@@ -2,6 +2,9 @@ class Transform {
 
   static isDraggingX: boolean = false;
   static isDraggingY: boolean = false;
+  static dx: number = 0;
+  static dy: number = 0;
+
 
   static gizmoArrowLength: number = 18;
   static gizmoArrowWidth: number = 2;
@@ -54,12 +57,12 @@ class Transform {
       
       if(Transform.isDraggingX){
         for (let p of polygon) {
-          p.x += dx;
+          p.x += Transform.dx;
         }
       }
       else if(Transform.isDraggingY){
         for (let p of polygon) {
-          p.y += dy;
+          p.y += Transform.dy;
         }
       }
       
@@ -70,16 +73,16 @@ class Transform {
       Transform.calculateDxDy();
   
       if(Transform.isDraggingX){
-        selectedVertex.x += dx;
+        selectedVertex.x += Transform.dx;
       }
       else if(Transform.isDraggingY){
-        selectedVertex.y += dy;
+        selectedVertex.y += Transform.dy;
       }
     }
   
     // Update the initial translation coordinates
-    translateInitialX = mousePosInGridSnapped.x;
-    translateInitialY = mousePosInGridSnapped.y;
+    translateInitialX = Mouse.mousePosInGridSnapped.x;
+    translateInitialY = Mouse.mousePosInGridSnapped.y;
   }
 
   static drawTransformGizmo() {
@@ -105,10 +108,10 @@ class Transform {
     let hitboxWidth = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
     let hitboxHeight = Transform.gizmoHitboxWidth;
     
-    return (mousePosInGrid.x >= hitboxX && 
-            mousePosInGrid.x <= hitboxX + hitboxWidth &&
-            mousePosInGrid.y >= hitboxY - hitboxHeight/2 && 
-            mousePosInGrid.y <= hitboxY + hitboxHeight/2);
+    return (Mouse.mousePosInGrid.x >= hitboxX && 
+            Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth &&
+            Mouse.mousePosInGrid.y >= hitboxY - hitboxHeight/2 && 
+            Mouse.mousePosInGrid.y <= hitboxY + hitboxHeight/2);
   }
   
   static isClickingTransformHandleY() {
@@ -123,15 +126,15 @@ class Transform {
     let hitboxWidth = Transform.gizmoHitboxWidth;
     let hitboxHeight = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
     
-    return (mousePosInGrid.x >= hitboxX - hitboxWidth/2 && 
-            mousePosInGrid.x <= hitboxX + hitboxWidth/2 &&
-            mousePosInGrid.y >= hitboxY && 
-            mousePosInGrid.y <= hitboxY + hitboxHeight);
+    return (Mouse.mousePosInGrid.x >= hitboxX - hitboxWidth/2 && 
+            Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth/2 &&
+            Mouse.mousePosInGrid.y >= hitboxY && 
+            Mouse.mousePosInGrid.y <= hitboxY + hitboxHeight);
   }
 
   static calculateDxDy() {
-    dx = mousePosInGridSnapped.x - translateInitialX;
-    dy = mousePosInGridSnapped.y - translateInitialY;
+    Transform.dx = Mouse.mousePosInGridSnapped.x - translateInitialX;
+    Transform.dy = Mouse.mousePosInGridSnapped.y - translateInitialY;
   }
 
 }

@@ -19,9 +19,9 @@ class DebugUI{
     let debugText = "";
     // debugText += `mouseXY: [${mouseX.toFixed(2)}, ${mouseY.toFixed(2)}]`;
     // debugText += "\n";
-    debugText += `mousePosInGrid: [${mousePosInGrid.x.toFixed(2)}, ${mousePosInGrid.y.toFixed(2)}]`;
+    debugText += `mousePosInGrid: [${Mouse.mousePosInGrid.x.toFixed(2)}, ${Mouse.mousePosInGrid.y.toFixed(2)}]`;
     debugText += "\n";
-    debugText += `mousePosInGridSnapped: [${mousePosInGridSnapped.x}, ${mousePosInGridSnapped.y}]`;
+    debugText += `mousePosInGridSnapped: [${Mouse.mousePosInGridSnapped.x}, ${Mouse.mousePosInGridSnapped.y}]`;
     debugText += "\n";
     //debugText += `mousePosInCartesianPlane: ${mousePosInCartesianPlane.x}, ${mousePosInCartesianPlane.y}`;
     //debugText += "\n";
@@ -49,8 +49,6 @@ class DebugUI{
       debugText += `currentScale: [${Scale.currentScale.x.toFixed(4)}, ${Scale.currentScale.y.toFixed(4)}]`;
       debugText += "\n";
     }
-  
-  
   
     text(debugText, 20, 20);
     pop();

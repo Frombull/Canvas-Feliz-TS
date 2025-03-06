@@ -1,25 +1,25 @@
 class Camera {
   static centerCamera() {
-    panX = width / 2;
-    panY = height / 2;
+    Mouse.panX = width / 2;
+    Mouse.panY = height / 2;
   }
   
   static startPanning() {
-    isPanning = true;
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
+    Mouse.isPanning = true;
+    Mouse.lastMouseX = mouseX;
+    Mouse.lastMouseY = mouseY;
   }
   
   static stopPanning() {
-    isPanning = false;
+    Mouse.isPanning = false;
   }
   
   static panScreen() {
-    if (isPanning) {
-      panX += mouseX - lastMouseX;
-      panY += mouseY - lastMouseY;
-      lastMouseX = mouseX;
-      lastMouseY = mouseY;
+    if (Mouse.isPanning) {
+      Mouse.panX += mouseX - Mouse.lastMouseX;
+      Mouse.panY += mouseY - Mouse.lastMouseY;
+      Mouse.lastMouseX = mouseX;
+      Mouse.lastMouseY = mouseY;
     }
   }
 }

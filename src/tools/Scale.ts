@@ -90,8 +90,8 @@ class Scale {
     let handle2Y = center.y - Scale.gizmoScaleDistance; // Subtract because Y is inverted in p5.js
     
     // Check if mouse is near either handle
-    let d1 = dist(mousePosInGridSnapped.x, mousePosInGridSnapped.y, handle1X, handle1Y);
-    let d2 = dist(mousePosInGridSnapped.x, mousePosInGridSnapped.y, handle2X, handle2Y);
+    let d1 = dist(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, handle1X, handle1Y);
+    let d2 = dist(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, handle2X, handle2Y);
     
     if (d1 < Scale.gizmoScaleHandleSize) {
       console.log("Click X-axis handle");

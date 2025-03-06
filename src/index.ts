@@ -10,20 +10,7 @@ let vertexBallRadius: number = 3;
 let scaleFactor: number = 5; // Camera zoom scale
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
-let dx: number = 0, dy: number = 0;
 let debugVertexCenter = {x: null, y: null};                 // TODO: remover
-
-
-
-// Pan
-let panX: number, panY: number;
-let isPanning: boolean = false;
-let lastMouseX: number, lastMouseY: number;
-let mousePosInGrid: {x: any; y: any;};
-let mousePosInGridSnapped: {x: any; y: any;};
-let mousePosInCartesianPlane: {x: any; y: any;};
-
-// Tools
 
 let translateInitialX: number = 0;
 let translateInitialY: number = 0;
@@ -70,8 +57,8 @@ function setup() {
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
   SidePanel.createControlPanel();
 
-  disableBrowserRightClick();
-  disablePageZoom();
+  BrowserUtils.disableBrowserRightClick();
+  BrowserUtils.disablePageZoom();
   createColors();
   Camera.centerCamera();
 }
@@ -79,12 +66,12 @@ function setup() {
 function draw() {
   background(colors.BackgroundColor); 
   
-  translate(panX, panY);
+  translate(Mouse.panX, Mouse.panY);
   scale(scaleFactor);
 
-  mousePosInGrid = Mouse.getMousePosInGrid();
-  mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
-  mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
+  Mouse.mousePosInGrid = Mouse.getMousePosInGrid();
+  Mouse.mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
+  Mouse.mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
   
   Grid.drawGrid();
   Grid.drawCartesianPlaneAxis();
@@ -148,7 +135,7 @@ function drawPolygonBeingCreated() {
     for (let p of tempPolygon) {
       vertex(p.x , p.y);
     }
-    vertex(mousePosInGridSnapped.x, mousePosInGridSnapped.y);
+    vertex(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
     endShape();
 
     // Draw gradient line from last point to current mouse position
@@ -160,7 +147,7 @@ function drawPolygonBeingCreated() {
     // Create gradient
     let gradient = drawingContext.createLinearGradient(
       lastPoint.x, lastPoint.y, 
-      mousePosInGridSnapped.x , mousePosInGridSnapped.y
+      Mouse.mousePosInGridSnapped.x , Mouse.mousePosInGridSnapped.y
     );
     gradient.addColorStop(0, 'black');
     gradient.addColorStop(1, colors.Red);
@@ -169,7 +156,7 @@ function drawPolygonBeingCreated() {
     drawingContext.strokeStyle = gradient;
     drawingContext.beginPath();
     drawingContext.moveTo(lastPoint.x , lastPoint.y);
-    drawingContext.lineTo(mousePosInGridSnapped.x , mousePosInGridSnapped.y);
+    drawingContext.lineTo(Mouse.mousePosInGridSnapped.x , Mouse.mousePosInGridSnapped.y);
     drawingContext.stroke();
     
     // Restore previous drawing context state
@@ -189,7 +176,7 @@ function drawPolygonBeingCreated() {
   // Draw red dot
   fill(colors.Red);
   noStroke();
-  ellipse(mousePosInGridSnapped.x, mousePosInGridSnapped.y, vertexBallRadius, vertexBallRadius);
+  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, vertexBallRadius, vertexBallRadius);
   
   // Draw coordinates text
   drawCoordinatesOnMouse();
@@ -230,7 +217,7 @@ function drawCoordinatesOnMouse() {
   strokeWeight(0.5);
   textAlign(LEFT, CENTER);
   textSize(12/scaleFactor);
-  text(`(${mousePosInCartesianPlane.x}, ${mousePosInCartesianPlane.y})`, mousePosInGridSnapped.x + 2, mousePosInGridSnapped.y + 2);
+  text(`(${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y})`, Mouse.mousePosInGridSnapped.x + 2, Mouse.mousePosInGridSnapped.y + 2);
 }
 
 function drawPolygonCenter() {
@@ -249,7 +236,7 @@ function selectNearestVertex() { // Selects vertex or centroid
 
   let d;
   for (let p of polygon) {
-    d = dist(mousePosInGrid.x, mousePosInGrid.y, p.x, p.y); 
+    d = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, p.x, p.y); 
     if (d < 3) {
       selectedVertex = p;
       selectedCentroid = null;
@@ -258,7 +245,7 @@ function selectNearestVertex() { // Selects vertex or centroid
     }
   }
 
-  d = dist(mousePosInGrid.x, mousePosInGrid.y, centroid.x, centroid.y);
+  d = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, centroid.x, centroid.y);
   
   if(d < 3) {
     selectedCentroid = getPolygonCenter();
@@ -299,28 +286,6 @@ function keyPressed() {
 
 
 // --------- HELPER FUNCTIONS ----------
-
-function disableBrowserRightClick() {
-  for (let element of document.getElementsByClassName("p5Canvas")) {
-    element.addEventListener("contextmenu", (e) => e.preventDefault());
-  }
-}
-
-function disablePageZoom() {
-  // You can still zoom with (ctrl +-)
-
-  // Prevent zooming with the mouse wheel
-  window.addEventListener('wheel', function(event) {
-    if (event.ctrlKey) {
-      event.preventDefault();
-    }
-  }, { passive: false });
-
-  // Prevent zooming with touch gestures
-  window.addEventListener('gesturestart', function(event) {
-    event.preventDefault();
-  });
-}
 
 function getPolygonCenter() {
   let sumX = 0, sumY = 0;

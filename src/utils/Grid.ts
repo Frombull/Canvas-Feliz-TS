@@ -10,10 +10,10 @@ class Grid {
     stroke(this.gridLineColor);
   
     // How many grid lines needed based on current view
-    let leftEdge = -panX / scaleFactor;
-    let rightEdge = (width - panX) / scaleFactor;
-    let topEdge = -panY / scaleFactor;
-    let bottomEdge = (height - panY) / scaleFactor;
+    let leftEdge = -Mouse.panX / scaleFactor;
+    let rightEdge = (width - Mouse.panX) / scaleFactor;
+    let topEdge = -Mouse.panY / scaleFactor;
+    let bottomEdge = (height - Mouse.panY) / scaleFactor;
   
     // Round to nearest grid line
     let startX = Math.floor(leftEdge / this.gridSize) * this.gridSize;

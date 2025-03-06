@@ -1,4 +1,14 @@
 class Mouse {
+  // Pan
+  static panX: number;
+  static panY: number;
+  static isPanning: boolean = false;
+  static lastMouseX: number;
+  static lastMouseY: number;
+  static mousePosInGrid: {x: any; y: any;};
+  static mousePosInGridSnapped: {x: any; y: any;};
+  static mousePosInCartesianPlane: {x: any; y: any;};
+  
   static mousePressed() {
     if (Mouse.isMouseOutOfBounds()) return;
   
@@ -10,7 +20,7 @@ class Mouse {
     if (mouseButton === LEFT) {
       if (selectedTool == Tool.CREATE_POLYGON) { 
         if (tempPolygon.length > 2) {
-          if (tempPolygon[0].x == mousePosInGridSnapped.x && tempPolygon[0].y == mousePosInGridSnapped.y) { // Close polygon
+          if (tempPolygon[0].x == Mouse.mousePosInGridSnapped.x && tempPolygon[0].y == Mouse.mousePosInGridSnapped.y) { // Close polygon
             polygon = [...tempPolygon];
             Scale.currentScale = {x: 1, y: 1} // Create polygon with scale of 1
             tempPolygon = [];
@@ -23,19 +33,19 @@ class Mouse {
             return;
           }
         }
-        tempPolygon.push(mousePosInGridSnapped);
+        tempPolygon.push(Mouse.mousePosInGridSnapped);
       }
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
             console.log("Clicking X handle");
-            translateInitialX = mousePosInGridSnapped.x;
+            translateInitialX = Mouse.mousePosInGridSnapped.x;
             Transform.isDraggingX = true;
             return;
           }
           else if (Transform.isClickingTransformHandleY()) {
             console.log("Clicking Y handle");
-            translateInitialY = mousePosInGridSnapped.y;
+            translateInitialY = Mouse.mousePosInGridSnapped.y;
             Transform.isDraggingY = true;
             return;
           }
@@ -51,7 +61,7 @@ class Mouse {
         let selectedAxis = Scale.isClickingScaleHandle();
         if (selectedAxis) {
           Scale.isScaling = true;
-          Scale.scaleStartPos = mousePosInGrid;
+          Scale.scaleStartPos = Mouse.mousePosInGrid;
           Scale.scalePolygonOriginalForm = polygon.map(p => ({x: p.x, y: p.y})); // Deep copy..?
           console.log("Saving current form for scale");
   
@@ -98,8 +108,8 @@ class Mouse {
     } 
     else if (Scale.isScaling) {
       if (!Scale.scaleStartPos.x || !Scale.scaleStartPos.y) return;
-      let distanciaX = mousePosInGrid.x - Scale.scaleStartPos.x;
-      let distanciaY = (mousePosInGrid.y - Scale.scaleStartPos.y)*-1;
+      let distanciaX = Mouse.mousePosInGrid.x - Scale.scaleStartPos.x;
+      let distanciaY = (Mouse.mousePosInGrid.y - Scale.scaleStartPos.y)*-1;
       
       Scale.currentScale.x = map(distanciaX, 0, 55, 1, 2);
       Scale.currentScale.y = map(distanciaY, 0, 55, 1, 2);
@@ -124,8 +134,8 @@ class Mouse {
     let centerX = width / 2;
     let centerY = height / 2;
   
-    panX = centerX - (centerX - panX) * zoomFactor;
-    panY = centerY - (centerY - panY) * zoomFactor;
+    Mouse.panX = centerX - (centerX - Mouse.panX) * zoomFactor;
+    Mouse.panY = centerY - (centerY - Mouse.panY) * zoomFactor;
   
     scaleFactor = newScale;
   }
@@ -140,22 +150,22 @@ class Mouse {
   
   static getMousePosInGrid() {
     return createVector(
-      (mouseX - panX) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
-      (mouseY - panY) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
+      (mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
+      (mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
     );
   }
   
   static getMousePosInGridSnapped() {
     return createVector(
-      Math.round((mouseX - panX) / (Grid.gridSize * scaleFactor)) * Grid.gridSize,
-      Math.round((mouseY - panY) / (Grid.gridSize * scaleFactor)) * Grid.gridSize
+      Math.round((mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor)) * Grid.gridSize,
+      Math.round((mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor)) * Grid.gridSize
     );
   }
   
   static getMousePosInCartesianPlane() {
     return createVector(
-      Math.round(mousePosInGridSnapped.x / Grid.gridSize),
-      Math.round(-mousePosInGridSnapped.y / Grid.gridSize) // Y grows down in p5js, but up in cartesian plane
+      Math.round(Mouse.mousePosInGridSnapped.x / Grid.gridSize),
+      Math.round(-Mouse.mousePosInGridSnapped.y / Grid.gridSize) // Y grows down in p5js, but up in cartesian plane
     );
   }
 

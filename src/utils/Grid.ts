@@ -1,11 +1,11 @@
-export class Grid {
+class Grid {
   static gridLineWidth: number = 0.1;
   static gridLineColor: number = 200;
   static gridSize: number = 5;
 
-  static drawGrid(panX: number, panY: number, scaleFactor: number) {
-    console.log("DRAW GRID!!");
-    
+  static drawGrid() {
+    if(!SidePanel.shouldDrawGrid) return
+
     strokeWeight(this.gridLineWidth);
     stroke(this.gridLineColor);
   
@@ -30,6 +30,15 @@ export class Grid {
     for (let y = startY; y <= endY; y += this.gridSize) {
       line(startX, y, endX, y);
     }
+  }
+
+  static drawCartesianPlaneAxis() {
+    if (!SidePanel.shouldDrawAxis) return;
+    strokeWeight(1);
+    stroke(colors.Red);
+    line(-5000, 0, width+5000, 0);
+    stroke(colors.Blue);
+    line(0, -5000, 0, height+5000);
   }
 }
 

@@ -15,7 +15,7 @@ class SidePanel {
     let createSection = createDiv('').class('section').parent(controlPanel);
     createDiv('').class('section-title').html('Tools').parent(createSection);
   
-    // Create Polygon Button
+    // Button Create Polygon 
     buttonCreate = createButton('Create Polygon').class('button').parent(createSection);
     buttonCreate.mousePressed(() => {
       selectedTool = Tool.CREATE_POLYGON;
@@ -25,7 +25,7 @@ class SidePanel {
       SidePanel.updateButtonStyles(buttonCreate);
     });
   
-    // Translate Button
+    // Button Translate 
     buttonTranslate = createButton('Translate').class('button').parent(createSection);
     buttonTranslate.mousePressed(() => {
       selectedTool = Tool.TRANSLATE;
@@ -33,7 +33,7 @@ class SidePanel {
       SidePanel.updateButtonStyles(buttonTranslate);
     });
   
-    // Scale button
+    // Button Scale
     buttonScale = createButton('Scale').class('button').parent(createSection);
     buttonScale.mousePressed(() => {
       selectedTool = Tool.SCALE;
@@ -43,25 +43,25 @@ class SidePanel {
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
   
-    // Mirror X Button
+    // Button Mirror X 
     buttonMirrorX = createButton('Mirror X').class('button').parent(createSection);
     buttonMirrorX.mousePressed(() => {
       Mirror.mirror('x');
     });
   
-    // Mirror Y Button
+    // Button Mirror Y 
     buttonMirrorY = createButton('Mirror Y').class('button').parent(createSection);
     buttonMirrorY.mousePressed(() => {
       Mirror.mirror('y');
     });
     
-    // Shear Uniform Button
+    // Button Shear Uniform 
     buttonShearU = createButton('Uniform Shear').class('button').parent(createSection);
     buttonShearU.mousePressed(() => {
       Shear.ShearUniform();
     });
   
-    // Shear Non-Uniform Button
+    // Button Shear Non-Uniform 
     buttonShearNU = createButton('Non-Uniform Shear').class('button').parent(createSection);
     buttonShearNU.mousePressed(() => {
       Shear.ShearNonUniform();
@@ -69,7 +69,7 @@ class SidePanel {
   
     createDiv('').class('section-title').html('Actions').parent(createSection);
   
-    // Reset Polygon Button
+    // Button Reset Polygon 
     buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
     buttonResetPolygon.mousePressed(() => {
       if(selectedPolygon){
@@ -77,7 +77,7 @@ class SidePanel {
       }
     });
   
-    // Center Camera Button
+    // Button Center Camera 
     buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
     buttonCenterCamera.mousePressed(() => {
       Camera.centerCamera();

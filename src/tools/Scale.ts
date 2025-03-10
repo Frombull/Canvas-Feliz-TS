@@ -53,13 +53,13 @@ class Scale {
     let handleYRight = centerY;
       
     // Draw X-axis line
-    stroke(colors.GizmoScaleColor);
+    stroke(Colors.GizmoScaleColor);
     strokeWeight(1.2);
     strokeCap(ROUND);
     line(centerX + 3, centerY, handleXRight, handleYRight);
       
     // Draw X-axis handle
-    fill(colors.GizmoScaleColor);
+    fill(Colors.GizmoScaleColor);
     noStroke();
     ellipse(handleXRight, handleYRight, Scale.gizmoScaleHandleSize, Scale.gizmoScaleHandleSize);
       
@@ -68,12 +68,12 @@ class Scale {
     let handleYUp = centerY - Scale.gizmoScaleDistance; // -Y up
       
     // Draw Y-axis line
-    stroke(colors.GizmoScaleColor);
+    stroke(Colors.GizmoScaleColor);
     strokeWeight(1.2);
     line(centerX, centerY - 3, handleXUp, handleYUp);
       
     // Draw Y-axis handle
-    fill(colors.GizmoScaleColor);
+    fill(Colors.GizmoScaleColor);
     noStroke();
     ellipse(handleXUp, handleYUp, Scale.gizmoScaleHandleSize, Scale.gizmoScaleHandleSize);
       

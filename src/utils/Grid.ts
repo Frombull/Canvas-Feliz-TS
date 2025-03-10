@@ -35,9 +35,9 @@ class Grid {
   static drawCartesianPlaneAxis() {
     if (!SidePanel.shouldDrawAxis) return;
     strokeWeight(1);
-    stroke(colors.Red);
+    stroke(Colors.Red);
     line(-5000, 0, width+5000, 0);
-    stroke(colors.Blue);
+    stroke(Colors.Blue);
     line(0, -5000, 0, height+5000);
   }
 }

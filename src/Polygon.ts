@@ -2,16 +2,26 @@ class Polygon {
   public vertices: Vertex[];
   private history: Vertex[][];
   private redoHistory: Vertex[][];
-
-  // Polygon ID
+  static vertexBallRadius: number = 3;
+  static selectedVertex: Vertex | null;          // Selected vertex for transformation
+  static selectedCentroid: Vertex | null;              // Selected centroid for transformation
+  // ID
   private static nextId: number = 1; // Começa com 1
   public id: number;
+  // Color
+  public vertexColor: any;
+  public edgesColor: any;
+  public fillColor: any;
 
-  static selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
-  static selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
+
 
   constructor(initialVertices: Vertex[] = []) {
     this.id = Polygon.nextId++;
+
+    this.vertexColor = Colors.Black;
+    this.edgesColor = Colors.Black;
+    this.fillColor = Colors.PolygonBlue;
+
     this.vertices = initialVertices;
     this.history = [];
     this.redoHistory = [];
@@ -24,7 +34,7 @@ class Polygon {
     stroke(0);
     strokeWeight(1);
     strokeJoin(ROUND);
-    fill(100, 100, 250, 100);
+    fill(this.fillColor);
 
     beginShape();
     for (let p of this.vertices) {
@@ -57,25 +67,27 @@ class Polygon {
   }
 
   drawPolygonCenter() {
-    if (this.vertices.length < 3) return;
-
     let center = this.getCenter();
-    strokeWeight(0.3);
-    fill(colors.Blue);
+    push();
+    strokeWeight(0.2);
+    stroke(0);
+    fill(Colors.Blue);
     ellipse(center.x, center.y, 3, 3);
+    pop();
   }
 
   drawVertexBalls() {
     push();
-    fill(0);
+    fill(this.vertexColor);
     noStroke();
     for (let p of this.vertices) {
-      ellipse(p.x, p.y, vertexBallRadius, vertexBallRadius);
+      ellipse(p.x, p.y, Polygon.vertexBallRadius, Polygon.vertexBallRadius);
     }
     pop();
   }
 
   resetPolygon() { // TODO
+    console.log("resetPolygon");
     // if (lastCompletePolygon.length > 0) {
     //   polygon = lastCompletePolygon.map(p => ({x: p.x, y: p.y}));
     //   selectedVertex = null;

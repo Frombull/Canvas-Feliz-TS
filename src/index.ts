@@ -2,10 +2,8 @@
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any, buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any;
 let canvas: any;
-let colors: Record<string, any> = {};                       // Should be color, from p5js
 let tempPolygon: { x: number; y: number }[] = [];                   // For when ur drawing
 let lastCompletePolygon: { x: number; y: number }[] = [];           // For ctrl+z
-let vertexBallRadius: number = 3;
 let scaleFactor: number = 5; // Camera scale factor (zoom)
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
@@ -58,18 +56,18 @@ let polygonsList: Polygon[] = [];
 function setup() {
   console.log("SETUP!!!!!!!!!!");
   
+  Colors.init();
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
   SidePanel.createControlPanel();
 
   BrowserUtils.disableBrowserRightClick();
   BrowserUtils.disablePageZoom();
-  createColors();
   Camera.centerCamera();
 }
 
 function draw() {
-  background(colors.BackgroundColor); 
+  background(Colors.BackgroundColor); 
   translate(Mouse.panX, Mouse.panY);
   scale(scaleFactor);
 
@@ -89,16 +87,7 @@ function draw() {
   //debugDrawArrowHitboxes();
 }
 
-function createColors() {
-  colors.Red = color(255, 30, 30);
-  colors.Green = color(30,255,30);
-  colors.Blue = color(30,30,255);
-  colors.Purple = color(150,40,210);
-  colors.Gray = color(150);
-  colors.Black = color(30, 30, 30);
-  colors.BackgroundColor = color(230);
-  colors.GizmoScaleColor = color(255, 100, 55);
-}
+
 
 function handleToolsLogic() {
   switch (selectedTool) {
@@ -126,7 +115,7 @@ function handleToolsLogic() {
 function drawCoordinatesOnMouse() {
   push();
   fill(0);
-  stroke(colors.BackgroundColor);
+  stroke(Colors.BackgroundColor);
   strokeWeight(0.5);
   textAlign(LEFT, CENTER);
   textSize(12/scaleFactor);
@@ -193,7 +182,7 @@ function drawPolygonBeingCreated() {
       Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y
     );
     gradient.addColorStop(0, 'black');
-    gradient.addColorStop(1, colors.Red);
+    gradient.addColorStop(1, Colors.Red);
 
     // Apply gradient
     drawingContext.strokeStyle = gradient;
@@ -208,23 +197,23 @@ function drawPolygonBeingCreated() {
     // Draw each vertex of tempPolygon
     if (SidePanel.shouldDrawVertexBalls) {
       noStroke();
-      fill(colors.Black);
+      fill(Colors.Black);
       for(let v of tempPolygon) {
-        ellipse(v.x, v.y, vertexBallRadius);
+        ellipse(v.x, v.y, Polygon.vertexBallRadius);
       }
     }
 
     // Draw red circle around first vertex
     noFill();
-    stroke(colors.Red);
+    stroke(Colors.Red);
     strokeWeight(0.2);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, vertexBallRadius);
+    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius);
   }
 
   // Draw red dot
-  fill(colors.Red);
+  fill(Colors.Red);
   noStroke();
-  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, vertexBallRadius, vertexBallRadius);
+  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
 
   // Draw coordinates text
   drawCoordinatesOnMouse();

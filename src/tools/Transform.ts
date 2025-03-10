@@ -16,7 +16,7 @@ class Transform {
     push();
   
     // Draw X arrow
-    stroke(colors.Red);
+    stroke(Colors.Red);
     strokeWeight(1.6);
     strokeCap(ROUND);
     line(centerX + Transform.gizmoLineOffset, centerY, centerX + Transform.gizmoArrowLength, centerY);    // ----
@@ -25,7 +25,7 @@ class Transform {
     line(centerX + Transform.gizmoArrowLength, centerY, centerX + Transform.gizmoArrowLength - Transform.gizmoArrowHeadSize, centerY - Transform.gizmoArrowHeadSize); // /
     
     // Draw Y arrow
-    stroke(colors.Blue);
+    stroke(Colors.Blue);
     strokeWeight(1.6);
     strokeCap(ROUND);
     line(centerX, centerY + Transform.gizmoLineOffset, centerX, centerY + Transform.gizmoArrowLength);    // ----
@@ -35,7 +35,7 @@ class Transform {
   
     // Draw coords next to transform gizmo arrows
     fill(0);
-    stroke(colors.BackgroundColor);
+    stroke(Colors.BackgroundColor);
     strokeWeight(0.5);
     textAlign(LEFT, CENTER);
     textSize(12/scaleFactor);

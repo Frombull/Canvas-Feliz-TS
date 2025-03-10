@@ -1,10 +1,11 @@
 class Mirror {
   static mirror(axis: 'x' | 'y') {
-    for (let p of polygon) {
+    if(!selectedPolygon) return;
+    for (let p of selectedPolygon.vertices) {
       p[axis] *= -1;
     }
   
-    if (selectedCentroid)
-      selectedCentroid = getPolygonCenter();
+    // if (selectedCentroid)
+    //   selectedCentroid = getPolygonCenter(); // TODO: MEME
   }
 }

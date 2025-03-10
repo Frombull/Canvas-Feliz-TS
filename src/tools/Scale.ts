@@ -12,35 +12,39 @@ class Scale {
 
   static scalePolygon() {
     if (!Scale.scalePolygonOriginalForm) return;
+    if (!selectedPolygon) return;
   
     if(Scale.isScalingX) {
-      for (let i = 0; i < polygon.length; i++) {
-        polygon[i].x = Scale.scalePolygonOriginalForm[i].x * Scale.currentScale.x;
+      for (let i = 0; i < selectedPolygon.vertices.length; i++) {
+        selectedPolygon.vertices[i].x = Scale.scalePolygonOriginalForm[i].x * Scale.currentScale.x;
       }
     } 
     else if (Scale.isScalingY) {
-      for (let i = 0; i < polygon.length; i++) {
-        polygon[i].y = Scale.scalePolygonOriginalForm[i].y * Scale.currentScale.y;
+      for (let i = 0; i < selectedPolygon.vertices.length; i++) {
+        selectedPolygon.vertices[i].y = Scale.scalePolygonOriginalForm[i].y * Scale.currentScale.y;
       }
     }
   }
 
   static setScaleTo(newX: number, newY: number) {
     if(!newX || !newY) return;
+    if (!selectedPolygon) return;
   
-    for (let i = 0; i < polygon.length; i++) {
-      polygon[i].x = Scale.scalePolygonOriginalForm[i].x * newX;
-      polygon[i].y = Scale.scalePolygonOriginalForm[i].y * newY;
+    for (let i = 0; i < selectedPolygon.vertices.length; i++) {
+      selectedPolygon.vertices[i].x = Scale.scalePolygonOriginalForm[i].x * newX;
+      selectedPolygon.vertices[i].y = Scale.scalePolygonOriginalForm[i].y * newY;
     }
     Scale.currentScale = {x: newX, y: newY}
   }
 
 
   static drawScaleGizmo() {
-    let centerX = getPolygonCenter().x;
-    let centerY = getPolygonCenter().y;
+    if(!selectedPolygon) return;
+
+    let centerX = selectedPolygon.getCenter().x;
+    let centerY = selectedPolygon.getCenter().y;
   
-    if (centerX == null || centerY == null || polygon.length < 3) return;
+    if (centerX == null || centerY == null || selectedPolygon.vertices.length < 3) return;
   
     push();
     
@@ -77,7 +81,8 @@ class Scale {
   }
   
   static isClickingScaleHandle() {
-    let center = getPolygonCenter();
+    if(!selectedPolygon) return;
+    let center = selectedPolygon.getCenter();
   
     if (!center) return;
   

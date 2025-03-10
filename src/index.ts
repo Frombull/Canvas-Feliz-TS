@@ -3,7 +3,6 @@
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any, buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any;
 let canvas: any;
 let colors: Record<string, any> = {};                       // Should be color, from p5js
-let polygon: { x: number; y: number }[] = [];
 let tempPolygon: { x: number; y: number }[] = [];                   // For when ur drawing
 let lastCompletePolygon: { x: number; y: number }[] = [];           // For ctrl+z
 let vertexBallRadius: number = 3;
@@ -24,6 +23,10 @@ enum Tool {
   SHEAR_U,
   SHEAR_NU
 }
+
+// ---------------
+let selectedPolygon: Polygon | null;
+let polygonsList: Polygon[] = [];
 
 
 // TODOs:
@@ -69,13 +72,15 @@ function draw() {
   translate(Mouse.panX, Mouse.panY);
   scale(scaleFactor);
 
-  Mouse.mousePosInGrid = Mouse.getMousePosInGrid();
-  Mouse.mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
-  Mouse.mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
+  Mouse.updateMousePosition();
   
   Grid.drawGrid();
   Grid.drawCartesianPlaneAxis();
-  drawPolygon();
+
+  for (let p of polygonsList) {
+    p.drawPolygon();
+  }
+
   handleToolsLogic();
 
   // Debug
@@ -93,14 +98,6 @@ function createColors() {
   colors.GizmoScaleColor = color(255, 100, 55);
 }
 
-function resetPolygon() {
-  if (lastCompletePolygon.length > 0) {
-    polygon = lastCompletePolygon.map(p => ({x: p.x, y: p.y}));
-    selectedVertex = null;
-    selectedCentroid = null;
-  }
-}
-
 function handleToolsLogic() {
   switch (selectedTool) {
     
@@ -109,12 +106,14 @@ function handleToolsLogic() {
       break;
 
     case Tool.TRANSLATE:
-      drawPolygonCenter();
+      if(!selectedPolygon) return;
+      selectedPolygon.drawPolygonCenter();
       Transform.drawTransformGizmo();
       break;
 
     case Tool.SCALE:
-      drawPolygonCenter();
+      if(!selectedPolygon) return;
+      selectedPolygon.drawPolygonCenter();
       Scale.drawScaleGizmo();
       break;
 
@@ -123,93 +122,66 @@ function handleToolsLogic() {
   }
 }
 
-function drawPolygonBeingCreated() {
-  if (selectedTool != Tool.CREATE_POLYGON) return;
-  
-  // Draw filled shape up to current points
-  if (tempPolygon.length > 0) {
-    stroke(0);
-    strokeJoin(ROUND);
-    fill(100, 100, 250, 100);
-    beginShape();
-    for (let p of tempPolygon) {
-      vertex(p.x , p.y);
+  function drawPolygonBeingCreated() {
+    if (selectedTool != Tool.CREATE_POLYGON) return;
+
+    // Draw filled shape up to current points
+    if (tempPolygon.length > 0) {
+      stroke(0);
+      strokeJoin(ROUND);
+      fill(100, 100, 250, 100);
+      beginShape();
+      for (let p of tempPolygon) {
+        vertex(p.x, p.y);
+      }
+      vertex(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
+      endShape();
+
+      // Draw gradient line from last point to current mouse position
+      let lastPoint: { x: number, y: number } = tempPolygon[tempPolygon.length - 1];
+
+      // Save current drawing context state
+      drawingContext.save();
+
+      // Create gradient
+      let gradient = drawingContext.createLinearGradient(
+        lastPoint.x, lastPoint.y,
+        Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y
+      );
+      gradient.addColorStop(0, 'black');
+      gradient.addColorStop(1, colors.Red);
+
+      // Apply gradient
+      drawingContext.strokeStyle = gradient;
+      drawingContext.beginPath();
+      drawingContext.moveTo(lastPoint.x, lastPoint.y);
+      drawingContext.lineTo(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
+      drawingContext.stroke();
+
+      // Restore previous drawing context state
+      drawingContext.restore();
+
+      if (SidePanel.shouldDrawVertexBalls) { //TODO Deixa cada vertex decidir no proprio draw()
+        for(let p of polygonsList) {
+          p.drawVertexBalls();
+        }
+      }
+
+      // Draw red circle around first vertex
+      noFill();
+      stroke(colors.Red);
+      strokeWeight(0.2);
+      ellipse(tempPolygon[0].x, tempPolygon[0].y, vertexBallRadius, vertexBallRadius);
     }
-    vertex(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
-    endShape();
 
-    // Draw gradient line from last point to current mouse position
-    let lastPoint: {x:number, y: number} = tempPolygon[tempPolygon.length - 1];
-    
-    // Save current drawing context state
-    drawingContext.save();
-    
-    // Create gradient
-    let gradient = drawingContext.createLinearGradient(
-      lastPoint.x, lastPoint.y, 
-      Mouse.mousePosInGridSnapped.x , Mouse.mousePosInGridSnapped.y
-    );
-    gradient.addColorStop(0, 'black');
-    gradient.addColorStop(1, colors.Red);
-    
-    // Apply gradient
-    drawingContext.strokeStyle = gradient;
-    drawingContext.beginPath();
-    drawingContext.moveTo(lastPoint.x , lastPoint.y);
-    drawingContext.lineTo(Mouse.mousePosInGridSnapped.x , Mouse.mousePosInGridSnapped.y);
-    drawingContext.stroke();
-    
-    // Restore previous drawing context state
-    drawingContext.restore();
-    
-    if (SidePanel.shouldDrawVertexBalls)
-      drawVertexBalls(tempPolygon);
-    
-    
-    // Draw red circle around first vertex
-    noFill();
-    stroke(colors.Red);
-    strokeWeight(0.2);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, vertexBallRadius, vertexBallRadius);
+    // Draw red dot
+    fill(colors.Red);
+    noStroke();
+    ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, vertexBallRadius, vertexBallRadius);
+
+    // Draw coordinates text
+    drawCoordinatesOnMouse();
   }
-  
-  // Draw red dot
-  fill(colors.Red);
-  noStroke();
-  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, vertexBallRadius, vertexBallRadius);
-  
-  // Draw coordinates text
-  drawCoordinatesOnMouse();
-}
-
-function drawPolygon() {
-  if (polygon.length < 2) return;
-
-  stroke(0);
-  strokeWeight(1);
-  strokeJoin(ROUND);
-  fill(100, 100, 250, 100);
-
-  beginShape();
-  for (let p of polygon) {
-    vertex(p.x, p.y);
-  }
-  endShape(CLOSE);
-
-  if (SidePanel.shouldDrawVertexBalls){
-    drawVertexBalls(polygon);
-  }
-}
-
-function drawVertexBalls(polygon: any) {
-  push();
-  fill(0);
-  noStroke();
-  for (let p of polygon) {
-    ellipse(p.x, p.y, vertexBallRadius, vertexBallRadius);
-  }
-  pop();
-}
 
 function drawCoordinatesOnMouse() {
   fill(0);
@@ -220,39 +192,38 @@ function drawCoordinatesOnMouse() {
   text(`(${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y})`, Mouse.mousePosInGridSnapped.x + 2, Mouse.mousePosInGridSnapped.y + 2);
 }
 
-function drawPolygonCenter() {
-if (polygon.length < 2) return;
-
-  let center = getPolygonCenter();
-  strokeWeight(0.3);
-  fill(colors.Blue);
-  ellipse(center.x, center.y, 3, 3);
-}
-
 function selectNearestVertex() { // Selects vertex or centroid
-  let centroid = getPolygonCenter(); 
+  let selectDistance = 3;
 
-  if (centroid == null || polygon.length < 3) return;
+  // Selecting center
+  for (let p of polygonsList) {
+    let center = p.getCenter();
+    let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
 
-  let d;
-  for (let p of polygon) {
-    d = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, p.x, p.y); 
-    if (d < 3) {
-      selectedVertex = p;
-      selectedCentroid = null;
-      console.log("Selected vertex!");
+    if (distanceToCenter < selectDistance) {
+      selectedPolygon = p;
+      selectedCentroid = center;
+      console.log("Selected polygon!");
       return;
     }
   }
 
-  d = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, centroid.x, centroid.y);
+  // Selecting vertex
+  for (let p of polygonsList) {
+    for (let v of p.vertices) {
+      let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
   
-  if(d < 3) {
-    selectedCentroid = getPolygonCenter();
-    selectedVertex = null;
-    console.log("Selected centroid!");
-    return
+      if (distanceToVertex < selectDistance) {
+        selectedVertex = v;
+        selectedPolygon = p;
+        console.log("Selected vertex!");
+        return;
+      }
+    }
   }
+
+
+
 }
 
 function cancelPolygonCreation() {
@@ -286,17 +257,6 @@ function keyPressed() {
 
 
 // --------- HELPER FUNCTIONS ----------
-
-function getPolygonCenter() {
-  let sumX = 0, sumY = 0;
-  
-  for (let p of polygon) {
-    sumX += p.x;
-    sumY += p.y;
-  }
-  
-  return createVector((sumX / polygon.length), (sumY / polygon.length));
-}
 
 // function getPolygonCentroid() {
 //   let sumX = 0, sumY = 0;

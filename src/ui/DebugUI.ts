@@ -49,6 +49,9 @@ class DebugUI{
       debugText += `currentScale: [${Scale.currentScale.x.toFixed(4)}, ${Scale.currentScale.y.toFixed(4)}]`;
       debugText += "\n";
     }
+    debugText += `PolygonListLength: [${polygonsList.length}]`;
+    debugText += "\n";
+
   
     text(debugText, 20, 20);
     pop();

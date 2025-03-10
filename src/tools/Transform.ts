@@ -1,5 +1,4 @@
 class Transform {
-
   static isDraggingX: boolean = false;
   static isDraggingY: boolean = false;
   static dx: number = 0;
@@ -52,21 +51,23 @@ class Transform {
   }
 
   static translatePolygon() {
+    if(!selectedPolygon) return;
+
     if (selectedCentroid) { // Move the entire polygon
       Transform.calculateDxDy();
       
       if(Transform.isDraggingX){
-        for (let p of polygon) {
+        for (let p of selectedPolygon.vertices) {
           p.x += Transform.dx;
         }
       }
       else if(Transform.isDraggingY){
-        for (let p of polygon) {
+        for (let p of selectedPolygon.vertices) {
           p.y += Transform.dy;
         }
       }
       
-      selectedCentroid = getPolygonCenter(); // Update the centroid position
+      selectedCentroid = selectedPolygon.getCenter(); // Update the centroid position
     } 
     
     else if (selectedVertex) { // Move only the selected vertex
@@ -86,8 +87,10 @@ class Transform {
   }
 
   static drawTransformGizmo() {
+    if(!selectedPolygon) return;
+
     if (selectedCentroid) {
-      selectedCentroid = getPolygonCenter();
+      selectedCentroid = selectedPolygon.getCenter();
       Transform.drawGizmoArrows(selectedCentroid.x, selectedCentroid.y);
     }
   else if (selectedVertex){
@@ -136,5 +139,5 @@ class Transform {
     Transform.dx = Mouse.mousePosInGridSnapped.x - translateInitialX;
     Transform.dy = Mouse.mousePosInGridSnapped.y - translateInitialY;
   }
-
+  
 }

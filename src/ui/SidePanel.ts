@@ -72,7 +72,9 @@ class SidePanel {
     // Reset Polygon Button
     buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
     buttonResetPolygon.mousePressed(() => {
-      resetPolygon();
+      if(selectedPolygon){
+        selectedPolygon.resetPolygon();
+      }
     });
   
     // Center Camera Button

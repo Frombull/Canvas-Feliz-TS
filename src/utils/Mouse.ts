@@ -8,9 +8,17 @@ class Mouse {
   static mousePosInGrid: {x: any; y: any;};
   static mousePosInGridSnapped: {x: any; y: any;};
   static mousePosInCartesianPlane: {x: any; y: any;};
+
+  // Called every frame by draw()
+  public static updateMousePosition() {
+    Mouse.mousePosInGrid = Mouse.getMousePosInGrid();
+    Mouse.mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
+    Mouse.mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
+  }
   
   static mousePressed() {
     if (Mouse.isMouseOutOfBounds()) return;
+    
   
   
     if (mouseButton === RIGHT) {
@@ -21,20 +29,30 @@ class Mouse {
       if (selectedTool == Tool.CREATE_POLYGON) { 
         if (tempPolygon.length > 2) {
           if (tempPolygon[0].x == Mouse.mousePosInGridSnapped.x && tempPolygon[0].y == Mouse.mousePosInGridSnapped.y) { // Close polygon
-            polygon = [...tempPolygon];
+            let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
+            //selectedPolygon.vertices = [...tempPolygon];
             Scale.currentScale = {x: 1, y: 1} // Create polygon with scale of 1
-            tempPolygon = [];
+            
             selectedTool = Tool.NONE;   // TODO: VOLTAR A USAR A ULTIMA TOOL SELECIONADA
             SidePanel.updateButtonStyles(null);
   
             // Save last completed polygon for undo
-            lastCompletePolygon = polygon.map(p => ({x: p.x, y: p.y}));
+            lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
+
+
+            // let newPolygon = new Polygon(tempPolygon);
+            // polygonsList.push(newPolygon);
+            polygonsList.push(newPolygon);
+
+            
+            tempPolygon = [];
   
             return;
           }
         }
         tempPolygon.push(Mouse.mousePosInGridSnapped);
       }
+
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
@@ -57,12 +75,14 @@ class Mouse {
   
         selectNearestVertex();
       }
+
       else if (selectedTool == Tool.SCALE) {
+        if (!selectedPolygon) return;
         let selectedAxis = Scale.isClickingScaleHandle();
         if (selectedAxis) {
           Scale.isScaling = true;
           Scale.scaleStartPos = Mouse.mousePosInGrid;
-          Scale.scalePolygonOriginalForm = polygon.map(p => ({x: p.x, y: p.y})); // Deep copy..?
+          Scale.scalePolygonOriginalForm = selectedPolygon.vertices.map(p => ({x: p.x, y: p.y})); // Deep copy..?
           console.log("Saving current form for scale");
   
           if (selectedAxis == 1)
@@ -148,21 +168,21 @@ class Mouse {
     )
   }
   
-  static getMousePosInGrid() {
+  private static getMousePosInGrid() {
     return createVector(
       (mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
       (mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
     );
   }
   
-  static getMousePosInGridSnapped() {
+  private static getMousePosInGridSnapped() {
     return createVector(
       Math.round((mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor)) * Grid.gridSize,
       Math.round((mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor)) * Grid.gridSize
     );
   }
   
-  static getMousePosInCartesianPlane() {
+  private static getMousePosInCartesianPlane() {
     return createVector(
       Math.round(Mouse.mousePosInGridSnapped.x / Grid.gridSize),
       Math.round(-Mouse.mousePosInGridSnapped.y / Grid.gridSize) // Y grows down in p5js, but up in cartesian plane

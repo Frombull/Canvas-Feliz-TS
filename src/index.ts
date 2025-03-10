@@ -38,6 +38,7 @@ let polygonsList: Polygon[] = [];
 // - Disable select text on panel  - DONE
 // - Scale tool                    - DONE
 // - Separate shit into classes    - DONE-ish
+// - Create ToolsManager.ts?       - 
 // - Ruler                         - 
 // - Better ShearU / ShearNU tool  - 
 // - Undo / Redo                   - 
@@ -122,6 +123,51 @@ function handleToolsLogic() {
   }
 }
 
+function drawCoordinatesOnMouse() {
+  push();
+  fill(0);
+  stroke(colors.BackgroundColor);
+  strokeWeight(0.5);
+  textAlign(LEFT, CENTER);
+  textSize(12/scaleFactor);
+  text(`(${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y})`, Mouse.mousePosInGridSnapped.x + 2, Mouse.mousePosInGridSnapped.y + 2);
+  pop();
+}
+
+function selectNearestVertex() { // Selects vertex or center
+  let selectDistance = 3;
+
+  // Selecting center
+  for (let p of polygonsList) {
+    let center = p.getCenter();
+    let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
+
+    if (distanceToCenter < selectDistance) {
+      selectedPolygon = p;
+      selectedCentroid = center;
+      console.log(`Selected polygon ${selectedPolygon.id}!`);
+      return;
+    }
+  }
+
+  // Selecting vertex
+  for (let p of polygonsList) {
+    for (let v of p.vertices) {
+      let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
+  
+      if (distanceToVertex < selectDistance) {
+        selectedVertex = v;
+        selectedPolygon = p;
+        console.log("Selected vertex!");
+        return;
+      }
+    }
+  }
+}
+
+
+
+
 function drawPolygonBeingCreated() {
   // Draw filled shape up to current points
   if (tempPolygon.length > 0) {
@@ -182,48 +228,6 @@ function drawPolygonBeingCreated() {
 
   // Draw coordinates text
   drawCoordinatesOnMouse();
-}
-
-function drawCoordinatesOnMouse() {
-  push();
-  fill(0);
-  stroke(colors.BackgroundColor);
-  strokeWeight(0.5);
-  textAlign(LEFT, CENTER);
-  textSize(12/scaleFactor);
-  text(`(${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y})`, Mouse.mousePosInGridSnapped.x + 2, Mouse.mousePosInGridSnapped.y + 2);
-  pop();
-}
-
-function selectNearestVertex() { // Selects vertex or center
-  let selectDistance = 3;
-
-  // Selecting center
-  for (let p of polygonsList) {
-    let center = p.getCenter();
-    let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
-
-    if (distanceToCenter < selectDistance) {
-      selectedPolygon = p;
-      selectedCentroid = center;
-      console.log(`Selected polygon ${selectedPolygon.id}!`);
-      return;
-    }
-  }
-
-  // Selecting vertex
-  for (let p of polygonsList) {
-    for (let v of p.vertices) {
-      let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
-  
-      if (distanceToVertex < selectDistance) {
-        selectedVertex = v;
-        selectedPolygon = p;
-        console.log("Selected vertex!");
-        return;
-      }
-    }
-  }
 }
 
 function cancelPolygonCreation() {

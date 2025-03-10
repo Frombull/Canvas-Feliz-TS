@@ -51,7 +51,7 @@ class Transform {
   }
 
   static translatePolygon() {
-    if(!selectedPolygon) return;
+    if (!selectedPolygon) return;
 
     if (selectedCentroid) { // Move the entire polygon
       Transform.calculateDxDy();
@@ -87,7 +87,7 @@ class Transform {
   }
 
   static drawTransformGizmo() {
-    if(!selectedPolygon) return;
+    if (!selectedPolygon) return;
 
     if (selectedCentroid) {
       selectedCentroid = selectedPolygon.getCenter();

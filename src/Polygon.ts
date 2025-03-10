@@ -3,13 +3,43 @@ class Polygon {
   private history: Vertex[][];
   private redoHistory: Vertex[][];
 
+  // Polygon ID
+  private static nextId: number = 1; // Começa com 1
+  public id: number;
+
   static selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
   static selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
 
   constructor(initialVertices: Vertex[] = []) {
+    this.id = Polygon.nextId++;
     this.vertices = initialVertices;
     this.history = [];
     this.redoHistory = [];
+  }
+
+  drawPolygon() {
+    if (this.vertices.length < 3) return;
+
+    push();
+    stroke(0);
+    strokeWeight(1);
+    strokeJoin(ROUND);
+    fill(100, 100, 250, 100);
+
+    beginShape();
+    for (let p of this.vertices) {
+      vertex(p.x, p.y);
+    }
+    endShape(CLOSE);
+
+    if (SidePanel.shouldDrawVertexBalls) {
+      this.drawVertexBalls();
+    }
+
+    if (selectedPolygon == this) {
+      this.drawPolygonCenter();
+    }
+    pop();
   }
 
   getCenter(): Vertex {
@@ -33,25 +63,6 @@ class Polygon {
     strokeWeight(0.3);
     fill(colors.Blue);
     ellipse(center.x, center.y, 3, 3);
-  }
-
-  drawPolygon() {
-    if (this.vertices.length < 3) return;
-
-    stroke(0);
-    strokeWeight(1);
-    strokeJoin(ROUND);
-    fill(100, 100, 250, 100);
-
-    beginShape();
-    for (let p of this.vertices) {
-      vertex(p.x, p.y);
-    }
-    endShape(CLOSE);
-
-    if (SidePanel.shouldDrawVertexBalls) {
-      this.drawVertexBalls();
-    }
   }
 
   drawVertexBalls() {

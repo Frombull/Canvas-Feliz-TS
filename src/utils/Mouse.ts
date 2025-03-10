@@ -18,9 +18,7 @@ class Mouse {
   
   static mousePressed() {
     if (Mouse.isMouseOutOfBounds()) return;
-    
-  
-  
+
     if (mouseButton === RIGHT) {
       Camera.startPanning();
     }
@@ -44,6 +42,7 @@ class Mouse {
             // polygonsList.push(newPolygon);
             polygonsList.push(newPolygon);
 
+            selectedPolygon = newPolygon;
             
             tempPolygon = [];
   
@@ -56,13 +55,13 @@ class Mouse {
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
-            console.log("Clicking X handle");
+            //console.log("Clicking X handle");
             translateInitialX = Mouse.mousePosInGridSnapped.x;
             Transform.isDraggingX = true;
             return;
           }
           else if (Transform.isClickingTransformHandleY()) {
-            console.log("Clicking Y handle");
+            //console.log("Clicking Y handle");
             translateInitialY = Mouse.mousePosInGridSnapped.y;
             Transform.isDraggingY = true;
             return;
@@ -70,6 +69,9 @@ class Mouse {
           else { // Clicked out in the canvas, deselect current vertex
             selectedCentroid = null;
             selectedVertex = null;
+            selectedPolygon = null;
+            console.log("Deselected.");
+            
           }
         }
   

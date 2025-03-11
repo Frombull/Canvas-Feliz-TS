@@ -7,6 +7,8 @@ class SidePanel {
 
   static controlPanelSize = {x: 350, y: 10};
 
+  static colorPicker: any;
+
 
   static createControlPanel() {
     let controlPanel = createDiv('').class('control-panel');
@@ -43,16 +45,19 @@ class SidePanel {
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
   
+    // Container for Mirror buttons
+    let mirrorContainer = createDiv('').style('display', 'flex').style('gap', '5px').parent(createSection);
+
     // Button Mirror X 
-    buttonMirrorX = createButton('Mirror X').class('button').parent(createSection);
+    buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
     buttonMirrorX.mousePressed(() => {
-      Mirror.mirror('x');
-    });
-  
-    // Button Mirror Y 
-    buttonMirrorY = createButton('Mirror Y').class('button').parent(createSection);
-    buttonMirrorY.mousePressed(() => {
       Mirror.mirror('y');
+    });
+
+    // Button Mirror Y 
+    buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
+    buttonMirrorY.mousePressed(() => {
+      Mirror.mirror('x');
     });
     
     // Button Shear Uniform 
@@ -82,7 +87,28 @@ class SidePanel {
     buttonCenterCamera.mousePressed(() => {
       Camera.centerCamera();
     });
+
+    
+    // ---------- COLOR PICKER ----------
+    // Container for Color Picker
+    let colorPickerContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '5px').parent(createSection);
+
+    // Color Picker 
+    SidePanel.colorPicker = createColorPicker().class('color-picker').style('width', '30px').style('height', '30px').parent(colorPickerContainer);
+
+    SidePanel.colorPicker.input(() => {
+      if (selectedPolygon) {
+        console.log("ColorPicker color changed!");
+        selectedPolygon.fillColor = SidePanel.colorPicker.value();
+      }
+    });
+    
+    
+    // Textbox Color Picker 
+    let colorPickerTextbox = createInput('#ff0000').style('width', '80px').parent(colorPickerContainer);
   
+
+
     createDiv('').class('section-title').html('Display Options').parent(createSection);
   
     // Checkbox for vertex balls

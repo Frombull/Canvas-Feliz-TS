@@ -8,6 +8,8 @@ class Mouse {
   static mousePosInGrid: {x: any; y: any;};
   static mousePosInGridSnapped: {x: any; y: any;};
   static mousePosInCartesianPlane: {x: any; y: any;};
+  static translateInitialX: number = 0;
+  static translateInitialY: number = 0;
 
   // Called every frame by draw()
   public static updateMousePosition() {
@@ -42,7 +44,7 @@ class Mouse {
             // polygonsList.push(newPolygon);
             polygonsList.push(newPolygon);
 
-            selectedPolygon = newPolygon;
+            newPolygon.setAsSelectePolygon();
             
             tempPolygon = [];
   
@@ -56,13 +58,13 @@ class Mouse {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
             //console.log("Clicking X handle");
-            translateInitialX = Mouse.mousePosInGridSnapped.x;
+            Mouse.translateInitialX = Mouse.mousePosInGridSnapped.x;
             Transform.isDraggingX = true;
             return;
           }
           else if (Transform.isClickingTransformHandleY()) {
             //console.log("Clicking Y handle");
-            translateInitialY = Mouse.mousePosInGridSnapped.y;
+            Mouse.translateInitialY = Mouse.mousePosInGridSnapped.y;
             Transform.isDraggingY = true;
             return;
           }

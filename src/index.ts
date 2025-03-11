@@ -9,8 +9,7 @@ let selectedVertex: {x: number, y: number} | null;          // Selected vertex f
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
 let debugVertexCenter = {x: null, y: null};                 // TODO: remover
 
-let translateInitialX: number = 0;
-let translateInitialY: number = 0;
+
 let selectedTool: number = 0;
 enum Tool {
   NONE,
@@ -29,36 +28,38 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
-// - Click vertex to show gizmo    - DONE
-// - Shapes snap to grid           - DONE
-// - Reset shape button            - DONE
-// - Mirror from axis button       - DONE
-// - Disable select text on panel  - DONE
-// - Scale tool                    - DONE
-// - Separate shit into classes    - DONE-ish
-// - Create ToolsManager.ts?       - 
-// - Ruler                         - 
-// - Better ShearU / ShearNU tool  - 
-// - Undo / Redo                   - 
-// - Save / Load                   - 
-// - Show/hide grid button         - DONE
-// - Show/hide vertex balls button - DONE
-// - Show/hide coordinates button  - DONE
-// - Show/hide debug window button - DONE
-// - Canvas size of screen         - DONE
-// - Resize when console is open   - 
-// -                               - 
-// -                               - 
-// - Start working on 3D version   - 
+// - Click vertex to show gizmo        - DONE
+// - Shapes snap to grid               - DONE
+// - Reset shape button                - DONE
+// - Mirror from axis button           - DONE
+// - Disable select text on panel      - DONE
+// - Scale tool                        - DONE
+// - Separate shit into classes        - DONE-ish
+// - https://iro.js.org/               -
+// - Create ToolsManager.ts?           - 
+// - Scale tool bugged                 - 
+// - Ruler                             - 
+// - Annimation when hover scale arrow - 
+// - Better ShearU / ShearNU tool      - 
+// - Undo / Redo                       - 
+// - Save / Load                       - 
+// - Show/hide grid button             - DONE
+// - Show/hide vertex balls button     - DONE
+// - Show/hide coordinates button      - DONE
+// - Show/hide debug window button     - DONE
+// - Canvas size of screen             - DONE
+// - Resize when console is open       - 
+// -                                   - 
+// -                                   - 
+// - Start working on 3D version       - 
 // ---------------------------------
 
 
 function setup() {
-  console.log("SETUP!!!!!!!!!!");
-  
-  Colors.init();
+  console.log("Setup!");
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
+  Colors.init();
   SidePanel.createControlPanel();
 
   BrowserUtils.disableBrowserRightClick();
@@ -81,6 +82,10 @@ function draw() {
   }
 
   handleToolsLogic();
+
+  if (!selectedPolygon){
+    SidePanel.colorPicker.value('#ffffff');
+  }
 
   // Debug
   DebugUI.drawDebugWindow();
@@ -132,9 +137,8 @@ function selectNearestVertex() { // Selects vertex or center
     let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
 
     if (distanceToCenter < selectDistance) {
-      selectedPolygon = p;
+      p.setAsSelectePolygon();
       selectedCentroid = center;
-      console.log(`Selected polygon ${selectedPolygon.id}!`);
       return;
     }
   }
@@ -145,16 +149,14 @@ function selectNearestVertex() { // Selects vertex or center
       let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
   
       if (distanceToVertex < selectDistance) {
+        p.setAsSelectePolygon();
         selectedVertex = v;
-        selectedPolygon = p;
         console.log("Selected vertex!");
         return;
       }
     }
   }
 }
-
-
 
 
 function drawPolygonBeingCreated() {

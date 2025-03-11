@@ -39,7 +39,7 @@ class DebugUI {
     // debugText += "\n";
     // debugText += `translateInitialXY: [${translateInitialX}, ${translateInitialY}]`;
     // debugText += "\n";
-    // debugText += `dx, dy: [${dx}, ${dy}]`;
+    // debugText += `dx, dy: [${Transform.dx}, ${Transform.dy}]`;
     // debugText += "\n";
     if (Scale.scaleStartPos.x && Scale.scaleStartPos.y) {
       debugText += `scaleStartPos: [${(Scale.scaleStartPos.x).toFixed(4)}, ${(Scale.scaleStartPos.x).toFixed(4)}]`;

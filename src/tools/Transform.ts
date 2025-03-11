@@ -82,8 +82,8 @@ class Transform {
     }
   
     // Update the initial translation coordinates
-    translateInitialX = Mouse.mousePosInGridSnapped.x;
-    translateInitialY = Mouse.mousePosInGridSnapped.y;
+    Mouse.translateInitialX = Mouse.mousePosInGridSnapped.x;
+    Mouse.translateInitialY = Mouse.mousePosInGridSnapped.y;
   }
 
   static drawTransformGizmo() {
@@ -136,8 +136,8 @@ class Transform {
   }
 
   static calculateDxDy() {
-    Transform.dx = Mouse.mousePosInGridSnapped.x - translateInitialX;
-    Transform.dy = Mouse.mousePosInGridSnapped.y - translateInitialY;
+    Transform.dx = Mouse.mousePosInGridSnapped.x - Mouse.translateInitialX;
+    Transform.dy = Mouse.mousePosInGridSnapped.y - Mouse.translateInitialY;
   }
   
 }

@@ -4,9 +4,9 @@ class Polygon {
   private redoHistory: Vertex[][];
   static vertexBallRadius: number = 3;
   static selectedVertex: Vertex | null;          // Selected vertex for transformation
-  static selectedCentroid: Vertex | null;              // Selected centroid for transformation
+  static selectedCentroid: Vertex | null;        // Selected centroid for transformation
   // ID
-  private static nextId: number = 1; // Começa com 1
+  private static nextId: number = 1; // ID start in 1
   public id: number;
   // Color
   public vertexColor: any;
@@ -28,8 +28,6 @@ class Polygon {
   }
 
   drawPolygon() {
-    if (this.vertices.length < 3) return;
-
     push();
     stroke(0);
     strokeWeight(1);
@@ -53,10 +51,6 @@ class Polygon {
   }
 
   getCenter(): Vertex {
-    if (this.vertices.length === 0) {
-      return { x: 0, y: 0 };
-    }
-
     const sumX = this.vertices.reduce((sum, v) => sum + v.x, 0);
     const sumY = this.vertices.reduce((sum, v) => sum + v.y, 0);
 
@@ -94,6 +88,14 @@ class Polygon {
     //   selectedCentroid = null;
     // }
   }
+
+  setAsSelectePolygon() {
+    selectedPolygon = this;
+    console.log(`Selected polygon ${this.id}`);
+    SidePanel.colorPicker.value(Colors.rgbToHex(this.fillColor));
+  }
+
+
 
 }
 

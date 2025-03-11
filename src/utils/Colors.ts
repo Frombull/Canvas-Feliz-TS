@@ -21,17 +21,4 @@ class Colors {
     Colors.GizmoScaleColor = color(255, 100, 55);
     Colors.PolygonBlue = color(100, 100, 250, 100);
   }
-
-  static rgbToHex(color: any) {
-    // Check if the color is already a hex string
-    if (typeof color === 'string' && color.startsWith('#') && color.length === 7) {
-      return color; // Return the hex color as is
-    }
-
-    let c = color.levels;
-    return "#" + 
-      c[0].toString(16).padStart(2, "0") + 
-      c[1].toString(16).padStart(2, "0") + 
-      c[2].toString(16).padStart(2, "0");
-  }
 }

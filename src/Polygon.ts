@@ -14,7 +14,6 @@ class Polygon {
   public fillColor: any;
 
 
-
   constructor(initialVertices: Vertex[] = []) {
     this.id = Polygon.nextId++;
 
@@ -92,11 +91,8 @@ class Polygon {
   setAsSelectePolygon() {
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
-    SidePanel.colorPicker.value(Colors.rgbToHex(this.fillColor));
+    SidePanel.colorPicker.color.rgbaString = this.fillColor;
   }
-
-
-
 }
 
 interface Vertex {

@@ -1,10 +1,12 @@
 /// <reference path="../node_modules/@types/p5/global.d.ts" />
+/// <reference path="../node_modules/@irojs/iro-core/dist/index.d.ts" />
+
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any, buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any;
 let canvas: any;
-let tempPolygon: { x: number; y: number }[] = [];                   // For when ur drawing
-let lastCompletePolygon: { x: number; y: number }[] = [];           // For ctrl+z
-let scaleFactor: number = 5; // Camera scale factor (zoom)
+let tempPolygon: { x: number; y: number }[] = [];           // For when ur drawing
+let lastCompletePolygon: { x: number; y: number }[] = [];   // For ctrl+z
+let scaleFactor: number = 5;                                // Camera scale factor (zoom)
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
 let debugVertexCenter = {x: null, y: null};                 // TODO: remover
@@ -83,9 +85,9 @@ function draw() {
 
   handleToolsLogic();
 
-  if (!selectedPolygon){
-    SidePanel.colorPicker.value('#ffffff');
-  }
+  // if (!selectedPolygon){
+  //   SidePanel.colorPicker.value('#ffffff');
+  // }
 
   // Debug
   DebugUI.drawDebugWindow();

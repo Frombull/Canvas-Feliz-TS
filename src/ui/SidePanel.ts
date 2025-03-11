@@ -88,25 +88,58 @@ class SidePanel {
       Camera.centerCamera();
     });
 
-    
-    // ---------- COLOR PICKER ----------
-    // Container for Color Picker
+
+
+    createDiv('').class('section-title').html('Color').parent(createSection);
+
+
+    // ---------- COLOR PICKER ---------- 
+
     let colorPickerContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '5px').parent(createSection);
 
-    // Color Picker 
-    SidePanel.colorPicker = createColorPicker().class('color-picker').style('width', '30px').style('height', '30px').parent(colorPickerContainer);
+    let iroContainer = createDiv('').parent(colorPickerContainer);
 
-    SidePanel.colorPicker.input(() => {
+    // @ts-expect-error
+    SidePanel.colorPicker = new iro.ColorPicker(iroContainer.elt, {
+      width: 100,
+      color: `${Colors.PolygonBlue}`,
+      borderWidth: 1,
+      borderColor: "#fff",
+      handleRadius: 7,
+      padding: 1,
+      margin: 8,
+      layout: [
+        { // @ts-expect-error
+          component: iro.ui.Wheel }, 
+          // @ts-expect-error
+        { component: iro.ui.Slider, options: { sliderType: 'alpha' } } 
+      ]
+    });
+
+    // Text box
+    let formatedColor = `${Colors.PolygonBlue.levels[0]}, ${Colors.PolygonBlue.levels[1]}, ${Colors.PolygonBlue.levels[2]}, ${Colors.PolygonBlue.levels[3]}`;
+    let colorPickerTextbox = createInput(`${formatedColor}`).style('width', '140px').parent(colorPickerContainer) as any;
+
+    // Update polygon
+    SidePanel.colorPicker.on('color:change', function(c: any) {
+      colorPickerTextbox.value(`${c.rgb.r}, ${c.rgb.g}, ${c.rgb.b}, ${(c.alpha).toFixed(2)}`);
+      
       if (selectedPolygon) {
-        console.log("ColorPicker color changed!");
-        selectedPolygon.fillColor = SidePanel.colorPicker.value();
+        let p5Color = color(c.rgb.r, c.rgb.g, c.rgb.b, c.alpha * 255);
+
+        selectedPolygon.fillColor = p5Color;
       }
     });
-    
-    
-    // Textbox Color Picker 
-    let colorPickerTextbox = createInput('#ff0000').style('width', '80px').parent(colorPickerContainer);
-  
+
+    // Textbox update
+    colorPickerTextbox.input(() => {
+      SidePanel.colorPicker.color.rgbaString = colorPickerTextbox.value();
+    });
+
+
+
+
+
 
 
     createDiv('').class('section-title').html('Display Options').parent(createSection);

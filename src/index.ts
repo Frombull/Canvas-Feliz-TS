@@ -5,8 +5,8 @@ let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: an
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
  buttonBezier: any, buttonHermite: any;;
 let canvas: any;
-let tempPolygon: { x: number; y: number }[] = [];           // For when ur drawing
-let lastCompletePolygon: { x: number; y: number }[] = [];   // For ctrl+z
+let tempPolygon: { x: number; y: number }[] = [];           // 
+let lastCompletePolygon: { x: number; y: number }[] = [];   // 
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
 let debugVertexCenter = {x: null, y: null};                 // TODO: remover

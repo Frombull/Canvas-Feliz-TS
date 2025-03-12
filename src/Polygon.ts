@@ -94,6 +94,31 @@ class Polygon {
     console.log(`Selected polygon ${this.id}`);
     SidePanel.colorPicker.color.rgbaString = this.fillColor;
   }
+
+  deleteVertex(targetVertex: Vertex) {
+    if (this.vertices.length <= 3) return;
+    
+    let index = this.vertices.indexOf(targetVertex);
+    
+    if (index != -1) {
+      this.vertices.splice(index, 1);
+      selectedVertex = null;
+      // this.history.push([...this.vertices]);     // Save history for undo
+      // this.redoHistory = [];                     // Clear redo history
+    }
+  }
+
+  deleteSelf() {
+    if (selectedPolygon != this) return;
+    
+    selectedPolygon = null;
+    selectedVertex = null;
+
+    let index = polygonsList.indexOf(this);
+    if (index != -1) {
+      polygonsList.splice(index, 1);
+    }
+  }
 }
 
 interface Vertex {

@@ -17,8 +17,15 @@ class Keyboard {
       buttonScale.removeClass('active');
       buttonRotate.removeClass('active');
     }
-    else if (key == "t") {
-      console.log("Pressed t");
+    else if (keyCode = DELETE) {
+      // Delete vertex
+      if (selectedPolygon && selectedVertex) {
+        selectedPolygon.deleteVertex(selectedVertex);
+      }
+      // Delete polygon
+      else if (selectedPolygon && !selectedVertex && selectedCentroid) {
+        selectedPolygon.deleteSelf();
+      }
     }
   }
 }

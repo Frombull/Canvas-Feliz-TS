@@ -47,6 +47,27 @@ class SidePanel {
       tempPolygon = [];
       SidePanel.updateButtonStyles(buttonRotate);
     });
+
+    // ---------- Curves ----------
+  
+    // Container curve buttons
+    let curveContainer = createDiv('').style('display', 'flex').style('gap', '5px').parent(createSection);
+    
+    // Button Bezier Curve
+    buttonBezier = createButton('Bezier Curve').class('button').parent(curveContainer);
+    buttonBezier.mousePressed(() => {
+      selectedTool = Tool.BEZIER;
+      Curves.reset();  // Reset any existing curves
+      SidePanel.updateButtonStyles(buttonBezier);
+    });
+  
+    // Button Hermite Curve
+    buttonHermite = createButton('Hermite Curve').class('button').parent(curveContainer);
+    buttonHermite.mousePressed(() => {
+      selectedTool = Tool.HERMITE;
+      Curves.reset();  // Reset any existing curves
+      SidePanel.updateButtonStyles(buttonHermite);
+    });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
   
@@ -77,25 +98,23 @@ class SidePanel {
       Shear.ShearNonUniform();
     });
   
-    createDiv('').class('section-title').html('Actions').parent(createSection);
+    //createDiv('').class('section-title').html('Actions').parent(createSection);
   
-    // Button Reset Polygon 
-    buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
-    buttonResetPolygon.mousePressed(() => {
-      if(selectedPolygon){
-        selectedPolygon.resetPolygon();
-      }
-    });
+    // TODO
+    // // Button Reset Polygon 
+    // buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
+    // buttonResetPolygon.mousePressed(() => {
+    //   if(selectedPolygon){
+    //     selectedPolygon.resetPolygon();
+    //   }
+    // });
   
-    // Button Center Camera 
-    buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
-    buttonCenterCamera.mousePressed(() => {
-      Camera.centerCamera();
-    });
+
+
+    // ---------- COLOR PICKER ----------
 
     createDiv('').class('section-title').html('Color').parent(createSection);
-
-    // ---------- COLOR PICKER ---------- 
+    
     let colorPickerContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '5px').parent(createSection);
 
     let iroContainer = createDiv('').parent(colorPickerContainer);
@@ -138,6 +157,12 @@ class SidePanel {
     });
 
     createDiv('').class('section-title').html('Display Options').parent(createSection);
+
+    // Button Center Camera 
+    buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
+    buttonCenterCamera.mousePressed(() => {
+      Camera.centerCamera();
+    });
   
     // Checkbox for vertex balls
     let checkboxDrawVertexBalls: any = createCheckbox('Draw Vertex Balls', SidePanel.shouldDrawVertexBalls).parent(createSection);
@@ -170,6 +195,8 @@ class SidePanel {
     buttonTranslate.removeClass('active');
     buttonScale.removeClass('active');
     buttonRotate.removeClass('active');
+    buttonBezier.removeClass('active');
+    buttonHermite.removeClass('active');
 
     if (!activeButton) return;
     

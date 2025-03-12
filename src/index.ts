@@ -2,7 +2,8 @@
 /// <reference path="../node_modules/@irojs/iro-core/dist/index.d.ts" />
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any,
- buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any;
+ buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
+ buttonBezier: any, buttonHermite: any;;
 let canvas: any;
 let tempPolygon: { x: number; y: number }[] = [];           // For when ur drawing
 let lastCompletePolygon: { x: number; y: number }[] = [];   // For ctrl+z
@@ -17,7 +18,9 @@ enum Tool {
   REFLECT,
   SHEAR_U,
   SHEAR_NU,
-  ROTATE
+  ROTATE,
+  BEZIER,
+  HERMITE
 }
 let selectedTool: Tool = Tool.NONE;
 
@@ -44,6 +47,9 @@ let polygonsList: Polygon[] = [];
 // - Canvas size of screen              - DONE
 // - Rotate tool                        - DONE
 // - w rotate, let user select polygon  - DONE
+// - Bezier curve tool                  - 
+// - Hermite curve tool                 - 
+// - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
 // - Scale tool bugged                  - 
 // - Ruler tool                         - 
@@ -120,6 +126,14 @@ function handleToolsLogic() {
       if(!selectedPolygon) return;
       selectedPolygon.drawPolygonCenter();
       Rotate.drawRotationGizmo();
+      break;
+
+    case Tool.BEZIER:
+      Curves.drawBezierControls();
+      break;
+      
+    case Tool.HERMITE:
+      Curves.drawHermiteControls();
       break;
 
     default:

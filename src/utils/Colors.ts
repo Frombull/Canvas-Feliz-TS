@@ -11,6 +11,12 @@ class Colors {
   static PolygonBlue: any;
   static rotationHandleColor: any;
 
+  // Curves
+  static bezierColor: any ;
+  static hermiteColor: any ;
+  static tangentColor: any ;
+  static controlPointColor: any;
+
   static init() {
     Colors.Red = color(255, 30, 30);
     Colors.Green = color(30, 255, 30);
@@ -22,5 +28,9 @@ class Colors {
     Colors.GizmoScaleColor = color(255, 100, 55);
     Colors.PolygonBlue = color(100, 100, 250, 100);
     Colors.rotationHandleColor = color(255, 165, 0);
+    Colors.bezierColor = color(106, 90, 205);
+    Colors.hermiteColor = color(148, 0, 211);
+    Colors.tangentColor = color(255, 69, 0);
+    Colors.controlPointColor = color(0, 0, 0);
   }
 }

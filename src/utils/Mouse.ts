@@ -2,14 +2,15 @@ class Mouse {
   // Pan
   static panX: number;
   static panY: number;
-  static isPanning: boolean = false;
-  static lastMouseX: number;
-  static lastMouseY: number;
+  static lastMouseX: number;                              // Used for panning
+  static lastMouseY: number;                              // Used for panning
   static mousePosInGrid: {x: any; y: any;};
   static mousePosInGridSnapped: {x: any; y: any;};
   static mousePosInCartesianPlane: {x: any; y: any;};
   static translateInitialX: number = 0;
   static translateInitialY: number = 0;
+  static isDraggingControlPoint: boolean = false;
+  static selectedControlPoint: Vertex | null = null;
 
   // Called every frame by draw()
   public static updateMousePosition() {
@@ -122,7 +123,25 @@ class Mouse {
           }
         }
       }
-  
+      else if (selectedTool == Tool.BEZIER || selectedTool == Tool.HERMITE) {
+        // if clicking on a control point
+        let controlPoint = Curves.isNearControlPoint(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y);
+        
+        if (controlPoint) {
+          // Start dragging this control point
+          Mouse.selectedControlPoint = controlPoint;
+          Mouse.isDraggingControlPoint = true;
+        } else {
+          // Not clicking on a control point, so create a new curve
+          if (selectedTool == Tool.BEZIER) {
+            Curves.createBezierCurve();
+            console.log("createBezierCurve()");
+          } else {
+            Curves.createHermiteCurve();
+            console.log("createHermiteCurve()");
+          }
+        }
+      }
       else {
         Camera.startPanning();
       }
@@ -152,6 +171,9 @@ class Mouse {
     Scale.isScaling = false;
 
     Rotate.isDragging = false;
+
+    Mouse.isDraggingControlPoint = false;
+    Mouse.selectedControlPoint = null;
   }
   
   static mouseDragged() {
@@ -179,6 +201,11 @@ class Mouse {
         let dy = Mouse.mousePosInGrid.y - Rotate.rotationCenter.y;
         Rotate.rotationStartAngle = atan2(dy, dx);
       }
+    }
+    else if (Mouse.isDraggingControlPoint && Mouse.selectedControlPoint) {
+      // Update pos of dragged control point
+      Mouse.selectedControlPoint.x = Mouse.mousePosInGridSnapped.x;
+      Mouse.selectedControlPoint.y = Mouse.mousePosInGridSnapped.y;
     }
   }
   

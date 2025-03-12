@@ -1,5 +1,6 @@
 class Camera {
   static scaleFactor: number = 5;     // Camera scale factor (zoom)
+  static isPanning: boolean = false;
 
   static centerCamera() {
     Mouse.panX = width / 2;
@@ -7,17 +8,17 @@ class Camera {
   }
   
   static startPanning() {
-    Mouse.isPanning = true;
+    Camera.isPanning = true;
     Mouse.lastMouseX = mouseX;
     Mouse.lastMouseY = mouseY;
   }
   
   static stopPanning() {
-    Mouse.isPanning = false;
+    Camera.isPanning = false;
   }
   
   static panScreen() {
-    if (Mouse.isPanning) {
+    if (Camera.isPanning) {
       Mouse.panX += mouseX - Mouse.lastMouseX;
       Mouse.panY += mouseY - Mouse.lastMouseY;
       Mouse.lastMouseX = mouseX;

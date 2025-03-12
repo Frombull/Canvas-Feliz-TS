@@ -37,7 +37,6 @@ class Scale {
     Scale.currentScale = {x: newX, y: newY}
   }
 
-
   static drawScaleGizmo() {
     if(!selectedPolygon) return;
 

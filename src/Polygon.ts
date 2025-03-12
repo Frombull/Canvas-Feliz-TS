@@ -62,10 +62,11 @@ class Polygon {
   drawPolygonCenter() {
     let center = this.getCenter();
     push();
-    strokeWeight(0.2);
+    strokeWeight(0.3);
     stroke(0);
-    fill(Colors.Blue);
-    ellipse(center.x, center.y, 3, 3);
+    //noFill();
+    fill(Colors.PolygonBlue);
+    ellipse(center.x, center.y, 3);
     pop();
   }
 

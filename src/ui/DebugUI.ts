@@ -27,7 +27,7 @@ class DebugUI {
     //debugText += "\n";
     // debugText += `PanXY: [${panX.toFixed(2)}, ${panY.toFixed(2)}]`;
     // debugText += "\n";
-    debugText += `Screen scaleFactor: [${scaleFactor.toFixed(2)}]`;
+    debugText += `Screen scaleFactor: [${Camera.scaleFactor.toFixed(2)}]`;
     debugText += "\n";
     // debugText += `Last mouse pos: ${lastMouseX}, ${lastMouseY}`;
     // debugText += "\n";

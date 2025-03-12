@@ -10,10 +10,10 @@ class Grid {
     stroke(this.gridLineColor);
   
     // How many grid lines needed based on current view
-    let leftEdge = -Mouse.panX / scaleFactor;
-    let rightEdge = (width - Mouse.panX) / scaleFactor;
-    let topEdge = -Mouse.panY / scaleFactor;
-    let bottomEdge = (height - Mouse.panY) / scaleFactor;
+    let leftEdge = -Mouse.panX / Camera.scaleFactor;
+    let rightEdge = (width - Mouse.panX) / Camera.scaleFactor;
+    let topEdge = -Mouse.panY / Camera.scaleFactor;
+    let bottomEdge = (height - Mouse.panY) / Camera.scaleFactor;
   
     // Round to nearest grid line
     let startX = Math.floor(leftEdge / this.gridSize) * this.gridSize;
@@ -34,11 +34,13 @@ class Grid {
 
   static drawCartesianPlaneAxis() {
     if (!SidePanel.shouldDrawAxis) return;
+    push();
     strokeWeight(1);
     stroke(Colors.Red);
     line(-5000, 0, width+5000, 0);
     stroke(Colors.Blue);
     line(0, -5000, 0, height+5000);
+    pop();
   }
 }
 

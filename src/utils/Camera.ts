@@ -1,4 +1,6 @@
 class Camera {
+  static scaleFactor: number = 5;     // Camera scale factor (zoom)
+
   static centerCamera() {
     Mouse.panX = width / 2;
     Mouse.panY = height / 2;

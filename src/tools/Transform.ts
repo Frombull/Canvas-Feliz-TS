@@ -4,7 +4,6 @@ class Transform {
   static dx: number = 0;
   static dy: number = 0;
 
-
   static gizmoArrowLength: number = 18;
   static gizmoArrowWidth: number = 2;
   static gizmoArrowHeadSize: number = 2;
@@ -38,7 +37,7 @@ class Transform {
     stroke(Colors.BackgroundColor);
     strokeWeight(0.5);
     textAlign(LEFT, CENTER);
-    textSize(12/scaleFactor);
+    textSize(12/Camera.scaleFactor);
   
     // TODO: Esse código ta um pouco repetido em -> drawCoordinatesOnMouse()
     // Draw diferent if its a center instead of a vertex
@@ -139,5 +138,4 @@ class Transform {
     Transform.dx = Mouse.mousePosInGridSnapped.x - Mouse.translateInitialX;
     Transform.dy = Mouse.mousePosInGridSnapped.y - Mouse.translateInitialY;
   }
-  
 }

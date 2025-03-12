@@ -5,6 +5,7 @@ class Rotate {
   static rotationHandleLength: number = 30;
   static currentRotationDegrees: number = 0;
   
+
   static drawRotationGizmo() {
     if (!selectedPolygon) return;
 
@@ -54,10 +55,8 @@ class Rotate {
   static rotatePolygon(angle: number) {
     if (!selectedPolygon) return;
     
-    // Use selected vertex if available, otherwise use polygon center
     let center = selectedVertex || selectedPolygon.getCenter();
     
-    // Skip rotating pivot if its a vertex
     for (let vertex of selectedPolygon.vertices) {
       // Skip vertex if its the selected vertex (pivot)
       if (selectedVertex && vertex === selectedVertex) continue;
@@ -75,7 +74,7 @@ class Rotate {
       vertex.y = newY + center.y;
     }
 
-    // Update current rotation degrees (convert radians to degrees)
+    // Radians to degrees
     Rotate.currentRotationDegrees = (Rotate.currentRotationDegrees + angle * 180 / Math.PI) % 360;
   }
   
@@ -84,13 +83,13 @@ class Rotate {
     
     let center = selectedVertex || selectedPolygon.getCenter();
     
-    // Calculate angle between center and mouse position
+    // Angle between center and mouse pos
     let dx = Mouse.mousePosInGrid.x - center.x;
     let dy = Mouse.mousePosInGrid.y - center.y;
     let currentAngle = atan2(dy, dx);
     
-    // Return difference from the starting angle
-    return currentAngle - Rotate.rotationStartAngle;
+    // Difference from the starting angle
+    return (currentAngle - Rotate.rotationStartAngle);
   }
 
   static isClickingCenter(): boolean {

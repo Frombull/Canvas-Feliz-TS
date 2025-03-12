@@ -96,7 +96,6 @@ class SidePanel {
     createDiv('').class('section-title').html('Color').parent(createSection);
 
     // ---------- COLOR PICKER ---------- 
-
     let colorPickerContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '5px').parent(createSection);
 
     let iroContainer = createDiv('').parent(colorPickerContainer);
@@ -166,13 +165,13 @@ class SidePanel {
   }
   
   static updateButtonStyles(activeButton: any) {
-    if (!activeButton) return;
-    
     // Remove active class from all buttons           // TODO array of buttons?
     buttonCreate.removeClass('active');
     buttonTranslate.removeClass('active');
     buttonScale.removeClass('active');
     buttonRotate.removeClass('active');
+
+    if (!activeButton) return;
     
     // Add active class to selected button
     activeButton.addClass('active');

@@ -39,7 +39,6 @@ class Mouse {
             // Save last completed polygon for undo
             lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
 
-
             // let newPolygon = new Polygon(tempPolygon);
             // polygonsList.push(newPolygon);
             polygonsList.push(newPolygon);
@@ -47,6 +46,8 @@ class Mouse {
             newPolygon.setAsSelectePolygon();
             
             tempPolygon = [];
+
+            
   
             return;
           }
@@ -183,24 +184,24 @@ class Mouse {
   
   static mouseWheel(event: any) {
     let zoomFactor = event.delta > 0 ? 0.9 : 1.1;
-    let newScale = scaleFactor * zoomFactor;
+    let newScale = Camera.scaleFactor * zoomFactor;
   
     // Zoom limit
     if (newScale < 1) {
-      zoomFactor = 1 / scaleFactor;
+      zoomFactor = (1 / Camera.scaleFactor);
     } else if (newScale > 10.0) {
-      zoomFactor = 10.0 / scaleFactor;
+      zoomFactor = (10.0 / Camera.scaleFactor);
     }
   
-    newScale = scaleFactor * zoomFactor;
+    newScale = Camera.scaleFactor * zoomFactor;
   
-    let centerX = width / 2;
-    let centerY = height / 2;
+    let centerX = (width / 2);
+    let centerY = (height / 2);
   
-    Mouse.panX = centerX - (centerX - Mouse.panX) * zoomFactor;
-    Mouse.panY = centerY - (centerY - Mouse.panY) * zoomFactor;
+    Mouse.panX = (centerX - (centerX - Mouse.panX) * zoomFactor);
+    Mouse.panY = (centerY - (centerY - Mouse.panY) * zoomFactor);
   
-    scaleFactor = newScale;
+    Camera.scaleFactor = newScale;
   }
 
   static isMouseOutOfBounds() {
@@ -213,15 +214,15 @@ class Mouse {
   
   private static getMousePosInGrid() {
     return createVector(
-      (mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
-      (mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor) * Grid.gridSize,
+      (mouseX - Mouse.panX) / (Grid.gridSize * Camera.scaleFactor) * Grid.gridSize,
+      (mouseY - Mouse.panY) / (Grid.gridSize * Camera.scaleFactor) * Grid.gridSize,
     );
   }
   
   private static getMousePosInGridSnapped() {
     return createVector(
-      Math.round((mouseX - Mouse.panX) / (Grid.gridSize * scaleFactor)) * Grid.gridSize,
-      Math.round((mouseY - Mouse.panY) / (Grid.gridSize * scaleFactor)) * Grid.gridSize
+      Math.round((mouseX - Mouse.panX) / (Grid.gridSize * Camera.scaleFactor)) * Grid.gridSize,
+      Math.round((mouseY - Mouse.panY) / (Grid.gridSize * Camera.scaleFactor)) * Grid.gridSize
     );
   }
   
@@ -231,7 +232,4 @@ class Mouse {
       Math.round(-Mouse.mousePosInGridSnapped.y / Grid.gridSize) // Y grows down in p5js, but up in cartesian plane
     );
   }
-
-
-
 }

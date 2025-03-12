@@ -53,7 +53,6 @@ class Mouse {
         }
         tempPolygon.push(Mouse.mousePosInGridSnapped);
       }
-
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
@@ -79,7 +78,6 @@ class Mouse {
   
         selectNearestVertex();
       }
-
       else if (selectedTool == Tool.SCALE) {
         if (!selectedPolygon) return;
         let selectedAxis = Scale.isClickingScaleHandle();
@@ -94,6 +92,33 @@ class Mouse {
           else if (selectedAxis == 2)
             Scale.isScalingY = true;
   
+        }
+      }
+      else if (selectedTool == Tool.ROTATE) {
+        if (!selectedPolygon) return;
+        if (Rotate.isClickingRotationHandle()) {
+          Rotate.isDragging = true;
+          
+          let center = selectedVertex || selectedPolygon.getCenter();
+          let dx = Mouse.mousePosInGrid.x - center.x;
+          let dy = Mouse.mousePosInGrid.y - center.y;
+          Rotate.rotationStartAngle = atan2(dy, dx);
+          Rotate.rotationCenter = center;
+        } else {
+          if (Rotate.isClickingCenter()) {
+            // Select the center as rotation point by clearing selectedVertex
+            selectedVertex = null;
+            Rotate.resetAngle();
+            return;
+          }
+
+          let previousVertex = selectedVertex;
+
+          selectNearestVertex();
+
+          if (previousVertex !== selectedVertex) {
+            Rotate.resetAngle();
+          }
         }
       }
   
@@ -117,11 +142,15 @@ class Mouse {
   
   static mouseReleased() {
     Camera.stopPanning();
+
     Transform.isDraggingX = false;
     Transform.isDraggingY = false;
+
     Scale.isScalingX = false;
     Scale.isScalingY = false;
     Scale.isScaling = false;
+
+    Rotate.isDragging = false;
   }
   
   static mouseDragged() {
@@ -139,6 +168,16 @@ class Mouse {
       Scale.currentScale.y = map(distanciaY, 0, 55, 1, 2);
       
       Scale.scalePolygon();
+    }
+    else if (Rotate.isDragging) {
+      let angle = Rotate.calculateRotationAngle();
+      Rotate.rotatePolygon(angle);
+      // Update the start angle for smooth rotation
+      if (Rotate.rotationCenter) {
+        let dx = Mouse.mousePosInGrid.x - Rotate.rotationCenter.x;
+        let dy = Mouse.mousePosInGrid.y - Rotate.rotationCenter.y;
+        Rotate.rotationStartAngle = atan2(dy, dx);
+      }
     }
   }
   

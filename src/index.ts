@@ -2,7 +2,8 @@
 /// <reference path="../node_modules/@irojs/iro-core/dist/index.d.ts" />
 
 
-let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any, buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any;
+let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any,
+ buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any;
 let canvas: any;
 let tempPolygon: { x: number; y: number }[] = [];           // For when ur drawing
 let lastCompletePolygon: { x: number; y: number }[] = [];   // For ctrl+z
@@ -12,7 +13,6 @@ let selectedCentroid: {x: any, y: any} | null;              // Selected centroid
 let debugVertexCenter = {x: null, y: null};                 // TODO: remover
 
 
-let selectedTool: number = 0;
 enum Tool {
   NONE,
   CREATE_POLYGON,
@@ -20,8 +20,11 @@ enum Tool {
   SCALE,
   REFLECT,
   SHEAR_U,
-  SHEAR_NU
+  SHEAR_NU,
+  ROTATE
 }
+let selectedTool: Tool = Tool.NONE;
+
 
 // --------NEW SHIT-------
 let selectedPolygon: Polygon | null;
@@ -36,20 +39,22 @@ let polygonsList: Polygon[] = [];
 // - Mirror from axis button           - DONE
 // - Disable select text on panel      - DONE
 // - Scale tool                        - DONE
-// - Separate shit into classes        - DONE-ish
-// - https://iro.js.org/               -
-// - Create ToolsManager.ts?           - 
-// - Scale tool bugged                 - 
-// - Ruler                             - 
-// - Annimation when hover scale arrow - 
-// - Better ShearU / ShearNU tool      - 
-// - Undo / Redo                       - 
-// - Save / Load                       - 
+// - Separate shit into classes        - DONE
+// - Add color and alpha               - DONE
 // - Show/hide grid button             - DONE
 // - Show/hide vertex balls button     - DONE
 // - Show/hide coordinates button      - DONE
 // - Show/hide debug window button     - DONE
 // - Canvas size of screen             - DONE
+// - Rotate tool                       - DONE
+// - Create ToolsManager.ts?           - 
+// - Scale tool bugged                 - 
+// - Ruler tool                        - 
+// - Annimation when hover scale arrow - 
+// - Better ShearU / ShearNU tool      - 
+// - Undo / Redo                       - 
+// - Save / Load                       - 
+// - Delete vertex or polygon          - 
 // - Resize when console is open       - 
 // -                                   - 
 // -                                   - 
@@ -114,6 +119,12 @@ function handleToolsLogic() {
       Scale.drawScaleGizmo();
       break;
 
+    case Tool.ROTATE:
+      if(!selectedPolygon) return;
+      selectedPolygon.drawPolygonCenter();
+      Rotate.drawRotationGizmo();
+      break;
+
     default:
       return;
   }
@@ -139,8 +150,13 @@ function selectNearestVertex() { // Selects vertex or center
     let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
 
     if (distanceToCenter < selectDistance) {
+      // If selecting a different polygon, reset rotation angle
+      if (p !== selectedPolygon) {
+        Rotate.resetAngle();
+      }
       p.setAsSelectePolygon();
       selectedCentroid = center;
+      selectedVertex = null;
       return;
     }
   }
@@ -151,9 +167,14 @@ function selectNearestVertex() { // Selects vertex or center
       let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
   
       if (distanceToVertex < selectDistance) {
+        // If selecting a different polygon, reset rotation angle
+        if (p !== selectedPolygon) {
+          Rotate.resetAngle();
+        }
         p.setAsSelectePolygon();
         selectedVertex = v;
-        console.log("Selected vertex!");
+        selectedCentroid = null;
+        console.log(`Selected vertex of polygon ${p.id}!`);
         return;
       }
     }

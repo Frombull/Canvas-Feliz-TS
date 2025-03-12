@@ -4,12 +4,10 @@ class SidePanel {
   static shouldDrawGrid: boolean = true;
   static shouldDrawAxis: boolean = true;
   static shouldDrawDebugWindow: boolean = true;
-
+  static colorPicker: any;
   static controlPanelSize = {x: 350, y: 10};
 
-  static colorPicker: any;
-
-
+  
   static createControlPanel() {
     let controlPanel = createDiv('').class('control-panel');
     controlPanel.position(windowWidth - SidePanel.controlPanelSize.x, SidePanel.controlPanelSize.y);
@@ -41,6 +39,13 @@ class SidePanel {
       selectedTool = Tool.SCALE;
       tempPolygon = [];
       SidePanel.updateButtonStyles(buttonScale);
+    });
+
+    buttonRotate = createButton('Rotate').class('button').parent(createSection);
+    buttonRotate.mousePressed(() => {
+      selectedTool = Tool.ROTATE;
+      tempPolygon = [];
+      SidePanel.updateButtonStyles(buttonRotate);
     });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
@@ -88,10 +93,7 @@ class SidePanel {
       Camera.centerCamera();
     });
 
-
-
     createDiv('').class('section-title').html('Color').parent(createSection);
-
 
     // ---------- COLOR PICKER ---------- 
 
@@ -136,12 +138,6 @@ class SidePanel {
       SidePanel.colorPicker.color.rgbaString = colorPickerTextbox.value();
     });
 
-
-
-
-
-
-
     createDiv('').class('section-title').html('Display Options').parent(createSection);
   
     // Checkbox for vertex balls
@@ -172,10 +168,11 @@ class SidePanel {
   static updateButtonStyles(activeButton: any) {
     if (!activeButton) return;
     
-    // Remove active class from all buttons
+    // Remove active class from all buttons           // TODO array of buttons?
     buttonCreate.removeClass('active');
     buttonTranslate.removeClass('active');
     buttonScale.removeClass('active');
+    buttonRotate.removeClass('active');
     
     // Add active class to selected button
     activeButton.addClass('active');

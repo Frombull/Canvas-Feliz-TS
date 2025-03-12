@@ -9,6 +9,7 @@ class Colors {
   static BackgroundColor: any;
   static GizmoScaleColor: any;
   static PolygonBlue: any;
+  static rotationHandleColor: any;
 
   static init() {
     Colors.Red = color(255, 30, 30);
@@ -20,5 +21,6 @@ class Colors {
     Colors.BackgroundColor = color(230);
     Colors.GizmoScaleColor = color(255, 100, 55);
     Colors.PolygonBlue = color(100, 100, 250, 100);
+    Colors.rotationHandleColor = color(255, 165, 0);
   }
 }

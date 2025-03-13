@@ -44,20 +44,20 @@ let polygonsList: Polygon[] = [];
 // - Show/hide debug window button      - DONE
 // - Canvas size of screen              - DONE
 // - Rotate tool                        - DONE
-// - w rotate, let user select polygon  - DONE
-// - Bezier curve tool                  - ~
-// - Hermite curve tool                 - 
+// - select polygon to rotate from      - DONE
+// - Delete vertex or polygon           - DONE
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
+// - Bezier curve tool                  - ~
+// - Hermite curve tool                 - 
 // - Scale tool sucks                   - 
 // - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
 // - Annimation when hover scale arrow  - 
 // - Annimation with button CLICK       - 
 // - Better ShearU / ShearNU tool       - 
-// - Undo / Redo                        - 
+// - Undo / Redo                        - ~
 // - Save / Load                        - 
-// - Delete vertex or polygon           - 
 // - Resize when console is open        - 
 // -                                    - 
 // -                                    - 

@@ -4,8 +4,5 @@ class Mirror {
     for (let p of selectedPolygon.vertices) {
       p[axis] *= -1;
     }
-  
-    // if (selectedCentroid)
-    //   selectedCentroid = getPolygonCenter(); // TODO: MEME
   }
 }

@@ -64,7 +64,7 @@ class Polygon {
     push();
     strokeWeight(0.3);
     stroke(0);
-    //noFill();
+    noFill();
     fill(Colors.PolygonBlue);
     ellipse(center.x, center.y, 3);
     pop();
@@ -81,7 +81,7 @@ class Polygon {
   }
 
   resetPolygon() { // TODO
-    console.log("resetPolygon");
+    console.log("resetPolygon # T O D O");
     // if (lastCompletePolygon.length > 0) {
     //   polygon = lastCompletePolygon.map(p => ({x: p.x, y: p.y}));
     //   selectedVertex = null;

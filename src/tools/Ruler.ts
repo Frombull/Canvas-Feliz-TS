@@ -1,3 +1,3 @@
 class Ruler {
-  //TODO
+  //TODO: Ruler tool
 }

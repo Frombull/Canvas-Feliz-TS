@@ -46,6 +46,7 @@ let polygonsList: Polygon[] = [];
 // - Rotate tool                        - DONE
 // - select polygon to rotate from      - DONE
 // - Delete vertex or polygon           - DONE
+// - FPS RAM usage debug info           - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
 // - Bezier curve tool                  - ~

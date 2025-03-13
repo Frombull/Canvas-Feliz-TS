@@ -3,15 +3,17 @@ class Polygon {
   private history: Vertex[][];
   private redoHistory: Vertex[][];
   static vertexBallRadius: number = 3;
-  static selectedVertex: Vertex | null;          // Selected vertex for transformation
-  static selectedCentroid: Vertex | null;        // Selected centroid for transformation
+  static selectedVertex: Vertex | null;           // Selected vertex for transformation
+  static selectedCentroid: Vertex | null;         // Selected centroid for transformation
   // ID
-  private static nextId: number = 1; // ID start in 1
+  private static nextId: number = 1;              // ID start in 1
   public id: number;
   // Color
   public vertexColor: any;
   public edgesColor: any;
   public fillColor: any;
+  // Rotation
+  public rotationAngle: number = 0; // Store rotation for the Rotate tool
 
 
   constructor(initialVertices: Vertex[] = []) {
@@ -94,10 +96,15 @@ class Polygon {
     if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
       selectedVertex = null;
     }
+
+    Rotate.resetAngle();
     
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
     SidePanel.colorPicker.color.rgbaString = this.fillColor;
+
+    // Load rotation angle when selecting
+    Rotate.loadPolygonRotation();
   }
 
   deleteVertex(targetVertex: Vertex) {
@@ -147,6 +154,11 @@ class Polygon {
 
   public saveStateBeforeChange(): Vertex[] {
     return this.vertices.map(v => ({x: v.x, y: v.y}));
+  }
+
+  public updateRotationAngle(degrees: number) {
+    this.rotationAngle = degrees;
+    console.log(`Updated polygon ${this.id} rotation to ${this.rotationAngle}°`);
   }
 }
 

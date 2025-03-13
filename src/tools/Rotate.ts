@@ -76,6 +76,9 @@ class Rotate {
 
     // Radians to degrees
     Rotate.currentRotationDegrees = (Rotate.currentRotationDegrees + angle * 180 / Math.PI) % 360;
+
+    // Store rotation in polygon
+    selectedPolygon.updateRotationAngle(Rotate.currentRotationDegrees);
   }
   
   static calculateRotationAngle(): number {
@@ -103,6 +106,16 @@ class Rotate {
 
   static resetAngle() {
     Rotate.rotationStartAngle = 0;
-    Rotate.currentRotationDegrees = 0;
+    Rotate.currentRotationDegrees = selectedPolygon ? selectedPolygon.rotationAngle : 0;
+  }
+
+  static loadPolygonRotation() {
+    if (selectedPolygon) {
+      Rotate.currentRotationDegrees = selectedPolygon.rotationAngle;
+      // Update handle displays when loading angle stuff
+      Rotate.rotationStartAngle = selectedPolygon.rotationAngle * Math.PI / 180;
+      
+      console.log(`Loaded rotation angle: ${Rotate.currentRotationDegrees}°`);
+    }
   }
 }

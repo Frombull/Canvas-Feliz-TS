@@ -24,8 +24,6 @@ enum Tool {
 }
 let selectedTool: Tool = Tool.NONE;
 
-
-// --------NEW SHIT-------
 let selectedPolygon: Polygon | null;
 let polygonsList: Polygon[] = [];
 
@@ -112,19 +110,16 @@ function handleToolsLogic() {
 
     case Tool.TRANSLATE:
       if(!selectedPolygon) return;
-      selectedPolygon.drawPolygonCenter();
       Transform.drawTransformGizmo();
       break;
 
     case Tool.SCALE:
       if(!selectedPolygon) return;
-      selectedPolygon.drawPolygonCenter();
       Scale.drawScaleGizmo();
       break;
 
     case Tool.ROTATE:
       if(!selectedPolygon) return;
-      selectedPolygon.drawPolygonCenter();
       Rotate.drawRotationGizmo();
       break;
 
@@ -152,7 +147,7 @@ function drawCoordinatesOnMouse() {
   pop();
 }
 
-function selectNearestVertex() { // Selects vertex or center
+function selectNearestVertex(): boolean { // Selects vertex or center
   let selectDistance = 3;
 
   // Selecting center
@@ -168,7 +163,7 @@ function selectNearestVertex() { // Selects vertex or center
       p.setAsSelectePolygon();
       selectedCentroid = center;
       selectedVertex = null;
-      return;
+      return true;
     }
   }
 
@@ -178,7 +173,7 @@ function selectNearestVertex() { // Selects vertex or center
       let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
   
       if (distanceToVertex < selectDistance) {
-        // If selecting a different polygon, reset rotation angle
+        // If selecting a different polygon
         if (p !== selectedPolygon) {
           Rotate.resetAngle();
         }
@@ -186,10 +181,11 @@ function selectNearestVertex() { // Selects vertex or center
         selectedVertex = v;
         selectedCentroid = null;
         console.log(`Selected vertex of polygon ${p.id}!`);
-        return;
+        return true;
       }
     }
   }
+  return false;
 }
 
 function drawPolygonBeingCreated() {
@@ -261,6 +257,13 @@ function cancelPolygonCreation() {
   selectedTool = Tool.NONE;
   tempPolygon = [];
   SidePanel.updateButtonStyles(null);
+}
+
+function deselectPolygon() {
+  selectedCentroid = null;
+  selectedVertex = null;
+  selectedPolygon = null;
+  console.log("Polygon deselected.");
 }
 
 

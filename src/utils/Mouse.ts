@@ -24,10 +24,14 @@ class Mouse {
 
     if (mouseButton === RIGHT) {
       Camera.startPanning();
+      return;
     }
   
     if (mouseButton === LEFT) {
-      if (selectedTool == Tool.CREATE_POLYGON) { 
+      if (selectedTool == Tool.NONE) {
+        Mouse.selectPolygonUnderMouse();
+      }
+      else if (selectedTool == Tool.CREATE_POLYGON) { 
         if (tempPolygon.length > 2) {
           if (tempPolygon[0].x == Mouse.mousePosInGridSnapped.x && tempPolygon[0].y == Mouse.mousePosInGridSnapped.y) { // Close polygon
             let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
@@ -65,21 +69,19 @@ class Mouse {
             Transform.isDraggingY = true;
             return;
           }
-          else { // Clicked out in the canvas, deselect current vertex
-            selectedCentroid = null;
-            selectedVertex = null;
-            selectedPolygon = null;
-            console.log("Deselected.");
-            
+          else {
+            Mouse.selectPolygonUnderMouse();
           }
         }
+        if (!selectNearestVertex()){
+          Mouse.selectPolygonUnderMouse();
+        }
   
-        selectNearestVertex();
       }
       else if (selectedTool == Tool.SCALE) {
-        if (!selectedPolygon) return;
         let selectedAxis = Scale.isClickingScaleHandle();
-        if (selectedAxis) {
+
+        if (selectedAxis && selectedPolygon) {
           Scale.isScaling = true;
           Scale.scaleStartPos = Mouse.mousePosInGrid;
           Scale.scalePolygonOriginalForm = selectedPolygon.vertices.map(p => ({x: p.x, y: p.y})); // Deep copy..?
@@ -89,11 +91,17 @@ class Mouse {
             Scale.isScalingX = true;
           else if (selectedAxis == 2)
             Scale.isScalingY = true;
-  
+        }
+        else {
+          Mouse.selectPolygonUnderMouse();
         }
       }
       else if (selectedTool == Tool.ROTATE) {
-        if (!selectedPolygon) return;
+        if (!selectedPolygon) {
+          Mouse.selectPolygonUnderMouse();
+          return;
+        }
+
         if (Rotate.isClickingRotationHandle()) {
           Rotate.isDragging = true;
           
@@ -102,7 +110,8 @@ class Mouse {
           let dy = Mouse.mousePosInGrid.y - center.y;
           Rotate.rotationStartAngle = atan2(dy, dx);
           Rotate.rotationCenter = center;
-        } else {
+        }
+        else {
           if (Rotate.isClickingCenter()) {
             // Select the center as rotation point by clearing selectedVertex
             selectedVertex = null;
@@ -114,7 +123,11 @@ class Mouse {
 
           selectNearestVertex();
 
-          if (previousVertex !== selectedVertex) {
+          if (!selectNearestVertex()) {
+            // If no vertex selected, try selecting a polygon
+            Mouse.selectPolygonUnderMouse();
+          } 
+          else if (previousVertex !== selectedVertex) {
             Rotate.resetAngle();
           }
         }
@@ -141,18 +154,6 @@ class Mouse {
       else {
         Camera.startPanning();
       }
-  
-      // else if (transformType === 'scale') { // If clicking near scale handles
-      //   let bounds = getPolygonBounds();
-      //   let mousePos = getMousePos();
-      //   let d1 = dist(mouseX, mouseY, bounds.maxX, bounds.maxY);
-      //   let d2 = dist(mouseX, mouseY, bounds.minX, bounds.minY);
-      //   if (d1 < 5 || d2 < 5) {
-      //     transformControls.scale.isDragging = true;
-      //     transformControls.scale.startDistance = getPolygonDiagonalLength();
-      //     transformControls.scale.startMousePos = mousePos;
-      //   }
-      // }
     }
   }
   
@@ -254,5 +255,38 @@ class Mouse {
       Math.round(Mouse.mousePosInGridSnapped.x / Grid.gridSize),
       Math.round(-Mouse.mousePosInGridSnapped.y / Grid.gridSize) // Y grows down in p5js, but up in cartesian plane
     );
+  }
+
+  static isMouseInsidePolygon(polygon: Polygon): boolean {
+    let inside = false;
+    
+    for (let i = 0, j = polygon.vertices.length - 1; i < polygon.vertices.length; j = i++) {
+      const xi = polygon.vertices[i].x;
+      const yi = polygon.vertices[i].y;
+      const xj = polygon.vertices[j].x;
+      const yj = polygon.vertices[j].y;
+      
+      // Ray casting algorithm logic - if a ray from the point to the right crosses an odd number of edges, the point is inside
+      const intersect = ((yi > Mouse.mousePosInGrid.y) !== (yj > Mouse.mousePosInGrid.y)) &&
+          (Mouse.mousePosInGrid.x < (xj - xi) * (Mouse.mousePosInGrid.y - yi) / (yj - yi) + xi);
+      
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    
+    return inside;
+  }
+
+  static selectPolygonUnderMouse(): boolean {
+    for (let p of polygonsList) {
+      if (Mouse.isMouseInsidePolygon(p)) {
+        p.setAsSelectePolygon();
+        return true;
+      }
+    }
+    // No polygon was clicked, deselect current polygon
+    deselectPolygon();
+    return false;
   }
 }

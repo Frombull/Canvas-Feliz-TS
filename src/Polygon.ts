@@ -90,6 +90,11 @@ class Polygon {
   }
 
   setAsSelectePolygon() {
+    // Clar if has a selected vertex that isnt from this polygon
+    if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
+      selectedVertex = null;
+    }
+    
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
     SidePanel.colorPicker.color.rgbaString = this.fillColor;

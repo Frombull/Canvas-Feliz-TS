@@ -1,6 +1,7 @@
 class Keyboard {
   static keyPressed() {
     if (keyCode === ESCAPE) {           // ESC de-selects tool
+      console.log("Pressed ESCAPE");
       if (selectedTool == Tool.NONE) {  // ESC de-selects polygon as well
         console.log("De-selecting polygon as well");
         selectedPolygon = null;
@@ -18,7 +19,8 @@ class Keyboard {
       buttonRotate.removeClass('active');
       return;
     }
-    if (keyCode = DELETE) {
+    if (keyCode === DELETE) {
+      console.log("Pressed DELETE");
       if (selectedPolygon && selectedVertex) {
         const action = new DeleteVertexAction(selectedPolygon, selectedVertex);
         HistoryManager.getInstance().addAction(action);
@@ -32,13 +34,13 @@ class Keyboard {
       return;
     }
     // Ctrl+Z
-    if (keyIsDown(CONTROL) && key == 'z') {
+    if (keyIsDown(CONTROL) && key === 'z') {
+      console.log("Pressed CTRL+Z");
       HistoryManager.getInstance().undo();
-      //console.log("Pressed CTRL+Z");
       return;
     }
     // Ctrl+Y
-    if (keyIsDown(CONTROL) && key == 'y') {
+    if (keyIsDown(CONTROL) && key === 'y') {
       console.log("Pressed CTRL+Y");
       //HistoryManager.getInstance().redo();
       return;

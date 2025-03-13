@@ -47,11 +47,11 @@ let polygonsList: Polygon[] = [];
 // - Canvas size of screen              - DONE
 // - Rotate tool                        - DONE
 // - w rotate, let user select polygon  - DONE
-// - Bezier curve tool                  - 
+// - Bezier curve tool                  - ~
 // - Hermite curve tool                 - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
-// - Scale tool bugged                  - 
+// - Scale tool sucks                   - 
 // - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
 // - Annimation when hover scale arrow  - 
@@ -192,7 +192,6 @@ function selectNearestVertex() { // Selects vertex or center
   }
 }
 
-
 function drawPolygonBeingCreated() {
   push();
   // Draw filled shape up to current points
@@ -286,54 +285,3 @@ function mouseWheel(event?: any) {
 function keyPressed() {
   Keyboard.keyPressed();
 }
-
-
-// function getPolygonCentroid() {
-//   let sumX = 0, sumY = 0;
-//   let sumArea = 0;
-//   
-//   for (let i = 0; i < polygon.length; i++) {
-//     let p1 = polygon[i];
-//     let p2 = polygon[(i + 1) % polygon.length];
-//     
-//     let area = p1.x * p2.y - p2.x * p1.y;
-//     sumArea += area;
-//     
-//     sumX += (p1.x + p2.x) * area;
-//     sumY += (p1.y + p2.y) * area;
-//   }
-//   
-//   let x = sumX / (3 * sumArea);
-//   let y = sumY / (3 * sumArea);
-//   
-//   return createVector(x, y);
-// }
-
-// function debugDrawArrowHitboxes() {
-//   if (!debugVertexCenter) return;
-// 
-//   let center = debugVertexCenter;
-//   if (!center.x || !center.y) return;
-//   
-//   push();
-//   noFill();
-//   strokeWeight(0.5);
-// 
-//   // X
-//   stroke(255, 0, 0);
-//   rect(
-//     center.x + gizmoLineOffset,
-//     center.y - gizmoHitboxWidth/2,
-//     gizmoArrowLength - gizmoLineOffset,
-//     gizmoHitboxWidth
-//   );
-//   
-//   // Y 
-//   stroke(0, 255, 0);
-//   rect(center.x - gizmoHitboxWidth/2,
-//        center.y + gizmoLineOffset,
-//        gizmoHitboxWidth,
-//        gizmoArrowLength - gizmoLineOffset);
-//   
-//   pop();
-// }

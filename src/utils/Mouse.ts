@@ -31,25 +31,21 @@ class Mouse {
         if (tempPolygon.length > 2) {
           if (tempPolygon[0].x == Mouse.mousePosInGridSnapped.x && tempPolygon[0].y == Mouse.mousePosInGridSnapped.y) { // Close polygon
             let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
-            //selectedPolygon.vertices = [...tempPolygon];
-            Scale.currentScale = {x: 1, y: 1} // Create polygon with scale of 1
+            Scale.currentScale = {x: 1, y: 1}
             
             selectedTool = Tool.NONE;   // TODO: VOLTAR A USAR A ULTIMA TOOL SELECIONADA
             SidePanel.updateButtonStyles(null);
-  
-            // Save last completed polygon for undo
+            
             lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
-
-            // let newPolygon = new Polygon(tempPolygon);
-            // polygonsList.push(newPolygon);
+            
             polygonsList.push(newPolygon);
-
             newPolygon.setAsSelectePolygon();
             
-            tempPolygon = [];
-
+            // Add the creation action to history
+            const action = new CreatePolygonAction(newPolygon);
+            HistoryManager.getInstance().addAction(action);
             
-  
+            tempPolygon = [];
             return;
           }
         }

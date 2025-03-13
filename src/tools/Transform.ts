@@ -52,6 +52,9 @@ class Transform {
   static translatePolygon() {
     if (!selectedPolygon) return;
 
+    // Save state before transformation
+    const oldVertices = selectedPolygon.saveStateBeforeChange();
+
     if (selectedCentroid) { // Move the entire polygon
       Transform.calculateDxDy();
       
@@ -83,6 +86,8 @@ class Transform {
     // Update the initial translation coordinates
     Mouse.translateInitialX = Mouse.mousePosInGridSnapped.x;
     Mouse.translateInitialY = Mouse.mousePosInGridSnapped.y;
+
+    selectedPolygon.recordAction(oldVertices);
   }
 
   static drawTransformGizmo() {

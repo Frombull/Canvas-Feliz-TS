@@ -103,21 +103,45 @@ class Polygon {
     if (index != -1) {
       this.vertices.splice(index, 1);
       selectedVertex = null;
-      // this.history.push([...this.vertices]);     // Save history for undo
-      // this.redoHistory = [];                     // Clear redo history
     }
   }
 
   deleteSelf() {
     if (selectedPolygon != this) return;
     
+    const action = new DeletePolygonAction(this);
+    HistoryManager.getInstance().addAction(action);
+    
     selectedPolygon = null;
     selectedVertex = null;
-
+  
     let index = polygonsList.indexOf(this);
     if (index != -1) {
       polygonsList.splice(index, 1);
     }
+  }
+
+  public saveState(): void {
+    // Create a deep copy of current vertices
+    const oldVertices = this.vertices.map(v => ({x: v.x, y: v.y}));
+    this.history.push(oldVertices);
+    
+    // Clear redo history when a new state is saved
+    this.redoHistory = [];
+    
+    // Limit history size
+    if (this.history.length > 50) {
+      this.history.shift();
+    }
+  }
+
+  public recordAction(oldVertices: Vertex[]): void {
+    const action = new ModifyPolygonAction(this, oldVertices);
+    HistoryManager.getInstance().addAction(action);
+  }
+
+  public saveStateBeforeChange(): Vertex[] {
+    return this.vertices.map(v => ({x: v.x, y: v.y}));
   }
 }
 

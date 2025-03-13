@@ -16,16 +16,32 @@ class Keyboard {
       buttonTranslate.removeClass('active');
       buttonScale.removeClass('active');
       buttonRotate.removeClass('active');
+      return;
     }
-    else if (keyCode = DELETE) {
-      // Delete vertex
+    if (keyCode = DELETE) {
       if (selectedPolygon && selectedVertex) {
+        const action = new DeleteVertexAction(selectedPolygon, selectedVertex);
+        HistoryManager.getInstance().addAction(action);
         selectedPolygon.deleteVertex(selectedVertex);
       }
-      // Delete polygon
       else if (selectedPolygon && !selectedVertex && selectedCentroid) {
+        const action = new DeletePolygonAction(selectedPolygon);
+        HistoryManager.getInstance().addAction(action);
         selectedPolygon.deleteSelf();
       }
+      return;
+    }
+    // Ctrl+Z
+    if (keyIsDown(CONTROL) && key == 'z') {
+      HistoryManager.getInstance().undo();
+      //console.log("Pressed CTRL+Z");
+      return;
+    }
+    // Ctrl+Y
+    if (keyIsDown(CONTROL) && key == 'y') {
+      console.log("Pressed CTRL+Y");
+      //HistoryManager.getInstance().redo();
+      return;
     }
   }
 }

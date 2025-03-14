@@ -4,7 +4,6 @@ class SidePanel {
   static shouldDrawGrid: boolean = true;
   static shouldDrawAxis: boolean = true;
   static shouldDrawDebugWindow: boolean = true;
-  static colorPicker: any;
   static controlPanelSize = {x: 350, y: 10};
 
   
@@ -115,45 +114,10 @@ class SidePanel {
 
     createDiv('').class('section-title').html('Color').parent(createSection);
     
-    let colorPickerContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '5px').parent(createSection);
-
-    let iroContainer = createDiv('').parent(colorPickerContainer);
-
-    // @ts-expect-error
-    SidePanel.colorPicker = new iro.ColorPicker(iroContainer.elt, {
-      width: 100,
-      color: `${Colors.PolygonBlue}`,
-      borderWidth: 1,
-      borderColor: "#fff",
-      handleRadius: 7,
-      padding: 1,
-      margin: 8,
-      layout: [
-        { // @ts-expect-error
-          component: iro.ui.Wheel }, 
-          // @ts-expect-error
-        { component: iro.ui.Slider, options: { sliderType: 'alpha' } } 
-      ]
-    });
-
-    // Text box
-    let formatedColor = `${Colors.PolygonBlue.levels[0]}, ${Colors.PolygonBlue.levels[1]}, ${Colors.PolygonBlue.levels[2]}, ${Colors.PolygonBlue.levels[3]}`;
-    let colorPickerTextbox = createInput(`${formatedColor}`).style('width', '140px').parent(colorPickerContainer) as any;
-
-    // Update polygon
-    SidePanel.colorPicker.on('color:change', function(c: any) {
-      colorPickerTextbox.value(`${c.rgb.r}, ${c.rgb.g}, ${c.rgb.b}, ${(c.alpha).toFixed(2)}`);
-      
-      if (selectedPolygon) {
-        let p5Color = color(c.rgb.r, c.rgb.g, c.rgb.b, c.alpha * 255);
-
-        selectedPolygon.fillColor = p5Color;
-      }
-    });
-
-    // Textbox update
-    colorPickerTextbox.input(() => {
-      SidePanel.colorPicker.color.rgbaString = colorPickerTextbox.value();
+    // Create the toggle button for the color picker
+    let buttonColorPicker = createButton('Color Picker').class('button').parent(createSection);
+    buttonColorPicker.mousePressed(() => {
+      ColorPickerUI.toggle();
     });
 
     createDiv('').class('section-title').html('Display Options').parent(createSection);
@@ -187,6 +151,34 @@ class SidePanel {
     checkboxDebugWindow.changed(() => {
       SidePanel.shouldDrawDebugWindow = checkboxDebugWindow.checked();
     });
+    
+    // Initialize the advanced color picker UI
+    SidePanel.initColorPickerUI();
+  }
+  
+  static initColorPickerUI() {
+    // Create the color picker UI
+    new ColorPickerUI();
+    
+    // Set up color change callback
+    ColorPickerUI.onColorChange((colorObj) => {
+      // Update the selected polygon color if any
+      if (selectedPolygon) {
+        // Create p5 color using window.color instead of directly referencing color
+        // This avoids conflicts with parameter naming
+        const r = colorObj.rgb.r;
+        const g = colorObj.rgb.g;
+        const b = colorObj.rgb.b;
+        const a = colorObj.alpha * 255;
+        
+        // Use a different approach to create the color
+        const newColor = window["color"](r, g, b, a);
+        selectedPolygon.fillColor = newColor;
+      }
+    });
+    
+    // Initialize with default color
+    ColorPickerUI.setColor(Colors.PolygonBlue);
   }
   
   static updateButtonStyles(activeButton: any) {

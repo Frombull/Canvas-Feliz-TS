@@ -150,3 +150,119 @@ input[type="text"]:focus {
   box-shadow: 0 0 5px rgba(100, 149, 237, 0.5);
   outline: none;
 }
+
+/* ------------------------------ ColorPickerUI Styles ------------------------------*/
+.colorpicker-container {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  width: 260px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 100;
+}
+
+.colorpicker-wheel-container {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.colorpicker-sliders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.colorpicker-slider-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.colorpicker-slider-label {
+  width: 80px;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.colorpicker-slider-value-container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+}
+
+.colorpicker-slider {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ddd;
+  outline: none;
+  border-radius: 4px;
+}
+
+.colorpicker-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4169E1;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.colorpicker-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4169E1;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.colorpicker-value-box {
+  width: 50px;
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: white;
+  margin-left: 5px;
+  font-family: monospace;
+  font-weight: 500;
+}
+
+/* Custom slider colors */
+.colorpicker-slider[name="H"] {
+  background: linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.colorpicker-slider[name="S"] {
+  background: linear-gradient(to right, #ccc, #4169E1);
+}
+
+.colorpicker-slider[name="V"] {
+  background: linear-gradient(to right, #000, #fff);
+}
+
+.colorpicker-slider[name="R"] {
+  background: linear-gradient(to right, #000, #f00);
+}
+
+.colorpicker-slider[name="G"] {
+  background: linear-gradient(to right, #000, #0f0);
+}
+
+.colorpicker-slider[name="B"] {
+  background: linear-gradient(to right, #000, #00f);
+}

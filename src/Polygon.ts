@@ -101,7 +101,9 @@ class Polygon {
     
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
-    SidePanel.colorPicker.color.rgbaString = this.fillColor;
+    //SidePanel.colorPicker.color.rgbaString = this.fillColor;
+    ColorPickerUI.setColor(this.fillColor);
+
 
     // Load rotation angle when selecting
     Rotate.loadPolygonRotation();

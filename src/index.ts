@@ -9,7 +9,6 @@ let tempPolygon: { x: number; y: number }[] = [];           //
 let lastCompletePolygon: { x: number; y: number }[] = [];   // 
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
-let debugVertexCenter = {x: null, y: null};                 // TODO: remover
 enum Tool {
   NONE,
   CREATE_POLYGON,

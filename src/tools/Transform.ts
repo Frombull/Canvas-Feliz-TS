@@ -69,8 +69,6 @@ class Transform {
     
     if (!center) return false;
     
-    debugVertexCenter = center;
-    
     // The X hitbox should extend from the starting point of the line to the end of the arrow
     let hitboxX = center.x + Transform.gizmoLineOffset;
     let hitboxY = center.y;
@@ -87,8 +85,6 @@ class Transform {
     let center = selectedVertex ? selectedVertex : selectedCentroid;
     
     if (!center) return false;
-    
-    debugVertexCenter = center;
     
     let hitboxX = center.x;
     let hitboxY = center.y + Transform.gizmoLineOffset;
@@ -147,7 +143,6 @@ class Transform {
   static isVertexInPolygon(vertex: Vertex | null, polygon: Polygon | null): boolean {
     if (!vertex || !polygon) return false;
     
-    // Verifica se o vértice está na lista de vértices do polígono
     return polygon.vertices.some(v => v === vertex);
   }
 }

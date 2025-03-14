@@ -228,13 +228,35 @@ class Mouse {
     Camera.scaleFactor = newScale;
   }
 
-  static isMouseOutOfBounds() {
-    return (
-      (mouseY > height || mouseY < 0 || mouseX > width || mouseX < 0)
-      ||
-      (mouseX >= windowWidth - SidePanel.controlPanelSize.x) // Control panel
-    )
+static isMouseOutOfBounds() {
+  if (mouseY > height || mouseY < 0 || mouseX > width || mouseX < 0) {
+    return true;
   }
+  
+  // Over UI element
+  const elements = document.querySelectorAll('.control-panel, .control-panel *');
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i] as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    
+    if (
+      mouseX >= rect.left && 
+      mouseX <= rect.right && 
+      mouseY >= rect.top && 
+      mouseY <= rect.bottom
+    ) {
+      return true;
+    }
+  }
+  
+  // Any element that isnt canvas over mouse
+  const elemUnderMouse = document.elementFromPoint(mouseX, mouseY);
+  if (elemUnderMouse && elemUnderMouse.tagName !== 'CANVAS') {
+    return true;
+  }
+  
+  return false;
+}
   
   private static getMousePosInGrid() {
     return createVector(

@@ -2,6 +2,7 @@ class Polygon {
   public vertices: Vertex[];
   private history: Vertex[][];
   private redoHistory: Vertex[][];
+  public initialShape: Vertex[];
   static vertexBallRadius: number = 3;
   static selectedVertex: Vertex | null;           // Selected vertex for transformation
   static selectedCentroid: Vertex | null;         // Selected centroid for transformation
@@ -17,15 +18,19 @@ class Polygon {
 
 
   constructor(initialVertices: Vertex[] = []) {
+    console.log("CONSTRUCTOR CALLED!!\n\n\n\n\n");
+    
     this.id = Polygon.nextId++;
 
     this.vertexColor = Colors.Black;
     this.edgesColor = Colors.Black;
     this.fillColor = Colors.PolygonBlue;
 
-    this.vertices = initialVertices;
+    this.vertices = initialVertices.map(p => ({x: p.x, y: p.y}));     // Deep copy ¬¬
     this.history = [];
     this.redoHistory = [];
+    
+    this.initialShape = initialVertices.map(p => ({x: p.x, y: p.y})); // Deep copy ¬¬
   }
 
   drawPolygon() {
@@ -82,13 +87,12 @@ class Polygon {
     pop();
   }
 
-  resetPolygon() { // TODO
-    console.log("resetPolygon # T O D O");
-    // if (lastCompletePolygon.length > 0) {
-    //   polygon = lastCompletePolygon.map(p => ({x: p.x, y: p.y}));
-    //   selectedVertex = null;
-    //   selectedCentroid = null;
-    // }
+  resetPolygon() {
+    this.vertices = this.initialShape.map(p => ({x: p.x, y: p.y})); // Deep copy ¬¬
+    selectedVertex = null;
+    selectedCentroid = null;
+    this.rotationAngle = 0;
+    this.fillColor = Colors.PolygonBlue;
   }
 
   setAsSelectePolygon() {

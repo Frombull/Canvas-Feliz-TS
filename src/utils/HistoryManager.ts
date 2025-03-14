@@ -2,7 +2,7 @@ class HistoryManager {
   private static instance: HistoryManager;
   private undoStack: Action[] = [];
   private redoStack: Action[] = [];
-  private maxHistorySize: number = 50; // Limit the history size to prevent memory issues
+  private maxHistorySize: number = 50;
 
   // Private constructor for singleton
   private constructor() {}

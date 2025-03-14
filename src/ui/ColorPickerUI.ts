@@ -18,7 +18,7 @@ class ColorPickerUI {
 
   private static createContainer() {
     ColorPickerUI.container = createDiv('').class('colorpicker-container');
-    ColorPickerUI.container.position(10, 440); // TODO: Crime absoluto, fica fora da tela só de respirar perto disso
+    ColorPickerUI.container.position(10, 380); // TODO: Crime absoluto, fica fora da tela só de respirar perto disso
   }
 
   private static createColorPicker() {
@@ -77,9 +77,29 @@ class ColorPickerUI {
       // Create the value box directly to the right of the slider
       ColorPickerUI.valueBoxes[slider.name] = createDiv('0').class('colorpicker-value-box').parent(sliderValueContainer);
       
-      // Set initial value
+      // Initial value
       ColorPickerUI.updateSliderValue(slider.name);
     });
+    
+    const separator = createDiv('').parent(slidersContainer);
+    separator.style('height', '1px');
+    separator.style('background-color', '#cccccc');
+    separator.style('margin', '8px 0');
+    separator.style('width', '100%');
+    
+    const alphaRow = createDiv('').class('colorpicker-slider-row').parent(slidersContainer);
+    
+    createDiv('Alpha').class('colorpicker-slider-label').parent(alphaRow);
+    
+    const alphaSliderValueContainer = createDiv('').class('colorpicker-slider-value-container').parent(alphaRow);
+    
+    ColorPickerUI.sliders['A'] = createSlider(0, 100, ColorPickerUI.currentColor.alpha * 100)
+      .class('colorpicker-slider')
+      .parent(alphaSliderValueContainer);
+    
+    ColorPickerUI.valueBoxes['A'] = createDiv('100%').class('colorpicker-value-box').parent(alphaSliderValueContainer);
+    
+    ColorPickerUI.updateSliderValue('A');
   }
 
   private static setupEvents() {
@@ -99,17 +119,34 @@ class ColorPickerUI {
         const value = ColorPickerUI.sliders[key].value();
         
         if (['H', 'S', 'V'].includes(key)) {
+          // Preservar o valor de alpha atual
+          const currentAlpha = ColorPickerUI.colorPicker.color.alpha;
+          
+          // Atualizar valores HSV
           const hsv = {...ColorPickerUI.colorPicker.color.hsv};
           if (key === 'H') hsv.h = value;
           if (key === 'S') hsv.s = value;
           if (key === 'V') hsv.v = value;
           ColorPickerUI.colorPicker.color.hsv = hsv;
+          
+          // Restaurar o valor de alpha após atualizar HSV
+          ColorPickerUI.colorPicker.color.alpha = currentAlpha;
+        } else if (key === 'A') {
+          // Atualizar alpha
+          ColorPickerUI.colorPicker.color.alpha = value / 100;
         } else {
+          // Preservar o valor de alpha atual
+          const currentAlpha = ColorPickerUI.colorPicker.color.alpha;
+          
+          // Atualizar valores RGB
           const rgb = {...ColorPickerUI.colorPicker.color.rgb};
           if (key === 'R') rgb.r = value;
           if (key === 'G') rgb.g = value;
           if (key === 'B') rgb.b = value;
           ColorPickerUI.colorPicker.color.rgb = rgb;
+          
+          // Restaurar o valor de alpha após atualizar RGB
+          ColorPickerUI.colorPicker.color.alpha = currentAlpha;
         }
         
         ColorPickerUI.updateSliderValue(key);
@@ -123,7 +160,7 @@ class ColorPickerUI {
     
     if (key === 'H') {
       displayValue = `${value}°`;
-    } else if (key === 'S' || key === 'V') {
+    } else if (key === 'S' || key === 'V' || key === 'A') {
       displayValue = `${value}%`;
     }
     
@@ -140,6 +177,11 @@ class ColorPickerUI {
     ColorPickerUI.sliders['R'].value(ColorPickerUI.currentColor.rgb.r);
     ColorPickerUI.sliders['G'].value(ColorPickerUI.currentColor.rgb.g);
     ColorPickerUI.sliders['B'].value(ColorPickerUI.currentColor.rgb.b);
+    
+    // Update Alpha slider
+    const alpha = ColorPickerUI.currentColor.alpha !== undefined ? 
+      ColorPickerUI.currentColor.alpha * 100 : 100;
+    ColorPickerUI.sliders['A'].value(alpha);
     
     // Update all value boxes
     Object.keys(ColorPickerUI.sliders).forEach(key => {
@@ -172,20 +214,42 @@ class ColorPickerUI {
   public static setColor(color: any) {
     if (!ColorPickerUI.colorPicker) return;
     
+    const currentAlpha = ColorPickerUI.colorPicker.color.alpha;
+    
     if (color.levels) {
       // Its a p5.js color object
+      const newAlpha = color.levels[3] !== undefined ? color.levels[3] / 255 : currentAlpha;
+      
       ColorPickerUI.colorPicker.color.rgb = { 
         r: color.levels[0], 
         g: color.levels[1], 
-        b: color.levels[2], 
-        a: color.levels[3] / 255 
+        b: color.levels[2] 
       };
+      
+      ColorPickerUI.colorPicker.color.alpha = newAlpha;
     } else if (typeof color === 'string') {
       // Its a string (hex, rgb, etc.)
+      const oldAlpha = currentAlpha;
+      
       ColorPickerUI.colorPicker.color.rgbString = color;
+      
+      if (!color.includes('rgba') && !color.includes('hsla')) {
+        ColorPickerUI.colorPicker.color.alpha = oldAlpha;
+      }
     } else {
       // Its an object with rgb values
-      ColorPickerUI.colorPicker.color.rgb = color;
+      const hasAlpha = color.a !== undefined;
+      
+      if (!hasAlpha) {
+        ColorPickerUI.colorPicker.color.rgb = {
+          r: color.r || 0,
+          g: color.g || 0,
+          b: color.b || 0
+        };
+        ColorPickerUI.colorPicker.color.alpha = currentAlpha;
+      } else {
+        ColorPickerUI.colorPicker.color.rgb = color;
+      }
     }
     
     ColorPickerUI.updateAllSliders();

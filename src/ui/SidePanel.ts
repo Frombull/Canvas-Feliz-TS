@@ -97,24 +97,22 @@ class SidePanel {
       Shear.ShearNonUniform();
     });
   
-    //createDiv('').class('section-title').html('Actions').parent(createSection);
-  
-    // TODO
-    // // Button Reset Polygon 
-    // buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
-    // buttonResetPolygon.mousePressed(() => {
-    //   if(selectedPolygon){
-    //     selectedPolygon.resetPolygon();
-    //   }
-    // });
-  
+    createDiv('').class('section-title').html('Actions').parent(createSection);
+
+    // Button Reset Polygon 
+    buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
+    buttonResetPolygon.mousePressed(() => {
+      if(selectedPolygon) {
+        selectedPolygon.resetPolygon();
+      }
+    });
 
 
-    // ---------- COLOR PICKER ----------
+    // ------------------------------ COLOR PICKER ------------------------------
 
     createDiv('').class('section-title').html('Color').parent(createSection);
     
-    // Create the toggle button for the color picker
+    // Create toggle button for color picker
     let buttonColorPicker = createButton('Color Picker').class('button').parent(createSection);
     buttonColorPicker.mousePressed(() => {
       ColorPickerUI.toggle();
@@ -152,17 +150,14 @@ class SidePanel {
       SidePanel.shouldDrawDebugWindow = checkboxDebugWindow.checked();
     });
     
-    // Initialize the advanced color picker UI
     SidePanel.initColorPickerUI();
   }
   
-  static initColorPickerUI() {
-    // Create the color picker UI
+static initColorPickerUI() {
     new ColorPickerUI();
     
-    // Set up color change callback
+    // Color change callback
     ColorPickerUI.onColorChange((colorObj) => {
-      // Update the selected polygon color if any
       if (selectedPolygon) {
         // Create p5 color using window.color instead of directly referencing color
         // This avoids conflicts with parameter naming
@@ -171,7 +166,6 @@ class SidePanel {
         const b = colorObj.rgb.b;
         const a = colorObj.alpha * 255;
         
-        // Use a different approach to create the color
         const newColor = window["color"](r, g, b, a);
         selectedPolygon.fillColor = newColor;
       }

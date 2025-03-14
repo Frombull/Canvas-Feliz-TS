@@ -266,6 +266,12 @@ function deselectPolygon() {
   console.log("Polygon deselected.");
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  SidePanel.handleWindowResize();
+  redraw();
+}
+
 
 // --------- MOUSE & KEYBOARD ---------
 

@@ -180,6 +180,14 @@ class SidePanel {
     // Initialize with default color
     ColorPickerUI.setColor(Colors.PolygonBlue);
   }
+
+  static handleWindowResize() {
+    let controlPanel = select('.control-panel');
+    
+    if (controlPanel) {
+      controlPanel.position(windowWidth - SidePanel.controlPanelSize.x, SidePanel.controlPanelSize.y);
+    }
+  }
   
   static updateButtonStyles(activeButton: any) {
     // Remove active class from all buttons           // TODO array of buttons?

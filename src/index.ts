@@ -124,6 +124,7 @@ function handleToolsLogic() {
 
     case Tool.BEZIER:
       CurvesUI.drawBezierControls();
+      Curves.updateAnimation();
       break;
 
     default:

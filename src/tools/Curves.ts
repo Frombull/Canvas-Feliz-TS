@@ -3,10 +3,14 @@ class Curves {
   static bezierPoints: Vertex[] = [];
   static selectedControlPoint: Vertex | null = null;
   static isDraggingControlPoint: boolean = false;
+  static animationProgress: number = 0;
+  static isAnimating: boolean = false;
+  static animationSpeed: number = 0.01; 
+  static interpolationPoints: Vertex[] = [];
   
   // Styling
   static controlPointRadius: number = 1.5;
-  static curveResolution: number = 30;
+  static curveResolution: number = 24;
   
   static reset() {
     Curves.bezierPoints = [];
@@ -15,7 +19,6 @@ class Curves {
   
   static createBezierCurve() {
     if (Curves.bezierPoints.length < 4) {
-      // Add control point
       Curves.bezierPoints.push({
         x: Mouse.mousePosInGridSnapped.x,
         y: Mouse.mousePosInGridSnapped.y
@@ -23,31 +26,7 @@ class Curves {
       
       if (Curves.bezierPoints.length == 4) {
         console.log("Curves.bezierPoints.length == 4");
-        
-        let curvePoints: Vertex[] = [];
-        let p0 = Curves.bezierPoints[0];
-        let p1 = Curves.bezierPoints[1];
-        let p2 = Curves.bezierPoints[2];
-        let p3 = Curves.bezierPoints[3];
-        
-        // Generate points along the curve
-        for (let t = 0; t <= 1; t += 1 / Curves.curveResolution) {
-          let x = Math.pow(1-t, 3) * p0.x + 
-                  3 * Math.pow(1-t, 2) * t * p1.x + 
-                  3 * (1-t) * Math.pow(t, 2) * p2.x + 
-                  Math.pow(t, 3) * p3.x;
-          
-          let y = Math.pow(1-t, 3) * p0.y + 
-                  3 * Math.pow(1-t, 2) * t * p1.y + 
-                  3 * (1-t) * Math.pow(t, 2) * p2.y + 
-                  Math.pow(t, 3) * p3.y;
-          
-          curvePoints.push({x, y});
-        }
-        
-        // let newPolygon = new Polygon(curvePoints);
-        // polygonsList.push(newPolygon);
-        // newPolygon.setAsSelectePolygon();
+        Curves.startAnimation(); // Inicia a animação quando o quarto ponto é adicionado
       }
     }
   }
@@ -60,5 +39,66 @@ class Curves {
     }
     
     return null;
+  }
+
+  static startAnimation() {
+    Curves.animationProgress = 0;
+    Curves.isAnimating = true;
+    Curves.interpolationPoints = [];
+  }
+
+  static updateAnimation() {
+    if (!Curves.isAnimating) return;
+    
+    Curves.animationProgress += Curves.animationSpeed;
+    
+    if (Curves.animationProgress >= 1) {
+      Curves.animationProgress = 1;
+      Curves.isAnimating = false;
+    }
+  }
+
+  static calculateInterpolationPoints(t: number) {
+    if (Curves.bezierPoints.length !== 4) return [];
+    
+    let p0 = Curves.bezierPoints[0];
+    let p1 = Curves.bezierPoints[1];
+    let p2 = Curves.bezierPoints[2];
+    let p3 = Curves.bezierPoints[3];
+    
+    // Pontos de interpolação linear (primeiro nível)
+    let p01 = {
+      x: (1-t) * p0.x + t * p1.x,
+      y: (1-t) * p0.y + t * p1.y
+    };
+    
+    let p12 = {
+      x: (1-t) * p1.x + t * p2.x,
+      y: (1-t) * p1.y + t * p2.y
+    };
+    
+    let p23 = {
+      x: (1-t) * p2.x + t * p3.x,
+      y: (1-t) * p2.y + t * p3.y
+    };
+    
+    // Pontos de interpolação quadrática (segundo nível)
+    let p012 = {
+      x: (1-t) * p01.x + t * p12.x,
+      y: (1-t) * p01.y + t * p12.y
+    };
+    
+    let p123 = {
+      x: (1-t) * p12.x + t * p23.x,
+      y: (1-t) * p12.y + t * p23.y
+    };
+    
+    // Ponto final da curva (terceiro nível)
+    let p0123 = {
+      x: (1-t) * p012.x + t * p123.x,
+      y: (1-t) * p012.y + t * p123.y
+    };
+    
+    return [p01, p12, p23, p012, p123, p0123];
   }
 }

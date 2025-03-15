@@ -29,8 +29,9 @@ class Colors {
     Colors.rotationHandleColor = color(250, 165, 0);
     Colors.orange = color(250, 69, 0);
     // Curves
-    Colors.bezierLineColor = color(106, 90, 205);
-    Colors.bezierControlPointColor = color(80, 80, 80, 100);
+    //Colors.bezierLineColor = color(106, 90, 205);
+    Colors.bezierLineColor = color(255, 50, 50);
+    Colors.bezierControlPointColor = color(60, 60, 60, 150);
     Colors.bezierConnectingLinesColor = color(80, 80, 80, 100);
   }
 }

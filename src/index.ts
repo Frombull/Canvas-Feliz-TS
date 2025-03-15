@@ -5,8 +5,8 @@ let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: an
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
  buttonBezier: any, buttonCurves: any;;
 let canvas: any;
-let tempPolygon: { x: number; y: number }[] = [];           // 
-let lastCompletePolygon: { x: number; y: number }[] = [];   // 
+let tempPolygon: { x: number; y: number }[] = [];
+let lastCompletePolygon: { x: number; y: number }[] = [];
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
 enum Tool {
@@ -44,7 +44,6 @@ let polygonsList: Polygon[] = [];
 // - Rotate tool                        - DONE
 // - select polygon to rotate from      - DONE
 // - Delete vertex or polygon           - DONE
-// - disalow right click agian lmao its fucked after udating the mouse out of bounds stuff
 // - FPS RAM usage debug info           - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
@@ -143,6 +142,15 @@ function drawCoordinatesOnMouse() {
   pop();
 }
 
+function drawCircleOnMouse(circleColor: any) {
+  push();
+  noFill();
+  stroke(circleColor);
+  strokeWeight(0.4);
+  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
+  pop();
+}
+
 function selectNearestVertex(): boolean { // Selects vertex or center
   let selectDistance = 3;
 
@@ -202,7 +210,6 @@ function drawPolygonBeingCreated() {
     // Draw gradient line from last point to current mouse position
     let lastPoint: { x: number, y: number } = tempPolygon[tempPolygon.length - 1];
 
-    // Save current drawing context state
     drawingContext.save();
 
     // Create gradient
@@ -238,14 +245,9 @@ function drawPolygonBeingCreated() {
     strokeWeight(0.2);
     ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius);
   }
-
-  // Draw red dot
-  fill(Colors.Red);
-  noStroke();
-  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
   pop();
 
-  // Draw coordinates text
+  drawCircleOnMouse(Colors.Red);
   drawCoordinatesOnMouse();
 }
 

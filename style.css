@@ -273,7 +273,7 @@ input[type="text"]:focus {
   z-index: 50;
 }
 
-/* Style the back button differently */
+/* Back to main panel button */
 .curves-panel button:first-of-type {
   background-color: #f8f8f8;
   border-left: 4px solid #6495ED;
@@ -285,14 +285,8 @@ input[type="text"]:focus {
   background-color: #e8e8e8;
 }
 
-/* Spacing for slider section */
-.curves-panel input[type="range"] {
-  margin: 8px 0 15px 0;
-}
-
 /* Label styling for curve panel */
 .curves-panel div:not(.section):not(.section-title) {
   font-size: 14px;
   color: #555;
-  margin-top: 5px;
 }

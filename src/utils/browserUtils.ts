@@ -1,8 +1,6 @@
 class BrowserUtils {
   static disableBrowserRightClick() {
-    for (let element of document.getElementsByClassName("p5Canvas")) {
-      element.addEventListener("contextmenu", (e) => e.preventDefault());
-    }
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
   }
   
   static disablePageZoom() {

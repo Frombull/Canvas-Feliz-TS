@@ -14,12 +14,10 @@ class Polygon {
   public edgesColor: any;
   public fillColor: any;
   // Rotation
-  public rotationAngle: number = 0; // Store rotation for the Rotate tool
+  public rotationAngle: number = 0;               // Store rotation for the Rotate tool
 
 
   constructor(initialVertices: Vertex[] = []) {
-    console.log("CONSTRUCTOR CALLED!!\n\n\n\n\n");
-    
     this.id = Polygon.nextId++;
 
     this.vertexColor = Colors.Black;

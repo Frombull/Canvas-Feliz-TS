@@ -5,7 +5,25 @@ class SidePanel {
   static shouldDrawAxis: boolean = true;
   static shouldDrawDebugWindow: boolean = true;
   static controlPanelSize = {x: 350, y: 10};
-
+  
+  // Tool management
+  static toolButtons: ToolButton[] = [];
+  static createButton: ToolButton;
+  static translateButton: ToolButton;
+  static scaleButton: ToolButton;
+  static rotateButton: ToolButton;
+  static curvesButton: ToolButton;
+  
+  
+  static registerToolButton(toolButton: ToolButton) {
+    SidePanel.toolButtons.push(toolButton);
+  }
+  
+  static updateActiveToolButton() {
+    SidePanel.toolButtons.forEach(tb => {
+      tb.setActive(selectedTool === tb.tool);
+    });
+  }
   
   static createControlPanel() {
     let controlPanel = createDiv('').class('control-panel');
@@ -14,43 +32,31 @@ class SidePanel {
     let createSection = createDiv('').class('section').parent(controlPanel);
     createDiv('').class('section-title').html('Tools').parent(createSection);
   
-    // Button Create Polygon 
-    buttonCreate = createButton('Create Polygon').class('button').parent(createSection);
-    buttonCreate.mousePressed(() => {
-      selectedTool = Tool.CREATE_POLYGON;
+    // Create Polygon Tool Button
+    SidePanel.createButton = new ToolButton('Create Polygon', Tool.CREATE_POLYGON, createSection, () => {
       tempPolygon = [];
       selectedVertex = null;
       selectedCentroid = null;
-      SidePanel.updateButtonStyles(buttonCreate);
     });
   
-    // Button Translate 
-    buttonTranslate = createButton('Translate').class('button').parent(createSection);
-    buttonTranslate.mousePressed(() => {
-      selectedTool = Tool.TRANSLATE;
+    // Translate Tool Button
+    SidePanel.translateButton = new ToolButton('Translate', Tool.TRANSLATE, createSection, () => {
       tempPolygon = [];
-      SidePanel.updateButtonStyles(buttonTranslate);
     });
   
-    // Button Scale
-    buttonScale = createButton('Scale').class('button').parent(createSection);
-    buttonScale.mousePressed(() => {
-      selectedTool = Tool.SCALE;
+    // Scale Tool Button
+    SidePanel.scaleButton = new ToolButton('Scale', Tool.SCALE, createSection, () => {
       tempPolygon = [];
-      SidePanel.updateButtonStyles(buttonScale);
     });
 
-    buttonRotate = createButton('Rotate').class('button').parent(createSection);
-    buttonRotate.mousePressed(() => {
-      selectedTool = Tool.ROTATE;
+    // Rotate Tool Button
+    SidePanel.rotateButton = new ToolButton('Rotate', Tool.ROTATE, createSection, () => {
       tempPolygon = [];
-      SidePanel.updateButtonStyles(buttonRotate);
     });
 
-    // ---------- Curves ----------
-    // Button for showing Curves Panel
-    buttonCurves = createButton('Curves').class('button').parent(createSection);
-    buttonCurves.mousePressed(() => {
+    // Curves Button (special case - doesn't set a tool directly)
+    let curvesButtonElement = createButton('Curves').class('button').parent(createSection);
+    curvesButtonElement.mousePressed(() => {
       CurvesUI.toggleCurvesPanel(true);
     });
   
@@ -60,25 +66,25 @@ class SidePanel {
     let mirrorContainer = createDiv('').style('display', 'flex').style('gap', '5px').parent(createSection);
 
     // Button Mirror X 
-    buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
+    let buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
     buttonMirrorX.mousePressed(() => {
       Mirror.mirror('y');
     });
 
     // Button Mirror Y 
-    buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
+    let buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
     buttonMirrorY.mousePressed(() => {
       Mirror.mirror('x');
     });
     
     // Button Shear Uniform 
-    buttonShearU = createButton('Uniform Shear').class('button').parent(createSection);
+    let buttonShearU = createButton('Uniform Shear').class('button').parent(createSection);
     buttonShearU.mousePressed(() => {
       Shear.ShearUniform();
     });
   
     // Button Shear Non-Uniform 
-    buttonShearNU = createButton('Non-Uniform Shear').class('button').parent(createSection);
+    let buttonShearNU = createButton('Non-Uniform Shear').class('button').parent(createSection);
     buttonShearNU.mousePressed(() => {
       Shear.ShearNonUniform();
     });
@@ -86,13 +92,12 @@ class SidePanel {
     createDiv('').class('section-title').html('Actions').parent(createSection);
 
     // Button Reset Polygon 
-    buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
+    let buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
     buttonResetPolygon.mousePressed(() => {
       if(selectedPolygon) {
         selectedPolygon.resetPolygon();
       }
     });
-
 
     // ------------------------------ COLOR PICKER ------------------------------
 
@@ -107,7 +112,7 @@ class SidePanel {
     createDiv('').class('section-title').html('Display Options').parent(createSection);
 
     // Button Center Camera 
-    buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
+    let buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
     buttonCenterCamera.mousePressed(() => {
       Camera.centerCamera();
     });
@@ -138,9 +143,12 @@ class SidePanel {
     
     SidePanel.initColorPickerUI();
     CurvesUI.setupCurvesUI();
+    
+    // Set the initial active tool
+    SidePanel.updateActiveToolButton();
   }
   
-static initColorPickerUI() {
+  static initColorPickerUI() {
     new ColorPickerUI();
     
     // Color change callback
@@ -172,17 +180,16 @@ static initColorPickerUI() {
     CurvesUI.handleWindowResize();
   }
   
+  // This method is now obsolete and can be removed in future refactor
   static updateButtonStyles(activeButton: any) {
-    // Remove active class from all buttons           // TODO array of buttons?
-    buttonCreate.removeClass('active');
-    buttonTranslate.removeClass('active');
-    buttonScale.removeClass('active');
-    buttonRotate.removeClass('active');
-    buttonCurves.removeClass('active');
-
-    if (!activeButton) return;
+    // Mantido por compatibilidade com código existente, mas não usado para botões de ferramentas
     
-    // Add active class to selected button
-    activeButton.addClass('active');
+    // Se for um botão de ferramenta, usar o sistema novo
+    SidePanel.toolButtons.forEach(tb => {
+      if (tb.getHTMLElement() === activeButton) {
+        SidePanel.updateActiveToolButton();
+        return;
+      }
+    });
   }
 }

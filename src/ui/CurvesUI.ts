@@ -1,7 +1,10 @@
 class CurvesUI {
   static panelVisible: boolean = false;
   static curvesPanelDiv: any = null;
+  static resolutionValueBox: any = null;
+  static bezierButton: ToolButton;
 
+  
   static createCurvesPanel() {
     if (CurvesUI.curvesPanelDiv) {
       CurvesUI.curvesPanelDiv.remove();
@@ -22,19 +25,26 @@ class CurvesUI {
     createDiv('').class('section-title').html('Bezier Curve').parent(curvesSection);
 
     // Button Bezier Curve
-    let bezierButton = createButton('Bezier Curve').class('button').parent(curvesSection);
-    bezierButton.mousePressed(() => {
-      selectedTool = Tool.BEZIER;
+    CurvesUI.bezierButton = new ToolButton('Bezier Curve', Tool.BEZIER, curvesSection, () => {
       Curves.reset();
-      SidePanel.updateButtonStyles(bezierButton);
     });
 
     // Curve resolution slider
-    createDiv('Resolution:').parent(curvesSection);
-    let resolutionSlider: any = createSlider(2, 42, Curves.curveResolution, 1).parent(curvesSection);
-    resolutionSlider.style('width', '90%');
+    let resolutionContainer = createDiv('').parent(curvesSection);
+    createDiv('Resolution:').parent(resolutionContainer);
+    
+    let sliderValueContainer = createDiv('').style('display', 'flex').style('align-items', 'center').style('gap', '10px').parent(resolutionContainer);
+    
+    let resolutionSlider: any = createSlider(2, 42, Curves.curveResolution, 1).parent(sliderValueContainer);
+    resolutionSlider.style('width', '80%');
+    resolutionSlider.style('flex', '1');
+    
+    // Add value box
+    CurvesUI.resolutionValueBox = createDiv(Curves.curveResolution.toString()).class('colorpicker-value-box').parent(sliderValueContainer);
+    
     resolutionSlider.input(() => {
       Curves.curveResolution = Number(resolutionSlider.value());
+      CurvesUI.resolutionValueBox.html(Curves.curveResolution.toString());
     });
 
     // Hide the panel initially
@@ -121,22 +131,11 @@ class CurvesUI {
     }
 
     if(Curves.bezierPoints.length < 4){
-      CurvesUI.drawBallAtCurser();
+      drawCircleOnMouse(Colors.bezierControlPointColor);
+      drawCoordinatesOnMouse();
     }
 
     pop();
-  }
-
-  static drawBallAtCurser() {
-    // Ellipse at cursor
-    push();
-    noFill();
-    stroke(Colors.bezierControlPointColor);
-    strokeWeight(0.5);
-    ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
-    pop();
-
-    drawCoordinatesOnMouse();
   }
   
   static handleWindowResize() {

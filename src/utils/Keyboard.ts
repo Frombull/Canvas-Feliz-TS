@@ -1,49 +1,60 @@
 class Keyboard {
   static keyPressed() {
-    if (keyCode === ESCAPE) {           // ESC de-selects tool
-      console.log("Pressed ESCAPE");
-      if (selectedTool == Tool.NONE) {  // ESC de-selects polygon as well
-        console.log("De-selecting polygon as well");
-        selectedPolygon = null;
-      }
-      selectedTool = Tool.NONE;
-      tempPolygon = [];
-      selectedVertex = null;
-      selectedCentroid = null;
-      SidePanel.updateButtonStyles(null);
-  
-      // Remove active class from all buttons //TODO: array of buttons
-      buttonCreate.removeClass('active');
-      buttonTranslate.removeClass('active');
-      buttonScale.removeClass('active');
-      buttonRotate.removeClass('active');
+    // ESC
+    if (keyCode === ESCAPE) {
+      Keyboard.handleEscapeKey();
       return;
     }
+    // DELETE
     if (keyCode === DELETE) {
-      console.log("Pressed DELETE");
-      if (selectedPolygon && selectedVertex) {
-        const action = new DeleteVertexAction(selectedPolygon, selectedVertex);
-        HistoryManager.getInstance().addAction(action);
-        selectedPolygon.deleteVertex(selectedVertex);
-      }
-      else if (selectedPolygon && !selectedVertex && selectedCentroid) {
-        const action = new DeletePolygonAction(selectedPolygon);
-        HistoryManager.getInstance().addAction(action);
-        selectedPolygon.deleteSelf();
-      }
+      Keyboard.handleDeleteKey();
       return;
     }
-    // Ctrl+Z
+    // CTRL+Z
     if (keyIsDown(CONTROL) && key === 'z') {
-      console.log("Pressed CTRL+Z");
-      HistoryManager.getInstance().undo();
+      Keyboard.handleUndo();
       return;
     }
-    // Ctrl+Y
-    if (keyIsDown(CONTROL) && key === 'y') {
-      console.log("Pressed CTRL+Y");
-      //HistoryManager.getInstance().redo();
-      return;
+  }
+
+  static handleEscapeKey() {
+    console.log("Pressed ESCAPE");
+    
+    // If no tool is selected, also deselect polygon
+    if (selectedTool == Tool.NONE) {
+      console.log("De-selecting polygon as well");
+      selectedPolygon = null;
     }
+    
+    // Reset selection states
+    selectedTool = Tool.NONE;
+    tempPolygon = [];
+    selectedVertex = null;
+    selectedCentroid = null;
+    
+    // Update button visuals
+    SidePanel.updateActiveToolButton();
+  }
+
+  static handleDeleteKey() {
+    console.log("Pressed DELETE");
+    
+    // Delete vertex if a vertex is selected
+    if (selectedPolygon && selectedVertex) {
+      const action = new DeleteVertexAction(selectedPolygon, selectedVertex);
+      HistoryManager.getInstance().addAction(action);
+      selectedPolygon.deleteVertex(selectedVertex);
+    }
+    // Delete polygon if centroid is selected but no vertex
+    else if (selectedPolygon && !selectedVertex && selectedCentroid) {
+      const action = new DeletePolygonAction(selectedPolygon);
+      HistoryManager.getInstance().addAction(action);
+      selectedPolygon.deleteSelf();
+    }
+  }
+
+  static handleUndo() {
+    console.log("Pressed CTRL+Z");
+    HistoryManager.getInstance().undo();
   }
 }

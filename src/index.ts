@@ -44,20 +44,20 @@ let polygonsList: Polygon[] = [];
 // - Rotate tool                        - DONE
 // - select polygon to rotate from      - DONE
 // - Delete vertex or polygon           - DONE
+// - Resize when console is open        - DONE
+// - Bezier curve tool                  - ~
 // - FPS RAM usage debug info           - 
 // - New polygon random color id based  - 
+// - Effect when hovering interactable  - 
 // - X/Y axis arrow                     - 
-// - Bezier curve tool                  - ~
 // - Hermite curve tool                 - 
 // - Scale tool sucks                   - 
 // - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
-// - Annimation when hover scale arrow  - 
 // - Annimation with button CLICK       - 
 // - Better ShearU / ShearNU tool       - 
 // - Undo / Redo                        - ~
 // - Save / Load                        - 
-// - Resize when console is open        - 
 // -                                    - 
 // -                                    - 
 // - Start working on 3D version        - 

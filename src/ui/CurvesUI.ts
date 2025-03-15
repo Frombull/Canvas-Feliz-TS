@@ -17,7 +17,7 @@ class CurvesUI {
 
     // Back button to return to main panel
     let backButton = createButton('« Back to Main Panel').class('button').parent(curvesSection);
-    backButton.mousePressed(() => {
+    backButton.mouseReleased(() => {
       CurvesUI.toggleCurvesPanel(false);
       select('.control-panel')?.style('display', 'block');
     });
@@ -71,23 +71,26 @@ class CurvesUI {
   static drawBezierControls() {
     push();
     // Draw control points
-    for (let i = 0; i < Curves.bezierPoints.length; i++) {
-      let p = Curves.bezierPoints[i];
-      
-      // Draw control point
-      fill(Colors.bezierControlPointColor);
-      noStroke();
-      ellipse(p.x, p.y, Curves.controlPointRadius * 2);
-      
-      // Draw text label
-      fill(0);
-      stroke(Colors.BackgroundColor);
-      strokeWeight(0.5);
-      textAlign(LEFT, CENTER);
-      textSize(12/Camera.scaleFactor);
-      text(`${i}`, p.x + 2, p.y + 0.5);
+    if(SidePanel.shouldDrawVertexBalls){
+      for (let i = 0; i < Curves.bezierPoints.length; i++) {
+        let p = Curves.bezierPoints[i];
+        
+        // Draw vertex ellipses ball things
+        fill(Colors.bezierControlPointColor);
+        noStroke();
+        ellipse(p.x, p.y, Curves.controlPointRadius * 2);
+        
+        // Draw text label
+        fill(0);
+        stroke(Colors.BackgroundColor);
+        strokeWeight(0.5);
+        textAlign(LEFT, CENTER);
+        textSize(12/Camera.scaleFactor);
+        text(`${i}`, p.x + 2, p.y + 0.5);
+      }
     }
-    
+
+
     // Draw connecting lines between control points
     if (Curves.bezierPoints.length > 1) {
       strokeCap(ROUND);
@@ -109,7 +112,7 @@ class CurvesUI {
       let p3 = Curves.bezierPoints[3];
       
       strokeWeight(1.5);
-      stroke(Colors.bezierColor);
+      stroke(Colors.bezierLineColor);
       noFill();
       beginShape();
       
@@ -130,6 +133,7 @@ class CurvesUI {
       endShape();
     }
 
+    // Draw circle on mouse position
     if(Curves.bezierPoints.length < 4){
       drawCircleOnMouse(Colors.bezierControlPointColor);
       drawCoordinatesOnMouse();

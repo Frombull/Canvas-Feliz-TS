@@ -54,9 +54,9 @@ class SidePanel {
       tempPolygon = [];
     });
 
-    // Curves Button (special case - doesn't set a tool directly)
+    // Curves Button (doesnt set a tool directly)
     let curvesButtonElement = createButton('Curves').class('button').parent(createSection);
-    curvesButtonElement.mousePressed(() => {
+    curvesButtonElement.mouseReleased(() => {
       CurvesUI.toggleCurvesPanel(true);
     });
   
@@ -67,25 +67,25 @@ class SidePanel {
 
     // Button Mirror X 
     let buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
-    buttonMirrorX.mousePressed(() => {
+    buttonMirrorX.mouseReleased(() => {
       Mirror.mirror('y');
     });
 
     // Button Mirror Y 
     let buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
-    buttonMirrorY.mousePressed(() => {
+    buttonMirrorY.mouseReleased(() => {
       Mirror.mirror('x');
     });
     
     // Button Shear Uniform 
     let buttonShearU = createButton('Uniform Shear').class('button').parent(createSection);
-    buttonShearU.mousePressed(() => {
+    buttonShearU.mouseReleased(() => {
       Shear.ShearUniform();
     });
   
     // Button Shear Non-Uniform 
     let buttonShearNU = createButton('Non-Uniform Shear').class('button').parent(createSection);
-    buttonShearNU.mousePressed(() => {
+    buttonShearNU.mouseReleased(() => {
       Shear.ShearNonUniform();
     });
   
@@ -93,19 +93,18 @@ class SidePanel {
 
     // Button Reset Polygon 
     let buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
-    buttonResetPolygon.mousePressed(() => {
+    buttonResetPolygon.mouseReleased(() => {
       if(selectedPolygon) {
         selectedPolygon.resetPolygon();
       }
     });
 
     // ------------------------------ COLOR PICKER ------------------------------
-
     createDiv('').class('section-title').html('Color').parent(createSection);
     
     // Create toggle button for color picker
     let buttonColorPicker = createButton('Color Picker').class('button').parent(createSection);
-    buttonColorPicker.mousePressed(() => {
+    buttonColorPicker.mouseReleased(() => {
       ColorPickerUI.toggle();
     });
 
@@ -113,7 +112,7 @@ class SidePanel {
 
     // Button Center Camera 
     let buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
-    buttonCenterCamera.mousePressed(() => {
+    buttonCenterCamera.mouseReleased(() => {
       Camera.centerCamera();
     });
   

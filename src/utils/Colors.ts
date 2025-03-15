@@ -12,7 +12,7 @@ class Colors {
   static rotationHandleColor: any;
   static orange: any ;
   // Curves
-  static bezierColor: any ;
+  static bezierLineColor: any ;
   static bezierControlPointColor: any;
   static bezierConnectingLinesColor: any;
 
@@ -29,8 +29,8 @@ class Colors {
     Colors.rotationHandleColor = color(250, 165, 0);
     Colors.orange = color(250, 69, 0);
     // Curves
-    Colors.bezierColor = color(106, 90, 205);
-    Colors.bezierControlPointColor = color(0, 0, 0);
+    Colors.bezierLineColor = color(106, 90, 205);
+    Colors.bezierControlPointColor = color(80, 80, 80, 100);
     Colors.bezierConnectingLinesColor = color(80, 80, 80, 100);
   }
 }

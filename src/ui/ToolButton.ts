@@ -1,7 +1,7 @@
 class ToolButton {
   button: any;
   tool: Tool;
-  
+
 
   constructor(label: string, tool: Tool, parent: any, onClick?: () => void) {
     this.tool = tool;

@@ -10,27 +10,27 @@ class Colors {
   static GizmoScaleColor: any;
   static PolygonBlue: any;
   static rotationHandleColor: any;
-
+  static orange: any ;
   // Curves
   static bezierColor: any ;
-  static hermiteColor: any ;
-  static tangentColor: any ;
-  static controlPointColor: any;
+  static bezierControlPointColor: any;
+  static bezierConnectingLinesColor: any;
 
   static init() {
-    Colors.Red = color(255, 30, 30);
-    Colors.Green = color(30, 255, 30);
-    Colors.Blue = color(30, 30, 255);
+    Colors.Red = color(250, 30, 30);
+    Colors.Green = color(30, 250, 30);
+    Colors.Blue = color(30, 30, 250);
     Colors.Purple = color(150, 40, 210);
     Colors.Gray = color(150);
     Colors.Black = color(0);
     Colors.BackgroundColor = color(230);
-    Colors.GizmoScaleColor = color(255, 100, 55);
+    Colors.GizmoScaleColor = color(250, 100, 55);
     Colors.PolygonBlue = color(100, 100, 250, 100);
-    Colors.rotationHandleColor = color(255, 165, 0);
+    Colors.rotationHandleColor = color(250, 165, 0);
+    Colors.orange = color(250, 69, 0);
+    // Curves
     Colors.bezierColor = color(106, 90, 205);
-    Colors.hermiteColor = color(148, 0, 211);
-    Colors.tangentColor = color(255, 69, 0);
-    Colors.controlPointColor = color(0, 0, 0);
+    Colors.bezierControlPointColor = color(0, 0, 0);
+    Colors.bezierConnectingLinesColor = color(80, 80, 80, 100);
   }
 }

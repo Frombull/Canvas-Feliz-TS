@@ -13,7 +13,7 @@ class ColorPickerUI {
     ColorPickerUI.createColorPicker();
     ColorPickerUI.createSliders();
     ColorPickerUI.setupEvents();
-    ColorPickerUI.show();
+    ColorPickerUI.hide();
   }
 
   private static createContainer() {

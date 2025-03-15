@@ -132,7 +132,7 @@ class Mouse {
           }
         }
       }
-      else if (selectedTool == Tool.BEZIER || selectedTool == Tool.HERMITE) {
+      else if (selectedTool == Tool.BEZIER) {
         // if clicking on a control point
         let controlPoint = Curves.isNearControlPoint(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y);
         
@@ -145,9 +145,6 @@ class Mouse {
           if (selectedTool == Tool.BEZIER) {
             Curves.createBezierCurve();
             console.log("createBezierCurve()");
-          } else {
-            Curves.createHermiteCurve();
-            console.log("createHermiteCurve()");
           }
         }
       }

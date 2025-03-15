@@ -48,24 +48,10 @@ class SidePanel {
     });
 
     // ---------- Curves ----------
-  
-    // Container curve buttons
-    let curveContainer = createDiv('').style('display', 'flex').style('gap', '5px').parent(createSection);
-    
-    // Button Bezier Curve
-    buttonBezier = createButton('Bezier Curve').class('button').parent(curveContainer);
-    buttonBezier.mousePressed(() => {
-      selectedTool = Tool.BEZIER;
-      Curves.reset();  // Reset any existing curves
-      SidePanel.updateButtonStyles(buttonBezier);
-    });
-  
-    // Button Hermite Curve
-    buttonHermite = createButton('Hermite Curve').class('button').parent(curveContainer);
-    buttonHermite.mousePressed(() => {
-      selectedTool = Tool.HERMITE;
-      Curves.reset();  // Reset any existing curves
-      SidePanel.updateButtonStyles(buttonHermite);
+    // Button for showing Curves Panel
+    buttonCurves = createButton('Curves').class('button').parent(createSection);
+    buttonCurves.mousePressed(() => {
+      CurvesUI.toggleCurvesPanel(true);
     });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
@@ -151,6 +137,7 @@ class SidePanel {
     });
     
     SidePanel.initColorPickerUI();
+    CurvesUI.setupCurvesUI();
   }
   
 static initColorPickerUI() {
@@ -176,11 +163,13 @@ static initColorPickerUI() {
   }
 
   static handleWindowResize() {
-    let controlPanel = select('.control-panel');
+    let controlPanel = select('.control-panel:not(.curves-panel)');
     
     if (controlPanel) {
       controlPanel.position(windowWidth - SidePanel.controlPanelSize.x, SidePanel.controlPanelSize.y);
     }
+    
+    CurvesUI.handleWindowResize();
   }
   
   static updateButtonStyles(activeButton: any) {
@@ -189,8 +178,7 @@ static initColorPickerUI() {
     buttonTranslate.removeClass('active');
     buttonScale.removeClass('active');
     buttonRotate.removeClass('active');
-    buttonBezier.removeClass('active');
-    buttonHermite.removeClass('active');
+    buttonCurves.removeClass('active');
 
     if (!activeButton) return;
     

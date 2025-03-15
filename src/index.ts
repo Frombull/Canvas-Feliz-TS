@@ -3,7 +3,7 @@
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any,
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
- buttonBezier: any, buttonHermite: any;;
+ buttonBezier: any, buttonCurves: any;;
 let canvas: any;
 let tempPolygon: { x: number; y: number }[] = [];           // 
 let lastCompletePolygon: { x: number; y: number }[] = [];   // 
@@ -18,8 +18,7 @@ enum Tool {
   SHEAR_U,
   SHEAR_NU,
   ROTATE,
-  BEZIER,
-  HERMITE
+  BEZIER
 }
 let selectedTool: Tool = Tool.NONE;
 
@@ -45,6 +44,7 @@ let polygonsList: Polygon[] = [];
 // - Rotate tool                        - DONE
 // - select polygon to rotate from      - DONE
 // - Delete vertex or polygon           - DONE
+// - disalow right click agian lmao its fucked after udating the mouse out of bounds stuff
 // - FPS RAM usage debug info           - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
@@ -124,11 +124,7 @@ function handleToolsLogic() {
       break;
 
     case Tool.BEZIER:
-      Curves.drawBezierControls();
-      break;
-      
-    case Tool.HERMITE:
-      Curves.drawHermiteControls();
+      CurvesUI.drawBezierControls();
       break;
 
     default:

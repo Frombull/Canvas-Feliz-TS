@@ -9,6 +9,10 @@ let tempPolygon: { x: number; y: number }[] = [];
 let lastCompletePolygon: { x: number; y: number }[] = [];
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
+enum BezierType {
+  QUADRATIC,
+  CUBIC
+}
 enum Tool {
   NONE,
   CREATE_POLYGON,
@@ -25,6 +29,7 @@ let selectedTool: Tool = Tool.NONE;
 let selectedPolygon: Polygon | null;
 let polygonsList: Polygon[] = [];
 
+// ARROW, CROSS, HAND, MOVE, TEXT, WAIT
 
 // TODOs:
 // ---------------------------------
@@ -90,6 +95,7 @@ function draw() {
     p.drawPolygon();
   }
 
+  cursor(ARROW);
   handleToolsLogic();
 
   // if (!selectedPolygon){
@@ -105,6 +111,7 @@ function handleToolsLogic() {
   switch (selectedTool) {
     case Tool.CREATE_POLYGON:
       drawPolygonBeingCreated();
+      cursor(CROSS); 
       break;
 
     case Tool.TRANSLATE:
@@ -255,7 +262,8 @@ function drawPolygonBeingCreated() {
 function cancelPolygonCreation() {
   selectedTool = Tool.NONE;
   tempPolygon = [];
-  SidePanel.updateButtonStyles(null);
+  buttonCreate.setActive(false);
+  //SidePanel.updateButtonStyles(null);
 }
 
 function deselectPolygon() {

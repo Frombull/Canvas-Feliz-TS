@@ -116,8 +116,8 @@ class SidePanel {
       Camera.centerCamera();
     });
   
-    // Checkbox for vertex balls
-    let checkboxDrawVertexBalls: any = createCheckbox('Draw Vertex Balls', SidePanel.shouldDrawVertexBalls).parent(createSection);
+    // Checkbox for draw vertices
+    let checkboxDrawVertexBalls: any = createCheckbox('Draw Vertices', SidePanel.shouldDrawVertexBalls).parent(createSection);
     checkboxDrawVertexBalls.changed(() => {
       SidePanel.shouldDrawVertexBalls = checkboxDrawVertexBalls.checked();
     });
@@ -177,18 +177,5 @@ class SidePanel {
     }
     
     CurvesUI.handleWindowResize();
-  }
-  
-  // This method is now obsolete and can be removed in future refactor
-  static updateButtonStyles(activeButton: any) {
-    // Mantido por compatibilidade com código existente, mas não usado para botões de ferramentas
-    
-    // Se for um botão de ferramenta, usar o sistema novo
-    SidePanel.toolButtons.forEach(tb => {
-      if (tb.getHTMLElement() === activeButton) {
-        SidePanel.updateActiveToolButton();
-        return;
-      }
-    });
   }
 }

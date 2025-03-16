@@ -38,7 +38,8 @@ class Mouse {
             Scale.currentScale = {x: 1, y: 1}
             
             selectedTool = Tool.NONE;   // TODO: VOLTAR A USAR A ULTIMA TOOL SELECIONADA
-            SidePanel.updateButtonStyles(null);
+            //buttonCreate.setActive(false); //TODO deselect button
+
             
             lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
             
@@ -133,18 +134,17 @@ class Mouse {
         }
       }
       else if (selectedTool == Tool.BEZIER) {
-        // if clicking on a control point
         let controlPoint = Curves.isNearControlPoint(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y);
         
         if (controlPoint) {
           // Start dragging this control point
           Mouse.selectedControlPoint = controlPoint;
           Mouse.isDraggingControlPoint = true;
-        } else {
-          // Not clicking on a control point, so create a new curve
+        } 
+        else {
+          // Not clicking on a control point, create a new curve
           if (selectedTool == Tool.BEZIER) {
             Curves.createBezierCurve();
-            console.log("createBezierCurve()");
           }
         }
       }
@@ -200,6 +200,8 @@ class Mouse {
       // Update pos of dragged control point
       Mouse.selectedControlPoint.x = Mouse.mousePosInGridSnapped.x;
       Mouse.selectedControlPoint.y = Mouse.mousePosInGridSnapped.y;
+
+      Curves.updateCurveForDraggedPoint();
     }
   }
   

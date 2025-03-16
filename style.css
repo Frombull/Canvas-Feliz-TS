@@ -242,7 +242,7 @@ input[type="text"]:focus {
   font-weight: 500;
 }
 
-/* Custom slider colors */
+/* Custom slider colors //TODO nao funciona */
 .colorpicker-slider[name="H"] {
   background: linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red);
 }
@@ -289,4 +289,30 @@ input[type="text"]:focus {
 .curves-panel div:not(.section):not(.section-title) {
   font-size: 14px;
   color: #555;
+}
+
+/* Added styles from CurvesUI.ts */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider {
+  width: 80%;
+  flex: 1;
+}
+
+.resolution-container, .animation-speed-container {
+  margin-bottom: 10px;
+}
+
+.loop-container {
+  margin: 10px 0 15px 0;
+  display: flex;
+  align-items: center;
+}
+
+.loop-container input[type="checkbox"] {
+  margin-right: 8px;
 }

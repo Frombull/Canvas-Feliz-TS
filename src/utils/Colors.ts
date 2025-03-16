@@ -5,6 +5,7 @@ class Colors {
   static Blue: any;
   static Purple: any;
   static Gray: any;
+  static GrayWithAlpha: any;
   static Black: any;
   static BackgroundColor: any;
   static GizmoScaleColor: any;
@@ -22,6 +23,7 @@ class Colors {
     Colors.Blue = color(30, 30, 250);
     Colors.Purple = color(150, 40, 210);
     Colors.Gray = color(150);
+    Colors.GrayWithAlpha = color(30, 30, 30, 120);
     Colors.Black = color(0);
     Colors.BackgroundColor = color(230);
     Colors.GizmoScaleColor = color(250, 100, 55);

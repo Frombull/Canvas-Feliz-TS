@@ -50,7 +50,9 @@ let polygonsList: Polygon[] = [];
 // - select polygon to rotate from      - DONE
 // - Delete vertex or polygon           - DONE
 // - Resize when console is open        - DONE
-// - Bezier curve tool                  - ~
+// - Bezier curve tool                  - ~~~
+// - More shouldDraw checkboxes         - ~
+// - Better font for labels in bezier   -
 // - FPS RAM usage debug info           - 
 // - New polygon random color id based  - 
 // - Effect when hovering interactable  - 
@@ -85,6 +87,7 @@ function draw() {
   background(Colors.BackgroundColor); 
   translate(Mouse.panX, Mouse.panY);
   scale(Camera.scaleFactor);
+  cursor(ARROW);
 
   Mouse.updateMousePosition();
   
@@ -95,7 +98,6 @@ function draw() {
     p.drawPolygon();
   }
 
-  cursor(ARROW);
   handleToolsLogic();
 
   // if (!selectedPolygon){
@@ -152,9 +154,9 @@ function drawCoordinatesOnMouse() {
 
 function drawCircleOnMouse(circleColor: any) {
   push();
-  noFill();
-  stroke(circleColor);
-  strokeWeight(0.4);
+  fill(circleColor);
+  noStroke();
+  //strokeWeight(0.4);
   ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
   pop();
 }
@@ -255,7 +257,7 @@ function drawPolygonBeingCreated() {
   }
   pop();
 
-  drawCircleOnMouse(Colors.Red);
+  drawCircleOnMouse(Colors.GrayWithAlpha);
   drawCoordinatesOnMouse();
 }
 

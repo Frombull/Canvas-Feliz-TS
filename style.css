@@ -151,6 +151,7 @@ input[type="text"]:focus {
   outline: none;
 }
 
+
 /* ------------------------------ ColorPickerUI Styles ------------------------------*/
 .colorpicker-container {
   background-color: #f0f0f0;
@@ -242,31 +243,6 @@ input[type="text"]:focus {
   font-weight: 500;
 }
 
-/* Custom slider colors //TODO nao funciona */
-.colorpicker-slider[name="H"] {
-  background: linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red);
-}
-
-.colorpicker-slider[name="S"] {
-  background: linear-gradient(to right, #ccc, #4169E1);
-}
-
-.colorpicker-slider[name="V"] {
-  background: linear-gradient(to right, #000, #fff);
-}
-
-.colorpicker-slider[name="R"] {
-  background: linear-gradient(to right, #000, #f00);
-}
-
-.colorpicker-slider[name="G"] {
-  background: linear-gradient(to right, #000, #0f0);
-}
-
-.colorpicker-slider[name="B"] {
-  background: linear-gradient(to right, #000, #00f);
-}
-
 /* ------------------------------ Curves Panel Styles ------------------------------*/
 .curves-panel {
   display: none; /* Hidden by default */
@@ -308,11 +284,65 @@ input[type="text"]:focus {
 }
 
 .loop-container {
-  margin: 10px 0 15px 0;
+  margin: 0px 0 10px 0;
   display: flex;
   align-items: center;
 }
 
 .loop-container input[type="checkbox"] {
   margin-right: 8px;
+}
+
+
+/* ------------------------------ Animation time slider of bezier curves ------------------------------*/
+.animation-time-container {
+  margin-bottom: 10px;
+}
+
+/* Time value box for animation slider */
+.animation-time-container .colorpicker-value-box {
+  font-weight: bold;
+  background: #f0f8ff;
+  border-color: #b0c4de;
+}
+
+
+/* ------------------------------ Play/Pause buttons of bezier curves ------------------------------ */
+.playback-controls-container {
+  margin: 10px 0 0px 0;
+}
+
+.playback-buttons-container {
+  display: flex;
+  gap: 10px;
+}
+
+.play-button, .reset-button {
+  flex: 1;
+  text-align: center;
+  font-weight: bold !important;
+  padding: 8px 5px;
+  height: 36px;
+  box-sizing: border-box; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-button {
+  background-color: #e6f4ff;
+  border-color: #4169E1;
+}
+
+.play-button:hover {
+  background-color: #d0e5ff;
+}
+
+.reset-button {
+  background-color: #f5f5f5;
+  border-color: #a0a0a0;
+}
+
+.reset-button:hover {
+  background-color: #e8e8e8;
 }

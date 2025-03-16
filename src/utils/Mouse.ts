@@ -140,6 +140,7 @@ class Mouse {
           // Start dragging this control point
           Mouse.selectedControlPoint = controlPoint;
           Mouse.isDraggingControlPoint = true;
+          cursor(HAND);
         } 
         else {
           // Not clicking on a control point, create a new curve

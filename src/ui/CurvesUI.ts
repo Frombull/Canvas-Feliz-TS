@@ -6,6 +6,7 @@ class CurvesUI {
   static cubicBezierButton: ToolButton;
   static animationSpeedSlider: any = null;
   static animationSpeedValueBox: any = null;
+  static animationTimeValueBox: any = null;
   static loopAnimationCheckbox: any = null;
 
   static shouldDrawFirstLevelLines: boolean = true;
@@ -61,14 +62,62 @@ class CurvesUI {
     //   Curves.curveResolution = Number(resolutionSlider.value());
     //   CurvesUI.resolutionValueBox.html(Curves.curveResolution.toString());
     // });
-  
-    // Animation speed
+
+
+    // ------------------------------ Animation time slider (t) ------------------------------
+    let animationTimeContainer = createDiv('').class('animation-time-container').parent(curvesSection);
+    createDiv('Time [t]:').parent(animationTimeContainer);
+    
+    let animationTimeSliderContainer: any = createDiv('').class('slider-container').parent(animationTimeContainer);
+    
+    let animationTimeSlider: any = createSlider(0.001, 1.001, Curves.animationProgress, 0.01).class('slider').parent(animationTimeSliderContainer); // Same story as 0.30000000004 ¬¬
+    
+    CurvesUI.animationTimeValueBox = createDiv(`${Curves.animationProgress.toFixed(2)}`).class('colorpicker-value-box').parent(animationTimeSliderContainer);
+    
+    animationTimeSlider.input(() => {
+      // Pause animation if running when user adjusts the slider
+      if (Curves.isAnimating) {
+        Curves.setAnimating(false);
+      }
+      
+      // Update progress based on slider value
+      Curves.animationProgress = Number(animationTimeSlider.value());
+      
+      // Update the display value with 2 decimal precision
+      CurvesUI.animationTimeValueBox.html(Curves.animationProgress.toFixed(2));
+      
+      // If we have complete bezier points, update the curve visualization
+      const requiredPoints = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
+      if (Curves.bezierPoints.length === requiredPoints) {
+        // Clear existing interpolation points so we only see the current t
+        Curves.interpolationPoints = [];
+        
+        // Calculate new points up to the current t for visualization
+        const step = 0.01;
+        for (let t = 0; t <= Curves.animationProgress; t += step) {
+          const interpPoints = Curves.calculateInterpolationPoints(t);
+          if (interpPoints.length === 0) continue;
+          
+          const finalPoint = interpPoints[interpPoints.length - 1];
+          
+          if (Curves.interpolationPoints.length === 0 || 
+              dist(finalPoint.x, finalPoint.y, 
+                  Curves.interpolationPoints[Curves.interpolationPoints.length-1].x, 
+                  Curves.interpolationPoints[Curves.interpolationPoints.length-1].y) > 0.1) {
+            Curves.interpolationPoints.push(finalPoint);
+          }
+        }
+      }
+    });
+
+
+    // ------------------------------ Animation speed slider ------------------------------
     let animationSpeedContainer = createDiv('').class('animation-speed-container').parent(curvesSection);
     createDiv('Animation Speed:').parent(animationSpeedContainer);
     
     let animationSliderContainer: any = createDiv('').class('slider-container').parent(animationSpeedContainer);
     
-    let animationSpeedSlider: any = createSlider(0, 1, Curves.animationSpeed * 100, 0.1).class('slider').parent(animationSliderContainer);
+    let animationSpeedSlider: any = createSlider(0.1, 1, Curves.animationSpeed * 100, 0.1).class('slider').parent(animationSliderContainer);
     
     CurvesUI.animationSpeedValueBox = createDiv(`${Curves.animationSpeed*100}`).class('colorpicker-value-box').parent(animationSliderContainer);
     
@@ -76,8 +125,48 @@ class CurvesUI {
       Curves.animationSpeed = Number(animationSpeedSlider.value()) / 100;
       CurvesUI.animationSpeedValueBox.html(animationSpeedSlider.value().toString());
     });
-    
-    // Loop animation checkbox
+
+
+    // ------------------------------ Play/Pause button ------------------------------
+    let playbackControlsContainer = createDiv('').class('playback-controls-container').parent(curvesSection);
+
+    let buttonContainer = createDiv('').class('playback-buttons-container').parent(playbackControlsContainer);
+
+    let playPauseButton = createButton('▶ Play').class('button play-button').parent(buttonContainer);
+    playPauseButton.style('flex', '1');
+    playPauseButton.mouseReleased(() => {
+      const requiredPoints = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
+      if (Curves.bezierPoints.length === requiredPoints) {
+        if (Curves.isAnimating) {
+          // Pause the animation
+          Curves.setAnimating(false);
+        } else {
+          // If we're at the end, restart from beginning
+          if (Curves.animationProgress >= 0.99) {
+            Curves.animationProgress = 0;
+            Curves.interpolationPoints = [];
+          }
+          // Start the animation
+          Curves.setAnimating(true);
+        }
+      }
+    });
+
+    // Reset animation button
+    let resetButton = createButton('⏮ Reset').class('button reset-button').parent(buttonContainer);
+    resetButton.style('flex', '1');
+    resetButton.mouseReleased(() => {
+      const requiredPoints = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
+      if (Curves.bezierPoints.length === requiredPoints) {
+        Curves.animationProgress = 0.001;
+        Curves.interpolationPoints = [];
+        CurvesUI.updateAnimationTimeSlider();
+        // Curves.setAnimating(true);
+      }
+    });
+
+
+    // ------------------------------ Checkbox loop animation  ------------------------------
     let loopContainer = createDiv('').class('loop-container').parent(curvesSection);
     CurvesUI.loopAnimationCheckbox = createCheckbox('Loop Animation', Curves.loopAnimation).parent(loopContainer);
     CurvesUI.loopAnimationCheckbox.changed(() => {
@@ -87,6 +176,27 @@ class CurvesUI {
       if (Curves.loopAnimation && !Curves.isAnimating && Curves.animationProgress >= 1) {
         Curves.startAnimation();
       }
+    });
+    
+
+    createDiv('').class('section-title').html('Display Options').parent(curvesSection);
+    
+    // Checkbox for first level lines
+    let checkboxFirstLevelLines: any = createCheckbox('Show First Level Lines', CurvesUI.shouldDrawFirstLevelLines).parent(curvesSection);
+    checkboxFirstLevelLines.changed(() => {
+      CurvesUI.shouldDrawFirstLevelLines = checkboxFirstLevelLines.checked();
+    });
+    
+    // Checkbox for second level lines
+    let checkboxSecondLevelLines: any = createCheckbox('Show Second Level Lines', CurvesUI.shouldDrawSecondLevelLines).parent(curvesSection);
+    checkboxSecondLevelLines.changed(() => {
+      CurvesUI.shouldDrawSecondLevelLines = checkboxSecondLevelLines.checked();
+    });
+    
+    // Checkbox for bezier line
+    let checkboxBezierLine: any = createCheckbox('Show Bezier Line', CurvesUI.shouldDrawBezierLine).parent(curvesSection);
+    checkboxBezierLine.changed(() => {
+      CurvesUI.shouldDrawBezierLine = checkboxBezierLine.checked();
     });
   
     // Restart animation button
@@ -148,7 +258,7 @@ class CurvesUI {
       else if (Curves.bezierType === BezierType.QUADRATIC && Curves.bezierPoints.length === 3) {
         CurvesUI.drawQuadraticBezierAnimation();
       }
-    }else {
+    } else {
       cursor(CROSS);
     }
 
@@ -163,7 +273,7 @@ class CurvesUI {
       drawCircleOnMouse(Colors.bezierControlPointColor);
       drawCoordinatesOnMouse();
     }
-  
+    
     pop();
   }
   
@@ -176,45 +286,52 @@ class CurvesUI {
       if (interpPoints.length >= 6) {
         let [p01, p12, p23, p012, p123, finalPoint] = interpPoints;
         
-        // First level interpolation points
-        fill(Colors.bezierControlPointColor);
-        noStroke();
-        ellipse(p01.x, p01.y, 2.5);
-        CurvesUI.drawTextAtVertex(p01, "L0", -3, 0);
-        
-        fill(Colors.bezierControlPointColor);
-        ellipse(p12.x, p12.y, 2.5);
-        CurvesUI.drawTextAtVertex(p12, "L1", -3, 0);
-        
-        fill(Colors.bezierControlPointColor);
-        ellipse(p23.x, p23.y, 2.5);
-        CurvesUI.drawTextAtVertex(p23, "L2", -3, 0);
+        if (Curves.animationProgress < 1) {
+          // First level interpolation points
+          fill(Colors.bezierControlPointColor);
+          noStroke();
+          ellipse(p01.x, p01.y, 2.5);
+          CurvesUI.drawTextAtVertex(p01, "L0", -3, 0);
+          
+          fill(Colors.bezierControlPointColor);
+          ellipse(p12.x, p12.y, 2.5);
+          CurvesUI.drawTextAtVertex(p12, "L1", -3, 0);
+          
+          fill(Colors.bezierControlPointColor);
+          ellipse(p23.x, p23.y, 2.5);
+          CurvesUI.drawTextAtVertex(p23, "L2", -3, 0);
+
+          // First level lines
+          if (CurvesUI.shouldDrawFirstLevelLines) {
+              stroke(CurvesUI.green);
+              strokeWeight(0.5);
+              line(p01.x, p01.y, p012.x, p012.y);
+              line(p012.x, p012.y, p12.x, p12.y);
+              
+              stroke(CurvesUI.green);
+              line(p12.x, p12.y, p123.x, p123.y);
+              line(p123.x, p123.y, p23.x, p23.y);
+          }
+
+          // Second level lines
+          if (CurvesUI.shouldDrawSecondLevelLines) {
+            stroke(CurvesUI.blue);
+            strokeWeight(0.5);
+            line(p012.x, p012.y, finalPoint.x, finalPoint.y);
+            line(finalPoint.x, finalPoint.y, p123.x, p123.y);
+            
+            // Second level interpolation points
+            fill(CurvesUI.blue);
+            noStroke();
+            ellipse(p012.x, p012.y, 2.5);
+            
+            fill(CurvesUI.blue);
+            ellipse(p123.x, p123.y, 2.5);
+          }
+        }
 
         
-        // Second level lines
-        stroke(CurvesUI.green);
-        strokeWeight(0.5);
-        line(p01.x, p01.y, p012.x, p012.y);
-        line(p012.x, p012.y, p12.x, p12.y);
-        
-        stroke(CurvesUI.green);
-        line(p12.x, p12.y, p123.x, p123.y);
-        line(p123.x, p123.y, p23.x, p23.y);
-        
-        // Second level interpolation points
-        fill(CurvesUI.blue);
-        noStroke();
-        ellipse(p012.x, p012.y, 2.5);
-        
-        fill(CurvesUI.blue);
-        ellipse(p123.x, p123.y, 2.5);
-        
 
-        // Third level lines
-        stroke(CurvesUI.blue);
-        strokeWeight(0.5);
-        line(p012.x, p012.y, finalPoint.x, finalPoint.y);
-        line(finalPoint.x, finalPoint.y, p123.x, p123.y);
         
         // Add point to curve while animating
         if (Curves.interpolationPoints.length === 0 || 
@@ -224,8 +341,8 @@ class CurvesUI {
           Curves.interpolationPoints.push(finalPoint);
         }
         
-        // draw curve being drawn
-        if (Curves.interpolationPoints.length > 1) {
+        // Draw bezier curve
+        if (CurvesUI.shouldDrawBezierLine && Curves.interpolationPoints.length > 1) {
           strokeWeight(1.5);
           stroke(Colors.bezierLineColor);
           noFill();
@@ -234,14 +351,9 @@ class CurvesUI {
             vertex(p.x, p.y);
           }
           endShape();
-        }
 
-        // Finish point
-        fill(Colors.bezierLineColor);
-        noStroke();
-        strokeWeight(0.2);
-        ellipse(finalPoint.x, finalPoint.y, 4);
-        this.drawTextAtVertex(finalPoint, "F", 0, 0, 20);
+          CurvesUI.drawBezierFinishPoint(finalPoint);
+        }
       }
     } 
     else {
@@ -259,20 +371,33 @@ class CurvesUI {
         let [p01, p12, finalPoint] = interpPoints;
         
         // First level interpolation points
-        fill(Colors.bezierControlPointColor);
-        noStroke();
-        ellipse(p01.x, p01.y, 2.5);
-        CurvesUI.drawTextAtVertex(p01, "L0", -3, 0);
-        
-        fill(Colors.bezierControlPointColor);
-        ellipse(p12.x, p12.y, 2.5);
-        CurvesUI.drawTextAtVertex(p12, "L1", -3, 0);
-        
-        // Second level lines
-        stroke(CurvesUI.green);
-        strokeWeight(0.8);
-        line(p01.x, p01.y, finalPoint.x, finalPoint.y);
-        line(finalPoint.x, finalPoint.y, p12.x, p12.y);
+        if (Curves.animationProgress < 1) {
+          fill(Colors.bezierControlPointColor);
+          noStroke();
+          ellipse(p01.x, p01.y, 2.5);
+          CurvesUI.drawTextAtVertex(p01, "L0", -3, 0);
+          
+          fill(Colors.bezierControlPointColor);
+          ellipse(p12.x, p12.y, 2.5);
+          CurvesUI.drawTextAtVertex(p12, "L1", -3, 0);
+
+          // First level lines
+          if (CurvesUI.shouldDrawFirstLevelLines) {
+            stroke(CurvesUI.green);
+            strokeWeight(0.8);
+            line(p01.x, p01.y, finalPoint.x, finalPoint.y);
+            line(finalPoint.x, finalPoint.y, p12.x, p12.y);
+          }
+
+          // Second level interpolation points
+          if (CurvesUI.shouldDrawSecondLevelLines) {
+            fill(CurvesUI.blue);
+            noStroke();
+            ellipse(finalPoint.x, finalPoint.y, 2.5);
+          }
+        }
+      
+
         
         // Add point to curve while animating
         if (Curves.interpolationPoints.length === 0 || 
@@ -282,8 +407,8 @@ class CurvesUI {
           Curves.interpolationPoints.push(finalPoint);
         }
         
-        // draw curve being drawn
-        if (Curves.interpolationPoints.length > 1) {
+        // Draw bezier curve
+        if (CurvesUI.shouldDrawBezierLine && Curves.interpolationPoints.length > 1) {
           strokeWeight(1.5);
           stroke(Colors.bezierLineColor);
           noFill();
@@ -292,14 +417,9 @@ class CurvesUI {
             vertex(p.x, p.y);
           }
           endShape();
-        }
 
-        // Finish point
-        fill(Colors.bezierLineColor);
-        noStroke();
-        strokeWeight(0.2);
-        ellipse(finalPoint.x, finalPoint.y, 4);
-        this.drawTextAtVertex(finalPoint, "F", 0, 0, 20);
+          CurvesUI.drawBezierFinishPoint(finalPoint);
+        }
       }
     } 
     else {
@@ -317,11 +437,11 @@ class CurvesUI {
     CurvesUI.createCurvesPanel();
   }
 
-  static drawTextAtVertex(myVertex: Vertex, myText: String, offsetX: number = 0, offsetY: number = 0, myTextSize: number = 16) {
+  static drawTextAtVertex(myVertex: Vertex, myText: String, offsetX: number = 0, offsetY: number = 0, myTextSize: number = 16, myStrokeWeight: number = 0.2) {
     push();
     fill(0);
     stroke(Colors.BackgroundColor);
-    strokeWeight(0.2);
+    strokeWeight(myStrokeWeight);
     textAlign(CENTER, CENTER);
     textSize(myTextSize/Camera.scaleFactor);
     text(myText, myVertex.x + offsetX, myVertex.y + offsetY);
@@ -354,5 +474,34 @@ class CurvesUI {
     }
     endShape();
     pop();
+  }
+
+  static drawBezierFinishPoint(point: Vertex) {
+    fill(Colors.bezierLineColor);
+    noStroke();
+    ellipse(point.x, point.y, 3.5);
+    CurvesUI.drawTextAtVertex(point, "F", 0, 0, 20, 0);
+  }
+
+  static updateAnimationTimeSlider() {
+    if (CurvesUI.animationTimeValueBox) {
+      CurvesUI.animationTimeValueBox.html(Curves.animationProgress.toFixed(2));
+      
+      // Update slider value
+      const slider = select('.animation-time-container .slider');
+      if (slider) {
+        slider.value(Curves.animationProgress);
+      }
+      
+      // Update play/pause button based on animation state
+      const playPauseButton = select('.play-button');
+      if (playPauseButton) {
+        if (Curves.isAnimating) {
+          playPauseButton.html('⏸ Pause');
+        } else {
+          playPauseButton.html('▶ Play');
+        }
+      }
+    }
   }
 }

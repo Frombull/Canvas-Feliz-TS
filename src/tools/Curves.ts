@@ -2,17 +2,16 @@ class Curves {
   static bezierPoints: Vertex[] = [];
   static selectedControlPoint: Vertex | null = null;
   static isDraggingControlPoint: boolean = false;
-  static animationProgress: number = 0;
+  static animationProgress: number = 0; // t
   static isAnimating: boolean = false;
-  static animationSpeed: number = 0.005; 
+  static animationSpeed: number = 0.003; 
   static interpolationPoints: Vertex[] = [];
   static bezierType: BezierType = BezierType.CUBIC;
-  static loopAnimation: boolean = false;
+  static loopAnimation: boolean = true;
   
   // Styling
   static controlPointRadius: number = 1.5;
   static curveResolution: number = 24;
-  
   
   static reset() {
     Curves.bezierPoints = [];
@@ -48,9 +47,33 @@ class Curves {
     return null;
   }
 
+  static setAnimating(isAnimating: boolean) {
+    Curves.isAnimating = isAnimating;
+    
+    // Update UI based on animation state 
+    const curvesPanel = select('.curves-panel');
+    if (curvesPanel) {
+      if (isAnimating) {
+        curvesPanel.addClass('animating');
+      } else {
+        curvesPanel.removeClass('animating');
+      }
+    }
+    
+    // Update button text
+    const playPauseButton = select('.play-button');
+    if (playPauseButton) {
+      if (isAnimating) {
+        playPauseButton.html('⏸ Pause');
+      } else {
+        playPauseButton.html('▶ Play');
+      }
+    }
+  }
+
   static startAnimation() {
     Curves.animationProgress = 0;
-    Curves.isAnimating = true;
+    Curves.setAnimating(true);
     Curves.interpolationPoints = [];
   }
 
@@ -58,15 +81,19 @@ class Curves {
     if (!Curves.isAnimating) return;
     
     Curves.animationProgress += Curves.animationSpeed;
+  
+    // Update time slider UI
+    CurvesUI.updateAnimationTimeSlider();
     
+    // If finished animating
     if (Curves.animationProgress >= 1) {
       if (Curves.loopAnimation) {
-        // Reset animation for loop
         Curves.animationProgress = 0;
         Curves.interpolationPoints = [];
-      } else {
+      } 
+      else {
         Curves.animationProgress = 1;
-        Curves.isAnimating = false;
+        Curves.setAnimating(false);
       }
     }
   }
@@ -157,7 +184,8 @@ class Curves {
   static drawBezierCurve() {
     if (Curves.bezierType === BezierType.QUADRATIC && Curves.bezierPoints.length === 3) {
       Curves.drawQuadraticBezier();
-    } else if (Curves.bezierType === BezierType.CUBIC && Curves.bezierPoints.length === 4) {
+    } 
+    else if (Curves.bezierType === BezierType.CUBIC && Curves.bezierPoints.length === 4) {
       Curves.drawCubicBezier();
     }
   }
@@ -218,9 +246,9 @@ class Curves {
   static updateCurveForDraggedPoint() {
     if (!Mouse.isDraggingControlPoint || !Mouse.selectedControlPoint) return;
     
-    // Se no meio de uma animação
+    // If animating
     if (Curves.interpolationPoints.length > 0) {
-      // Salve o progresso atual
+      // Save current progress
       const currentProgress = Curves.animationProgress;
       
       Curves.interpolationPoints = [];

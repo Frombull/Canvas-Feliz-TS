@@ -177,7 +177,6 @@ class CurvesUI {
         Curves.startAnimation();
       }
     });
-    
 
     createDiv('').class('section-title').html('Display Options').parent(curvesSection);
     
@@ -197,15 +196,6 @@ class CurvesUI {
     let checkboxBezierLine: any = createCheckbox('Show Bezier Line', CurvesUI.shouldDrawBezierLine).parent(curvesSection);
     checkboxBezierLine.changed(() => {
       CurvesUI.shouldDrawBezierLine = checkboxBezierLine.checked();
-    });
-  
-    // Restart animation button
-    let resetAnimationButton = createButton('Restart Animation').class('button').parent(curvesSection);
-    resetAnimationButton.mouseReleased(() => {
-      const requiredPoints = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
-      if (Curves.bezierPoints.length === requiredPoints) {
-        Curves.startAnimation();
-      }
     });
   
     CurvesUI.curvesPanelDiv.style('display', 'none');
@@ -330,9 +320,6 @@ class CurvesUI {
           }
         }
 
-        
-
-        
         // Add point to curve while animating
         if (Curves.interpolationPoints.length === 0 || 
             dist(finalPoint.x, finalPoint.y, 
@@ -396,8 +383,6 @@ class CurvesUI {
             ellipse(finalPoint.x, finalPoint.y, 2.5);
           }
         }
-      
-
         
         // Add point to curve while animating
         if (Curves.interpolationPoints.length === 0 || 
@@ -439,12 +424,14 @@ class CurvesUI {
 
   static drawTextAtVertex(myVertex: Vertex, myText: String, offsetX: number = 0, offsetY: number = 0, myTextSize: number = 16, myStrokeWeight: number = 0.2) {
     push();
+
     fill(0);
     stroke(Colors.BackgroundColor);
     strokeWeight(myStrokeWeight);
     textAlign(CENTER, CENTER);
     textSize(myTextSize/Camera.scaleFactor);
     text(myText, myVertex.x + offsetX, myVertex.y + offsetY);
+    
     pop();
   }
 

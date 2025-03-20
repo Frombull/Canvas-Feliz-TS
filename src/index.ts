@@ -73,8 +73,12 @@ let polygonsList: Polygon[] = [];
 
 function setup() {
   console.log("Setup!");
+
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
+  
+  textFont('monospace');
+
   Colors.init();
   SidePanel.createControlPanel();
 
@@ -105,6 +109,7 @@ function draw() {
   // }
 
   // Debug
+  DebugUI.updateCommonDebugInfo();
   DebugUI.drawDebugWindow();
   //debugDrawArrowHitboxes();
 }

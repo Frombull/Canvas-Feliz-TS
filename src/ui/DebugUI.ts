@@ -1,7 +1,6 @@
 class DebugUI {
-  // Lista de itens para mostrar no debug
   private static debugItems: Array<{label: string, value: any}> = [];
-  private static position = { x: 10, y: 10 };
+  private static position = {x: 10, y: 10};
   private static padding = 10;
   private static lineHeight = 20;
 
@@ -68,27 +67,28 @@ class DebugUI {
     }
     
     pop();
+
+    DebugUI.updateDebugInfo();
   }
 
-  static updateCommonDebugInfo(): void {
-    this.addItem("Mouse Grid", `[${Mouse.mousePosInGrid.x.toFixed(2)}, ${Mouse.mousePosInGrid.y.toFixed(2)}]`);
-    this.addItem("Mouse Snapped", `[${Mouse.mousePosInGridSnapped.x}, ${Mouse.mousePosInGridSnapped.y}]`);
-    this.addItem("Mouse in Cartesian", `[${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y}]`);
+  static updateDebugInfo(): void {
+    // this.addItem("Mouse Grid", `[${Mouse.mousePosInGrid.x.toFixed(2)}, ${Mouse.mousePosInGrid.y.toFixed(2)}]`);
+    // this.addItem("Mouse Snapped", `[${Mouse.mousePosInGridSnapped.x}, ${Mouse.mousePosInGridSnapped.y}]`);
+    // this.addItem("Mouse in Cartesian", `[${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y}]`);
+    // this.addItem("Panning", `${Camera.isPanning}`);
     this.addItem("Camera Scale", Camera.scaleFactor.toFixed(2));
-    this.addItem("Panning", `${Camera.isPanning}`);
     this.addItem("Current Tool", `${Tool[selectedTool]}`);
     this.addItem("Polygons Count", polygonsList.length);
     this.addItem("Selected Polygon", selectedPolygon?.id || "None");
+    this.addItem("Snap to Grid", Keyboard.isShiftPressed ? "OFF" : "ON");
     
     // Scale stuff
-    if (Scale.scaleStartPos.x && Scale.scaleStartPos.y) {
+    if (Scale.scaleStartPos.x && Scale.scaleStartPos.y)
       this.addItem("Scale Start", `[${Scale.scaleStartPos.x.toFixed(2)}, ${Scale.scaleStartPos.y.toFixed(2)}]`);
-    }
-    if (Scale.currentScale.x && Scale.currentScale.y) {
+    if (Scale.currentScale.x && Scale.currentScale.y)
       this.addItem("Current Scale", `[${Scale.currentScale.x.toFixed(2)}, ${Scale.currentScale.y.toFixed(2)}]`);
-    }
 
-    // Memory (Chrome only)
+    // Memory stuff (Chrome only)
     if (window.performance && (performance as any).memory) {
       const memoryInfo = (performance as any).memory;
       const usedHeapSize = (memoryInfo.usedJSHeapSize / 1048576).toFixed(2);
@@ -96,7 +96,8 @@ class DebugUI {
       this.addItem("Used Heap", `${usedHeapSize}MB`);
       this.addItem("Total Heap", `${totalHeapSize}MB`);
     }
-    
-    this.addItem("FPS", frameRate().toFixed(1));
+
+    // FPS
+    this.addItem("FPS", frameRate().toFixed(0));
   }
 }

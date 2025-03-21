@@ -14,8 +14,8 @@ class CurvesUI {
   static shouldDrawBezierLine: boolean = true;
 
   // Colors
-  private static blue = [30, 30, 250, 180];
-  private static green = [50, 200, 100, 255];
+  private static Blue = [30, 30, 250];
+  private static Green = [50, 200, 100];
   
   static createCurvesPanel() {
     if (CurvesUI.curvesPanelDiv) {
@@ -259,8 +259,9 @@ class CurvesUI {
   
     // Draw circle at mouse position
     const maxPointsForCurrentType = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
+    const mousePos = Mouse.getMousePosForTransform();
     if(Curves.bezierPoints.length < maxPointsForCurrentType){
-      drawCircleOnMouse(Colors.bezierControlPointColor);
+      drawCircleOnMouse(Colors.bezierControlPointColor, mousePos);
       drawCoordinatesOnMouse();
     }
     
@@ -291,31 +292,42 @@ class CurvesUI {
           ellipse(p23.x, p23.y, 2.5);
           CurvesUI.drawTextAtVertex(p23, "L2", -3, 0);
 
-          // First level lines
           if (CurvesUI.shouldDrawFirstLevelLines) {
-              stroke(CurvesUI.green);
-              strokeWeight(0.5);
-              line(p01.x, p01.y, p012.x, p012.y);
-              line(p012.x, p012.y, p12.x, p12.y);
-              
-              stroke(CurvesUI.green);
-              line(p12.x, p12.y, p123.x, p123.y);
-              line(p123.x, p123.y, p23.x, p23.y);
+            // First level lines
+            stroke(CurvesUI.Green);
+            strokeWeight(0.5);
+            line(p01.x, p01.y, p012.x, p012.y);
+            line(p012.x, p012.y, p12.x, p12.y);
+            
+            stroke(CurvesUI.Green);
+            line(p12.x, p12.y, p123.x, p123.y);
+            line(p123.x, p123.y, p23.x, p23.y);
+            
+            // First level interpolation points
+            fill(CurvesUI.Green);
+            noStroke();
+            ellipse(p01.x, p01.y, 2.2);
+            
+            fill(CurvesUI.Green);
+            ellipse(p12.x, p12.y, 2.2);
+            
+            fill(CurvesUI.Green);
+            ellipse(p23.x, p23.y, 2.2);
           }
 
           // Second level lines
           if (CurvesUI.shouldDrawSecondLevelLines) {
-            stroke(CurvesUI.blue);
+            stroke(CurvesUI.Blue);
             strokeWeight(0.5);
             line(p012.x, p012.y, finalPoint.x, finalPoint.y);
             line(finalPoint.x, finalPoint.y, p123.x, p123.y);
             
             // Second level interpolation points
-            fill(CurvesUI.blue);
+            fill(CurvesUI.Blue);
             noStroke();
             ellipse(p012.x, p012.y, 2.5);
             
-            fill(CurvesUI.blue);
+            fill(CurvesUI.Blue);
             ellipse(p123.x, p123.y, 2.5);
           }
         }
@@ -370,7 +382,7 @@ class CurvesUI {
 
           // First level lines
           if (CurvesUI.shouldDrawFirstLevelLines) {
-            stroke(CurvesUI.green);
+            stroke(CurvesUI.Green);
             strokeWeight(0.8);
             line(p01.x, p01.y, finalPoint.x, finalPoint.y);
             line(finalPoint.x, finalPoint.y, p12.x, p12.y);
@@ -378,7 +390,7 @@ class CurvesUI {
 
           // Second level interpolation points
           if (CurvesUI.shouldDrawSecondLevelLines) {
-            fill(CurvesUI.blue);
+            fill(CurvesUI.Blue);
             noStroke();
             ellipse(finalPoint.x, finalPoint.y, 2.5);
           }

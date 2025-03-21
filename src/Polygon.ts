@@ -15,12 +15,17 @@ class Polygon {
   public fillColor: any;
   // Rotation
   public rotationAngle: number = 0;               // Store rotation for the Rotate tool
+  // Vertex and mouse hover
+  static normalVertexRadius: number = 3;
+  static hoveredVertexRadius: number = 3.5;
+  public hoveredVertex: Vertex | null = null;
+  public hoveredCenter: boolean = false;
 
 
   constructor(initialVertices: Vertex[] = []) {
     this.id = Polygon.nextId++;
 
-    this.vertexColor = Colors.Black;
+    this.vertexColor = Colors.vertexColor;
     this.edgesColor = Colors.Black;
     this.fillColor = Colors.PolygonBlue;
 
@@ -33,6 +38,7 @@ class Polygon {
 
   drawPolygon() {
     push();
+
     stroke(0);
     strokeWeight(1);
     strokeJoin(ROUND);
@@ -51,6 +57,7 @@ class Polygon {
     if (selectedPolygon == this) {
       this.drawPolygonCenter();
     }
+
     pop();
   }
 
@@ -66,23 +73,33 @@ class Polygon {
 
   drawPolygonCenter() {
     let center = this.getCenter();
+    const radius = this.hoveredCenter ? Polygon.hoveredVertexRadius : Polygon.vertexBallRadius;
+
     push();
 
     strokeWeight(0.3);
     stroke(0);
     noFill();
-    //fill(Colors.PolygonBlue);
-    ellipse(center.x, center.y, 3);
+    ellipse(center.x, center.y, radius);
 
     pop();
   }
 
   drawVertexBalls() {
+    if(selectedPolygon !== this){
+      return;
+    }
+
     push();
-    fill(this.vertexColor);
     noStroke();
     for (let p of this.vertices) {
-      ellipse(p.x, p.y, Polygon.vertexBallRadius, Polygon.vertexBallRadius);
+      const isHovered = this.hoveredVertex === p;
+      
+      const radius = isHovered ? Polygon.hoveredVertexRadius : Polygon.vertexBallRadius;
+      
+      fill(isHovered ? Colors.vertexHoverColor : this.vertexColor);
+      
+      ellipse(p.x, p.y, radius, radius);
     }
     pop();
   }
@@ -139,7 +156,7 @@ class Polygon {
     }
   }
 
-  public saveState(): void {
+  saveState() {
     // Create a deep copy of current vertices
     const oldVertices = this.vertices.map(v => ({x: v.x, y: v.y}));
     this.history.push(oldVertices);
@@ -153,16 +170,16 @@ class Polygon {
     }
   }
 
-  public recordAction(oldVertices: Vertex[]): void {
+  recordAction(oldVertices: Vertex[]) {
     const action = new ModifyPolygonAction(this, oldVertices);
     HistoryManager.getInstance().addAction(action);
   }
 
-  public saveStateBeforeChange(): Vertex[] {
+  saveStateBeforeChange(): Vertex[] {
     return this.vertices.map(v => ({x: v.x, y: v.y}));
   }
 
-  public updateRotationAngle(degrees: number) {
+  updateRotationAngle(degrees: number) {
     this.rotationAngle = degrees;
     console.log(`Updated polygon ${this.id} rotation to ${this.rotationAngle}°`);
   }

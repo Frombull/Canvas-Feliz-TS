@@ -109,7 +109,6 @@ function draw() {
   // }
 
   // Debug
-  DebugUI.updateCommonDebugInfo();
   DebugUI.drawDebugWindow();
   //debugDrawArrowHitboxes();
 }
@@ -118,27 +117,34 @@ function handleToolsLogic() {
   switch (selectedTool) {
     case Tool.CREATE_POLYGON:
       drawPolygonBeingCreated();
+      drawSnapToGridInfo();
       cursor(CROSS); 
       break;
 
     case Tool.TRANSLATE:
       if(!selectedPolygon) return;
       Transform.drawTransformGizmo();
+      drawSnapToGridInfo();
+
       break;
 
     case Tool.SCALE:
       if(!selectedPolygon) return;
       Scale.drawScaleGizmo();
+      drawSnapToGridInfo();
+
       break;
 
     case Tool.ROTATE:
       if(!selectedPolygon) return;
       Rotate.drawRotationGizmo();
+      drawSnapToGridInfo();
       break;
 
     case Tool.BEZIER:
       CurvesUI.drawBezierControls();
       Curves.updateAnimation();
+      drawSnapToGridInfo();
       break;
 
     default:
@@ -147,22 +153,28 @@ function handleToolsLogic() {
 }
 
 function drawCoordinatesOnMouse() {
+  const mousePos = Mouse.getMousePosForTransform();
+  const cartesianX = Math.round(mousePos.x / Grid.gridSize);
+  const cartesianY = Math.round(-mousePos.y / Grid.gridSize); // Y grows down in p5js, but up in cartesian plane
+  
   push();
+
   fill(0);
   stroke(Colors.BackgroundColor);
   strokeWeight(0.5);
   textAlign(LEFT, CENTER);
   textSize(12/Camera.scaleFactor);
-  text(`(${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y})`, Mouse.mousePosInGridSnapped.x + 2, Mouse.mousePosInGridSnapped.y + 2);
+  text(`(${cartesianX}, ${cartesianY})`, mousePos.x + 2, mousePos.y + 2);
+
   pop();
 }
 
-function drawCircleOnMouse(circleColor: any) {
+function drawCircleOnMouse(circleColor: any, mousePos: Vertex) {
   push();
   fill(circleColor);
   noStroke();
   //strokeWeight(0.4);
-  ellipse(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y, Polygon.vertexBallRadius);
+  ellipse(mousePos.x, mousePos.y, Polygon.vertexBallRadius);
   pop();
 }
 
@@ -209,6 +221,13 @@ function selectNearestVertex(): boolean { // Selects vertex or center
 
 function drawPolygonBeingCreated() {
   push();
+
+  const mousePos = Mouse.getMousePosForTransform();
+  if (!mousePos){
+    console.log("MOUSEPOS IS NULL!!!!!!!!!!!!!!!!");
+  }
+
+
   // Draw filled shape up to current points
   if (tempPolygon.length > 0) {
     stroke(0);
@@ -219,7 +238,7 @@ function drawPolygonBeingCreated() {
     for (let p of tempPolygon) {
       vertex(p.x, p.y);
     }
-    vertex(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
+    vertex(mousePos.x, mousePos.y);
     endShape();
 
     // Draw gradient line from last point to current mouse position
@@ -230,7 +249,7 @@ function drawPolygonBeingCreated() {
     // Create gradient
     let gradient = drawingContext.createLinearGradient(
       lastPoint.x, lastPoint.y,
-      Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y
+      mousePos.x, mousePos.y
     );
     gradient.addColorStop(0, 'black');
     gradient.addColorStop(1, Colors.Red);
@@ -239,7 +258,7 @@ function drawPolygonBeingCreated() {
     drawingContext.strokeStyle = gradient;
     drawingContext.beginPath();
     drawingContext.moveTo(lastPoint.x, lastPoint.y);
-    drawingContext.lineTo(Mouse.mousePosInGridSnapped.x, Mouse.mousePosInGridSnapped.y);
+    drawingContext.lineTo(mousePos.x, mousePos.y);
     drawingContext.stroke();
 
     // Restore previous drawing context state
@@ -248,11 +267,12 @@ function drawPolygonBeingCreated() {
     // Draw each vertex of tempPolygon
     if (SidePanel.shouldDrawVertexBalls) {
       noStroke();
-      fill(Colors.Black);
+      fill(Colors.vertexColor);
       for(let v of tempPolygon) {
         ellipse(v.x, v.y, Polygon.vertexBallRadius);
       }
     }
+    
 
     // Draw red circle around first vertex
     noFill();
@@ -260,9 +280,25 @@ function drawPolygonBeingCreated() {
     strokeWeight(0.2);
     ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius);
   }
+
+  // Draw circle around first vertex when you're about to close the polygon
+  if (tempPolygon.length > 2 && Mouse.isCloseToFirstVertex()) {
+    noFill();
+    stroke(Colors.Red);
+    strokeWeight(0.4);
+    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius * 2);
+    
+    const mousePos = {x: tempPolygon[0].x, y: tempPolygon[0].y};
+    vertex(mousePos.x, mousePos.y);
+  } 
+  else {
+    const mousePos = Mouse.getMousePosForTransform();
+    vertex(mousePos.x, mousePos.y);
+  }
+
   pop();
 
-  drawCircleOnMouse(Colors.GrayWithAlpha);
+  drawCircleOnMouse(Colors.GrayWithAlpha, mousePos);
   drawCoordinatesOnMouse();
 }
 
@@ -286,6 +322,24 @@ function windowResized() {
   redraw();
 }
 
+function drawSnapToGridInfo() {
+  push();
+  resetMatrix();
+  
+  fill(0, 0, 0, 220);
+  noStroke();
+  textSize(16);
+  textAlign(LEFT, BOTTOM);
+  if (Keyboard.isShiftPressed) {
+    text("SNAP-TO-GRID: OFF ", 10, height - 10);
+  }
+  else {
+    text("SNAP-TO-GRID: ON", 10, height - 10);
+  }
+
+  pop();
+}
+
 
 // --------- MOUSE & KEYBOARD ---------
 
@@ -307,4 +361,8 @@ function mouseWheel(event?: any) {
 
 function keyPressed() {
   Keyboard.keyPressed();
+}
+
+function keyReleased() {
+  Keyboard.keyReleased();
 }

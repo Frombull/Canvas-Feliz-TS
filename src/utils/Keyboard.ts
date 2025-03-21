@@ -1,4 +1,6 @@
 class Keyboard {
+  static isShiftPressed: boolean = false;
+
   static keyPressed() {
     // ESC
     if (keyCode === ESCAPE) {
@@ -14,6 +16,11 @@ class Keyboard {
     if (keyIsDown(CONTROL) && key === 'z') {
       Keyboard.handleUndo();
       return;
+    }
+
+    // SHIFT
+    if (keyCode === SHIFT) {
+      Keyboard.isShiftPressed = true;
     }
   }
 
@@ -56,5 +63,12 @@ class Keyboard {
   static handleUndo() {
     console.log("Pressed CTRL+Z");
     HistoryManager.getInstance().undo();
+  }
+
+  static keyReleased() {
+    // SHIFT KEY release
+    if (keyCode === SHIFT) {
+      Keyboard.isShiftPressed = false;
+    }
   }
 }

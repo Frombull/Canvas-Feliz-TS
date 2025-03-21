@@ -1,5 +1,5 @@
 class Colors {
-  // Can't set as p5.Color because fuck me
+  // Can't set as p5.Color because f*ck me
   static Red: any;
   static Green: any;
   static Blue: any;
@@ -17,6 +17,9 @@ class Colors {
   static bezierControlPointColor: any;
   static bezierConnectingLinesColor: any;
 
+  static vertexColor: any;
+  static vertexHoverColor: any;
+
   static init() {
     Colors.Red = color(250, 30, 30);
     Colors.Green = color(30, 250, 30);
@@ -31,9 +34,11 @@ class Colors {
     Colors.rotationHandleColor = color(250, 165, 0);
     Colors.orange = color(250, 69, 0);
     // Curves
-    //Colors.bezierLineColor = color(106, 90, 205);
     Colors.bezierLineColor = color(255, 50, 50);
     Colors.bezierControlPointColor = color(60, 60, 60);
     Colors.bezierConnectingLinesColor = color(80, 80, 80, 100);
+    
+    Colors.vertexColor = color(10, 10, 10, 100);
+    Colors.vertexHoverColor = color(10, 10, 10, 120);
   }
 }

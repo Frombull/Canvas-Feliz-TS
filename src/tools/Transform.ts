@@ -13,11 +13,12 @@ class Transform {
 
   static translatePolygon() {
     if (!selectedPolygon) return;
-
+  
     // Save state before transformation
     const oldVertices = selectedPolygon.saveStateBeforeChange();
-
+  
     if (selectedCentroid) { // Move the entire polygon
+      // Use the modified calculation that considers shift key
       Transform.calculateDxDy();
       
       if(Transform.isDraggingX){
@@ -35,6 +36,7 @@ class Transform {
     } 
     
     else if (selectedVertex) { // Move only the selected vertex
+      // Use the modified calculation that considers shift key
       Transform.calculateDxDy();
   
       if(Transform.isDraggingX){
@@ -45,10 +47,10 @@ class Transform {
       }
     }
   
-    // Update the initial translation coordinates
-    Mouse.translateInitialX = Mouse.mousePosInGridSnapped.x;
-    Mouse.translateInitialY = Mouse.mousePosInGridSnapped.y;
-
+    // Update the initial translation coordinates with appropriate method
+    Mouse.translateInitialX = Mouse.getMousePosForTransform().x;
+    Mouse.translateInitialY = Mouse.getMousePosForTransform().y;
+  
     selectedPolygon.recordAction(oldVertices);
   }
 
@@ -97,11 +99,6 @@ class Transform {
             Mouse.mousePosInGrid.y <= hitboxY + hitboxHeight);
   }
 
-  static calculateDxDy() {
-    Transform.dx = Mouse.mousePosInGridSnapped.x - Mouse.translateInitialX;
-    Transform.dy = Mouse.mousePosInGridSnapped.y - Mouse.translateInitialY;
-  }
-
   private static drawGizmoArrows(centerX: number, centerY: number) {
     push();
   
@@ -144,5 +141,11 @@ class Transform {
     if (!vertex || !polygon) return false;
     
     return polygon.vertices.some(v => v === vertex);
+  }
+
+  static calculateDxDy() {
+    const currentMousePos = Mouse.getMousePosForTransform();
+    Transform.dx = currentMousePos.x - Mouse.translateInitialX;
+    Transform.dy = currentMousePos.y - Mouse.translateInitialY;
   }
 }

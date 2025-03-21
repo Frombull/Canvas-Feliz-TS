@@ -4,19 +4,23 @@ class Mouse {
   static panY: number;
   static lastMouseX: number;                              // Used for panning
   static lastMouseY: number;                              // Used for panning
-  static mousePosInGrid: {x: any; y: any;};
-  static mousePosInGridSnapped: {x: any; y: any;};
-  static mousePosInCartesianPlane: {x: any; y: any;};
+  static mousePosInGrid: Vertex;
+  static mousePosInGridSnapped: Vertex;
+  static mousePosInCartesianPlane: Vertex;
   static translateInitialX: number = 0;
   static translateInitialY: number = 0;
   static isDraggingControlPoint: boolean = false;
   static selectedControlPoint: Vertex | null = null;
+
 
   // Called every frame by draw()
   public static updateMousePosition() {
     Mouse.mousePosInGrid = Mouse.getMousePosInGrid();
     Mouse.mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
     Mouse.mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
+
+    Mouse.checkVertexHover()
+    Mouse.checkCenterHover();
   }
   
   static mousePressed() {
@@ -33,13 +37,12 @@ class Mouse {
       }
       else if (selectedTool == Tool.CREATE_POLYGON) { 
         if (tempPolygon.length > 2) {
-          if (tempPolygon[0].x == Mouse.mousePosInGridSnapped.x && tempPolygon[0].y == Mouse.mousePosInGridSnapped.y) { // Close polygon
+          if (Mouse.isCloseToFirstVertex()) {
+            // Force snap to first vertex
             let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
             Scale.currentScale = {x: 1, y: 1}
             
-            selectedTool = Tool.NONE;   // TODO: VOLTAR A USAR A ULTIMA TOOL SELECIONADA
-            //buttonCreate.setActive(false); //TODO deselect button
-
+            selectedTool = Tool.NONE;
             
             lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
             
@@ -54,19 +57,19 @@ class Mouse {
             return;
           }
         }
-        tempPolygon.push(Mouse.mousePosInGridSnapped);
+        tempPolygon.push(Mouse.getMousePosForTransform());
       }
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
             //console.log("Clicking X handle");
-            Mouse.translateInitialX = Mouse.mousePosInGridSnapped.x;
+            Mouse.translateInitialX = Mouse.getMousePosForTransform().x;
             Transform.isDraggingX = true;
             return;
           }
           else if (Transform.isClickingTransformHandleY()) {
             //console.log("Clicking Y handle");
-            Mouse.translateInitialY = Mouse.mousePosInGridSnapped.y;
+            Mouse.translateInitialY = Mouse.getMousePosForTransform().y;
             Transform.isDraggingY = true;
             return;
           }
@@ -197,11 +200,11 @@ class Mouse {
         Rotate.rotationStartAngle = atan2(dy, dx);
       }
     }
-    else if (Mouse.isDraggingControlPoint && Mouse.selectedControlPoint) {
+    if (Mouse.isDraggingControlPoint && Mouse.selectedControlPoint) {
       // Update pos of dragged control point
-      Mouse.selectedControlPoint.x = Mouse.mousePosInGridSnapped.x;
-      Mouse.selectedControlPoint.y = Mouse.mousePosInGridSnapped.y;
-
+      Mouse.selectedControlPoint.x = Mouse.getMousePosForTransform().x;
+      Mouse.selectedControlPoint.y = Mouse.getMousePosForTransform().y;
+    
       Curves.updateCurveForDraggedPoint();
     }
   }
@@ -228,35 +231,35 @@ class Mouse {
     Camera.scaleFactor = newScale;
   }
 
-static isMouseOutOfBounds() {
-  if (mouseY > height || mouseY < 0 || mouseX > width || mouseX < 0) {
-    return true;
-  }
-  
-  // Over UI element
-  const elements = document.querySelectorAll('.control-panel, .control-panel *');
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i] as HTMLElement;
-    const rect = element.getBoundingClientRect();
-    
-    if (
-      mouseX >= rect.left && 
-      mouseX <= rect.right && 
-      mouseY >= rect.top && 
-      mouseY <= rect.bottom
-    ) {
+  static isMouseOutOfBounds() {
+    if (mouseY > height || mouseY < 0 || mouseX > width || mouseX < 0) {
       return true;
     }
+    
+    // Over UI element
+    const elements = document.querySelectorAll('.control-panel, .control-panel *');
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLElement;
+      const rect = element.getBoundingClientRect();
+      
+      if (
+        mouseX >= rect.left && 
+        mouseX <= rect.right && 
+        mouseY >= rect.top && 
+        mouseY <= rect.bottom
+      ) {
+        return true;
+      }
+    }
+    
+    // Any element that isnt canvas over mouse
+    const elemUnderMouse = document.elementFromPoint(mouseX, mouseY);
+    if (elemUnderMouse && elemUnderMouse.tagName !== 'CANVAS') {
+      return true;
+    }
+    
+    return false;
   }
-  
-  // Any element that isnt canvas over mouse
-  const elemUnderMouse = document.elementFromPoint(mouseX, mouseY);
-  if (elemUnderMouse && elemUnderMouse.tagName !== 'CANVAS') {
-    return true;
-  }
-  
-  return false;
-}
   
   private static getMousePosInGrid() {
     return createVector(
@@ -310,5 +313,57 @@ static isMouseOutOfBounds() {
     // No polygon was clicked, deselect current polygon
     deselectPolygon();
     return false;
+  }
+
+  static getMousePosForTransform(): Vertex {
+    return Keyboard.isShiftPressed ? Mouse.mousePosInGrid : Mouse.mousePosInGridSnapped;
+  }
+
+  static isCloseToFirstVertex(): boolean {
+    if (tempPolygon.length < 3) return false;
+    
+    const firstVertex = tempPolygon[0];
+    const mousePos = Mouse.getMousePosForTransform();
+    
+    const distance = dist(mousePos.x, mousePos.y, firstVertex.x, firstVertex.y);
+    
+    return distance < 3;
+  }
+
+  static checkVertexHover() {
+    const hoverDistance = Polygon.vertexBallRadius / 2;
+    
+    for (let p of polygonsList) {
+      for (let v of p.vertices) {
+        let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
+        
+        if (distanceToVertex < hoverDistance) {
+          // Mouse is over vertex
+          p.hoveredVertex = v;
+          cursor(HAND);
+          return;
+        }
+      }
+      // Mouse not over any vertex of this polygon
+      p.hoveredVertex = null;
+    }
+  }
+
+  static checkCenterHover() {
+    const hoverDistance = Polygon.vertexBallRadius / 2;
+    
+    for (let p of polygonsList) {
+      let center = p.getCenter();
+      let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
+      
+      if (distanceToCenter < hoverDistance) {
+        // Mouse is over center
+        p.hoveredCenter = true;
+        cursor(HAND);
+      }
+      else {
+        p.hoveredCenter = false;
+      }
+    }
   }
 }

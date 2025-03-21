@@ -29,43 +29,21 @@ let selectedTool: Tool = Tool.NONE;
 let selectedPolygon: Polygon | null;
 let polygonsList: Polygon[] = [];
 
-// ARROW, CROSS, HAND, MOVE, TEXT, WAIT
 
 // TODOs:
 // ---------------------------------
-// - Click vertex to show gizmo         - DONE
-// - Shapes snap to grid                - DONE
-// - Reset shape button                 - DONE
-// - Mirror from axis button            - DONE
-// - Disable select text on panel       - DONE
-// - Scale tool                         - DONE
-// - Separate shit into classes         - DONE
-// - Add color and alpha                - DONE
-// - Show/hide grid button              - DONE
-// - Show/hide vertex balls button      - DONE
-// - Show/hide coordinates button       - DONE
-// - Show/hide debug window button      - DONE
-// - Canvas size of screen              - DONE
-// - Rotate tool                        - DONE
-// - select polygon to rotate from      - DONE
-// - Delete vertex or polygon           - DONE
-// - Resize when console is open        - DONE
 // - Bezier curve tool                  - ~~~
-// - More shouldDraw checkboxes         - ~
-// - Better font for labels in bezier   -
-// - FPS RAM usage debug info           - 
+// - Scale tool                         - 
+// - Rotate tool                        - 
 // - New polygon random color id based  - 
-// - Effect when hovering interactable  - 
 // - X/Y axis arrow                     - 
 // - Hermite curve tool                 - 
-// - Scale tool sucks                   - 
 // - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
 // - Annimation with button CLICK       - 
-// - Better ShearU / ShearNU tool       - 
+// - ShearU / ShearNU tool       - 
 // - Undo / Redo                        - ~
 // - Save / Load                        - 
-// -                                    - 
 // -                                    - 
 // - Start working on 3D version        - 
 // ---------------------------------
@@ -174,7 +152,7 @@ function drawCircleOnMouse(circleColor: any, mousePos: Vertex) {
   fill(circleColor);
   noStroke();
   //strokeWeight(0.4);
-  ellipse(mousePos.x, mousePos.y, Polygon.vertexBallRadius);
+  ellipse(mousePos.x, mousePos.y, Polygon.normalVertexRadius);
   pop();
 }
 
@@ -223,17 +201,13 @@ function drawPolygonBeingCreated() {
   push();
 
   const mousePos = Mouse.getMousePosForTransform();
-  if (!mousePos){
-    console.log("MOUSEPOS IS NULL!!!!!!!!!!!!!!!!");
-  }
-
 
   // Draw filled shape up to current points
   if (tempPolygon.length > 0) {
-    stroke(0);
+    stroke(Colors.edgeColor);
     strokeJoin(ROUND);
-    strokeWeight(1);
-    fill(100, 100, 250, 100);
+    strokeWeight(Polygon.edgeWidth);
+    fill(Colors.PolygonBlue);
     beginShape();
     for (let p of tempPolygon) {
       vertex(p.x, p.y);
@@ -269,7 +243,7 @@ function drawPolygonBeingCreated() {
       noStroke();
       fill(Colors.vertexColor);
       for(let v of tempPolygon) {
-        ellipse(v.x, v.y, Polygon.vertexBallRadius);
+        ellipse(v.x, v.y, Polygon.normalVertexRadius);
       }
     }
     
@@ -278,7 +252,7 @@ function drawPolygonBeingCreated() {
     noFill();
     stroke(Colors.Red);
     strokeWeight(0.2);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius);
+    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.normalVertexRadius);
   }
 
   // Draw circle around first vertex when you're about to close the polygon
@@ -286,7 +260,7 @@ function drawPolygonBeingCreated() {
     noFill();
     stroke(Colors.Red);
     strokeWeight(0.4);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.vertexBallRadius * 2);
+    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.normalVertexRadius * 2);
     
     const mousePos = {x: tempPolygon[0].x, y: tempPolygon[0].y};
     vertex(mousePos.x, mousePos.y);
@@ -314,6 +288,12 @@ function deselectPolygon() {
   selectedVertex = null;
   selectedPolygon = null;
   console.log("Polygon deselected.");
+}
+
+function deselectVertex() {
+  selectedCentroid = null;
+  selectedVertex = null;
+  console.log("Vertex deselected.");
 }
 
 function windowResized() {

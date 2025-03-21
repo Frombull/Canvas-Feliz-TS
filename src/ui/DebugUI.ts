@@ -82,11 +82,11 @@ class DebugUI {
     this.addItem("Selected Polygon", selectedPolygon?.id || "None");
     this.addItem("Snap to Grid", Keyboard.isShiftPressed ? "OFF" : "ON");
     
-    // Scale stuff
-    if (Scale.scaleStartPos.x && Scale.scaleStartPos.y)
-      this.addItem("Scale Start", `[${Scale.scaleStartPos.x.toFixed(2)}, ${Scale.scaleStartPos.y.toFixed(2)}]`);
-    if (Scale.currentScale.x && Scale.currentScale.y)
-      this.addItem("Current Scale", `[${Scale.currentScale.x.toFixed(2)}, ${Scale.currentScale.y.toFixed(2)}]`);
+    // // Scale stuff
+    // if (Scale.scaleStartPos.x && Scale.scaleStartPos.y)
+    //   this.addItem("Scale Start", `[${Scale.scaleStartPos.x.toFixed(2)}, ${Scale.scaleStartPos.y.toFixed(2)}]`);
+    // if (Scale.currentScale.x && Scale.currentScale.y)
+    //   this.addItem("Current Scale", `[${Scale.currentScale.x.toFixed(2)}, ${Scale.currentScale.y.toFixed(2)}]`);
 
     // Memory stuff (Chrome only)
     if (window.performance && (performance as any).memory) {

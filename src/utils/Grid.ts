@@ -1,13 +1,13 @@
 class Grid {
   static gridLineWidth: number = 0.1;
-  static gridLineColor: number = 200;
   static gridSize: number = 5;
 
   static drawGrid() {
-    if(!SidePanel.shouldDrawGrid) return
+    if(!SidePanel.shouldDrawGrid) return;
 
+    push();
     strokeWeight(this.gridLineWidth);
-    stroke(this.gridLineColor);
+    stroke(Colors.gridLineColor);
   
     // How many grid lines needed based on current view
     let leftEdge = -Mouse.panX / Camera.scaleFactor;
@@ -30,16 +30,18 @@ class Grid {
     for (let y = startY; y <= endY; y += this.gridSize) {
       line(startX, y, endX, y);
     }
+    pop();
   }
 
   static drawCartesianPlaneAxis() {
     if (!SidePanel.shouldDrawAxis) return;
+
     push();
     strokeWeight(1);
     stroke(Colors.Red);
-    line(-5000, 0, width+5000, 0);
+    line(-5000, 0, width + 5000, 0);
     stroke(Colors.Blue);
-    line(0, -5000, 0, height+5000);
+    line(0, -5000, 0, height + 5000);
     pop();
   }
 }

@@ -1,119 +1,127 @@
+interface Vertex {
+  x: number;
+  y: number;
+}
+
 class Polygon {
+  // Static properties
+  private static nextId: number = 1;
+  public static normalVertexRadius: number = 3;
+  public static hoveredVertexRadius: number = 3.5;
+  public static edgeWidth: number = 0.8;
+  
+  // Instance properties
+  public readonly id: number;
+  
+  // Vertex data
   public vertices: Vertex[];
-  private history: Vertex[][];
-  private redoHistory: Vertex[][];
   public initialShape: Vertex[];
-  static vertexBallRadius: number = 3;
-  static selectedVertex: Vertex | null;           // Selected vertex for transformation
-  static selectedCentroid: Vertex | null;         // Selected centroid for transformation
-  // ID
-  private static nextId: number = 1;              // ID start in 1
-  public id: number;
-  // Color
-  public vertexColor: any;
-  public edgesColor: any;
-  public fillColor: any;
-  // Rotation
-  public rotationAngle: number = 0;               // Store rotation for the Rotate tool
-  // Vertex and mouse hover
-  static normalVertexRadius: number = 3;
-  static hoveredVertexRadius: number = 3.5;
   public hoveredVertex: Vertex | null = null;
   public hoveredCenter: boolean = false;
+  
+  // History management
+  private history: Vertex[][];
+  private redoHistory: Vertex[][];
+
+  public rotationAngle: number = 0;
+  public vertexColor: any;
+  public edgeColor: any;
+  public fillColor: any;
 
 
   constructor(initialVertices: Vertex[] = []) {
     this.id = Polygon.nextId++;
-
+    
     this.vertexColor = Colors.vertexColor;
-    this.edgesColor = Colors.Black;
+    this.edgeColor = Colors.edgeColor;
     this.fillColor = Colors.PolygonBlue;
-
-    this.vertices = initialVertices.map(p => ({x: p.x, y: p.y}));     // Deep copy ¬¬
+    
+    // Deep copy vertices
+    this.vertices = this.copyVertices(initialVertices);
+    this.initialShape = this.copyVertices(initialVertices);
+    
     this.history = [];
     this.redoHistory = [];
-    
-    this.initialShape = initialVertices.map(p => ({x: p.x, y: p.y})); // Deep copy ¬¬
   }
 
-  drawPolygon() {
-    push();
+  private copyVertices(vertices: Vertex[]): Vertex[] {
+    return vertices.map(p => ({x: p.x, y: p.y}));
+  }
 
-    stroke(0);
-    strokeWeight(1);
+  public drawPolygon(): void {
+    push();
+    stroke(this.edgeColor);
+    strokeWeight(Polygon.edgeWidth);
     strokeJoin(ROUND);
     fill(this.fillColor);
-
+    
     beginShape();
-    for (let p of this.vertices) {
+    for (const p of this.vertices) {
       vertex(p.x, p.y);
     }
     endShape(CLOSE);
-
+    
     if (SidePanel.shouldDrawVertexBalls) {
-      this.drawVertexBalls();
+      this.drawVertices();
     }
-
-    if (selectedPolygon == this) {
+    
+    if (selectedPolygon === this) {
       this.drawPolygonCenter();
     }
-
     pop();
   }
 
-  getCenter(): Vertex {
+  public getCenter(): Vertex {
+    if (this.vertices.length === 0) {
+      return { x: 0, y: 0 };
+    }    
     const sumX = this.vertices.reduce((sum, v) => sum + v.x, 0);
     const sumY = this.vertices.reduce((sum, v) => sum + v.y, 0);
+    const count = this.vertices.length;
 
     return {
-      x: sumX / this.vertices.length,
-      y: sumY / this.vertices.length
+      x: sumX / count,
+      y: sumY / count
     };
   }
 
-  drawPolygonCenter() {
-    let center = this.getCenter();
-    const radius = this.hoveredCenter ? Polygon.hoveredVertexRadius : Polygon.vertexBallRadius;
+  public drawPolygonCenter(): void {
+    const center = this.getCenter();
+    const radius = this.hoveredCenter ? Polygon.hoveredVertexRadius : Polygon.normalVertexRadius;
 
     push();
-
     strokeWeight(0.3);
     stroke(0);
     noFill();
     ellipse(center.x, center.y, radius);
-
     pop();
   }
 
-  drawVertexBalls() {
-    if(selectedPolygon !== this){
-      return;
-    }
+  public drawVertices(): void {
+    if (selectedPolygon !== this) return;
 
     push();
     noStroke();
-    for (let p of this.vertices) {
+    for (const p of this.vertices) {
       const isHovered = this.hoveredVertex === p;
-      
-      const radius = isHovered ? Polygon.hoveredVertexRadius : Polygon.vertexBallRadius;
+      const radius = isHovered ? Polygon.hoveredVertexRadius : Polygon.normalVertexRadius;
       
       fill(isHovered ? Colors.vertexHoverColor : this.vertexColor);
-      
       ellipse(p.x, p.y, radius, radius);
     }
     pop();
   }
 
-  resetPolygon() {
-    this.vertices = this.initialShape.map(p => ({x: p.x, y: p.y})); // Deep copy ¬¬
+  public resetPolygon(): void {
+    this.vertices = this.copyVertices(this.initialShape);
     selectedVertex = null;
     selectedCentroid = null;
     this.rotationAngle = 0;
     this.fillColor = Colors.PolygonBlue;
   }
 
-  setAsSelectePolygon() {
-    // Clar if has a selected vertex that isnt from this polygon
+  public setAsSelectePolygon(): void {
+    // Clear if theres a selected vertex that isnt from this polygon
     if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
       selectedVertex = null;
     }
@@ -122,27 +130,29 @@ class Polygon {
     
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
-    //SidePanel.colorPicker.color.rgbaString = this.fillColor;
     ColorPickerUI.setColor(this.fillColor);
-
 
     // Load rotation angle when selecting
     Rotate.loadPolygonRotation();
   }
 
-  deleteVertex(targetVertex: Vertex) {
-    if (this.vertices.length <= 3) return;
+  public deleteVertex(targetVertex: Vertex): void {
+    if (this.vertices.length <= 3) {
+      return; // Maintain minimum triangle
+    }
     
-    let index = this.vertices.indexOf(targetVertex);
+    const index = this.vertices.indexOf(targetVertex);
     
-    if (index != -1) {
+    if (index !== -1) {
       this.vertices.splice(index, 1);
       selectedVertex = null;
     }
   }
 
-  deleteSelf() {
-    if (selectedPolygon != this) return;
+  public deleteSelf(): void {
+    if (selectedPolygon !== this) {
+      return;
+    }
     
     const action = new DeletePolygonAction(this);
     HistoryManager.getInstance().addAction(action);
@@ -150,42 +160,38 @@ class Polygon {
     selectedPolygon = null;
     selectedVertex = null;
   
-    let index = polygonsList.indexOf(this);
-    if (index != -1) {
+    const index = polygonsList.indexOf(this);
+    if (index !== -1) {
       polygonsList.splice(index, 1);
     }
   }
 
-  saveState() {
+  public saveState(): void {
     // Create a deep copy of current vertices
-    const oldVertices = this.vertices.map(v => ({x: v.x, y: v.y}));
+    const oldVertices = this.copyVertices(this.vertices);
     this.history.push(oldVertices);
     
     // Clear redo history when a new state is saved
     this.redoHistory = [];
     
     // Limit history size
-    if (this.history.length > 50) {
+    const MAX_HISTORY = 50;
+    if (this.history.length > MAX_HISTORY) {
       this.history.shift();
     }
   }
 
-  recordAction(oldVertices: Vertex[]) {
+  public recordAction(oldVertices: Vertex[]): void {
     const action = new ModifyPolygonAction(this, oldVertices);
     HistoryManager.getInstance().addAction(action);
   }
 
-  saveStateBeforeChange(): Vertex[] {
-    return this.vertices.map(v => ({x: v.x, y: v.y}));
+  public saveStateBeforeChange(): Vertex[] {
+    return this.copyVertices(this.vertices);
   }
 
-  updateRotationAngle(degrees: number) {
+  public updateRotationAngle(degrees: number): void {
     this.rotationAngle = degrees;
     console.log(`Updated polygon ${this.id} rotation to ${this.rotationAngle}°`);
   }
-}
-
-interface Vertex {
-  x: number;
-  y: number;
 }

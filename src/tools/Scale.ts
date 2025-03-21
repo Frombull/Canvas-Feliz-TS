@@ -10,6 +10,7 @@ class Scale {
   static scalePolygonOriginalForm: { x: number; y: number }[] = [];
   static currentScale = {x: 1, y: 1}
 
+
   static scalePolygon() {
     if (!Scale.scalePolygonOriginalForm) return;
     if (!selectedPolygon) return;
@@ -108,5 +109,4 @@ class Scale {
     
     return 0; // Not clicking any handle
   }
-
 }

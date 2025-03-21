@@ -54,7 +54,7 @@ class SidePanel {
       tempPolygon = [];
     });
 
-    // Curves Button (doesnt set a tool directly)
+    // Curves Button (doesnt set a tool directly) 
     let curvesButtonElement = createButton('Curves').class('button').parent(createSection);
     curvesButtonElement.mouseReleased(() => {
       CurvesUI.toggleCurvesPanel(true);
@@ -89,8 +89,6 @@ class SidePanel {
       Shear.ShearNonUniform();
     });
   
-    createDiv('').class('section-title').html('Actions').parent(createSection);
-
     // Button Reset Polygon 
     let buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
     buttonResetPolygon.mouseReleased(() => {
@@ -102,13 +100,13 @@ class SidePanel {
     // ------------------------------ COLOR PICKER ------------------------------
     createDiv('').class('section-title').html('Color').parent(createSection);
     
-    // Create toggle button for color picker
+    // Button color picker
     let buttonColorPicker = createButton('Color Picker').class('button').parent(createSection);
     buttonColorPicker.mouseReleased(() => {
       ColorPickerUI.toggle();
     });
 
-    createDiv('').class('section-title').html('Display Options').parent(createSection);
+    createDiv('').class('section-title').html('Display').parent(createSection);
 
     // Button Center Camera 
     let buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);

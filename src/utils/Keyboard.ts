@@ -7,11 +7,13 @@ class Keyboard {
       Keyboard.handleEscapeKey();
       return;
     }
+
     // DELETE
     if (keyCode === DELETE) {
       Keyboard.handleDeleteKey();
       return;
     }
+
     // CTRL+Z
     if (keyIsDown(CONTROL) && key === 'z') {
       Keyboard.handleUndo();
@@ -25,11 +27,8 @@ class Keyboard {
   }
 
   static handleEscapeKey() {
-    console.log("Pressed ESCAPE");
-    
     // If no tool is selected, also deselect polygon
     if (selectedTool == Tool.NONE) {
-      console.log("De-selecting polygon as well");
       selectedPolygon = null;
     }
     
@@ -44,8 +43,6 @@ class Keyboard {
   }
 
   static handleDeleteKey() {
-    console.log("Pressed DELETE");
-    
     // Delete vertex if a vertex is selected
     if (selectedPolygon && selectedVertex) {
       const action = new DeleteVertexAction(selectedPolygon, selectedVertex);
@@ -61,12 +58,11 @@ class Keyboard {
   }
 
   static handleUndo() {
-    console.log("Pressed CTRL+Z");
     HistoryManager.getInstance().undo();
   }
 
   static keyReleased() {
-    // SHIFT KEY release
+    // SHIFT KEY released
     if (keyCode === SHIFT) {
       Keyboard.isShiftPressed = false;
     }

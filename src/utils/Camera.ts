@@ -1,6 +1,6 @@
 class Camera {
-  static scaleFactor: number = 5;     // Camera scale factor (zoom)
-  static isPanning: boolean = false;
+  public static scaleFactor: number = 5;     // Camera scale factor (zoom)
+  public static isPanning: boolean = false;
 
   static centerCamera() {
     Mouse.panX = width / 2;

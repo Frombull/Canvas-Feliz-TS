@@ -18,7 +18,7 @@ class Mouse {
     Mouse.mousePosInGrid = Mouse.getMousePosInGrid();
     Mouse.mousePosInGridSnapped = Mouse.getMousePosInGridSnapped();
     Mouse.mousePosInCartesianPlane = Mouse.getMousePosInCartesianPlane();
-
+    
     Mouse.checkVertexHover()
     Mouse.checkCenterHover();
   }
@@ -125,11 +125,10 @@ class Mouse {
 
           let previousVertex = selectedVertex;
 
-          selectNearestVertex();
-
           if (!selectNearestVertex()) {
-            // If no vertex selected, try selecting a polygon
-            Mouse.selectPolygonUnderMouse();
+            if(!Mouse.selectPolygonUnderMouse()) {
+              deselectVertex();
+            }
           } 
           else if (previousVertex !== selectedVertex) {
             Rotate.resetAngle();
@@ -310,8 +309,8 @@ class Mouse {
         return true;
       }
     }
-    // No polygon was clicked, deselect current polygon
-    deselectPolygon();
+    // No polygon was clicked, deselect current vertex but keep selected polygon
+    deselectVertex();
     return false;
   }
 
@@ -331,7 +330,7 @@ class Mouse {
   }
 
   static checkVertexHover() {
-    const hoverDistance = Polygon.vertexBallRadius / 2;
+    const hoverDistance = Polygon.normalVertexRadius / 2;
     
     for (let p of polygonsList) {
       for (let v of p.vertices) {
@@ -350,7 +349,7 @@ class Mouse {
   }
 
   static checkCenterHover() {
-    const hoverDistance = Polygon.vertexBallRadius / 2;
+    const hoverDistance = Polygon.normalVertexRadius / 2;
     
     for (let p of polygonsList) {
       let center = p.getCenter();

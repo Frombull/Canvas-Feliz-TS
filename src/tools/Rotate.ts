@@ -4,7 +4,7 @@ class Rotate {
   static rotationCenter: Vertex | null = null;
   static rotationHandleLength: number = 30;
   static currentRotationDegrees: number = 0;
-  
+
 
   static drawRotationGizmo() {
     if (!selectedPolygon) return;

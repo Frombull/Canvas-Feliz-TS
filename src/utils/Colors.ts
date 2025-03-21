@@ -11,14 +11,14 @@ class Colors {
   static GizmoScaleColor: any;
   static PolygonBlue: any;
   static rotationHandleColor: any;
-  static orange: any ;
-  // Curves
+  static orange: any;
   static bezierLineColor: any ;
   static bezierControlPointColor: any;
   static bezierConnectingLinesColor: any;
-
   static vertexColor: any;
   static vertexHoverColor: any;
+  static edgeColor: any;
+  static gridLineColor: any;
 
   static init() {
     Colors.Red = color(250, 30, 30);
@@ -33,12 +33,12 @@ class Colors {
     Colors.PolygonBlue = color(100, 100, 250, 100);
     Colors.rotationHandleColor = color(250, 165, 0);
     Colors.orange = color(250, 69, 0);
-    // Curves
     Colors.bezierLineColor = color(255, 50, 50);
     Colors.bezierControlPointColor = color(60, 60, 60);
     Colors.bezierConnectingLinesColor = color(80, 80, 80, 100);
-    
-    Colors.vertexColor = color(10, 10, 10, 100);
-    Colors.vertexHoverColor = color(10, 10, 10, 120);
+    Colors.vertexColor = color(10, 10, 10, 180);
+    Colors.vertexHoverColor = color(10, 10, 10, 180);
+    Colors.edgeColor = color(10, 10, 10, 200);
+    Colors.gridLineColor = color(200);
   }
 }

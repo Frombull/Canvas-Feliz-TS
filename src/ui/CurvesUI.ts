@@ -2,8 +2,8 @@ class CurvesUI {
   static panelVisible: boolean = false;
   static curvesPanelDiv: any = null;
   static resolutionValueBox: any = null;
-  static quadraticBezierButton: ToolButton;
-  static cubicBezierButton: ToolButton;
+  static quadraticBezierButton: Button;
+  static cubicBezierButton: Button;
   static animationSpeedSlider: any = null;
   static animationSpeedValueBox: any = null;
   static animationTimeValueBox: any = null;
@@ -28,24 +28,27 @@ class CurvesUI {
     let curvesSection = createDiv('').class('section').parent(CurvesUI.curvesPanelDiv);
 
     // Back button to return to main panel
-    let backButton = createButton('« Back to Main Panel').class('button').parent(curvesSection);
-    backButton.mouseReleased(() => {
+    new Button('« Back to Main Panel', curvesSection, () => {
       CurvesUI.toggleCurvesPanel(false);
       select('.control-panel')?.style('display', 'block');
     });
   
     createDiv('').class('section-title').html('Bezier Curves').parent(curvesSection);
 
-    CurvesUI.quadraticBezierButton = new ToolButton('Quadratic Bezier [3]', Tool.BEZIER, curvesSection, () => {
+    CurvesUI.quadraticBezierButton = new Button('Quadratic Bezier [3]', curvesSection, () => {
       Curves.reset();
       Curves.bezierType = BezierType.QUADRATIC;
       CurvesUI.updateActiveButton();
+    }, {
+      tool: Tool.BEZIER
     });
     
-    CurvesUI.cubicBezierButton = new ToolButton('Cubic Bezier [4]', Tool.BEZIER, curvesSection, () => {
+    CurvesUI.cubicBezierButton = new Button('Cubic Bezier [4]', curvesSection, () => {
       Curves.reset();
       Curves.bezierType = BezierType.CUBIC;
       CurvesUI.updateActiveButton();
+    }, {
+      tool: Tool.BEZIER
     });
 
     // // Curve resolution slider

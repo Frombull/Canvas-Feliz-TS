@@ -7,15 +7,15 @@ class SidePanel {
   static controlPanelSize = {x: 350, y: 10};
   
   // Tool management
-  static toolButtons: ToolButton[] = [];
-  static createButton: ToolButton;
-  static translateButton: ToolButton;
-  static scaleButton: ToolButton;
-  static rotateButton: ToolButton;
-  static curvesButton: ToolButton;
+  static toolButtons: Button[] = [];
+  static createButton: Button;
+  static translateButton: Button;
+  static scaleButton: Button;
+  static rotateButton: Button;
+  static curvesButton: Button;
   
   
-  static registerToolButton(toolButton: ToolButton) {
+  static registerToolButton(toolButton: Button) {
     SidePanel.toolButtons.push(toolButton);
   }
   
@@ -32,31 +32,42 @@ class SidePanel {
     let createSection = createDiv('').class('section').parent(controlPanel);
     createDiv('').class('section-title').html('Tools').parent(createSection);
   
-    // Create Polygon Tool Button
-    SidePanel.createButton = new ToolButton('Create Polygon', Tool.CREATE_POLYGON, createSection, () => {
+    // Create Polygon Button
+    SidePanel.createButton = new Button('Create Polygon', createSection, () => {
       tempPolygon = [];
       selectedVertex = null;
       selectedCentroid = null;
-    }, 'icons/create.svg');
+    }, {
+      tool: Tool.CREATE_POLYGON, 
+      iconPath: 'icons/create.svg'
+    });
   
     // Translate Tool Button
-    SidePanel.translateButton = new ToolButton('Translate', Tool.TRANSLATE, createSection, () => {
+    SidePanel.translateButton = new Button('Translate', createSection, () => { 
       tempPolygon = [];
-    }, 'icons/translate.svg');
+    }, {
+      tool: Tool.TRANSLATE,
+      iconPath: 'icons/translate.svg'
+    });
   
     // Scale Tool Button
-    SidePanel.scaleButton = new ToolButton('Scale', Tool.SCALE, createSection, () => {
+    SidePanel.scaleButton = new Button('Scale', createSection, () => {
       tempPolygon = [];
-    }, 'icons/scale.svg');
+    }, {
+      tool: Tool.SCALE,
+      iconPath: 'icons/scale.svg'
+    });
 
     // Rotate Tool Button
-    SidePanel.rotateButton = new ToolButton('Rotate', Tool.ROTATE, createSection, () => {
+    SidePanel.rotateButton = new Button('Rotate', createSection, () => {
       tempPolygon = [];
-    }, 'icons/rotate.svg');
+    }, {
+      tool: Tool.ROTATE,
+      iconPath: 'icons/rotate.svg'
+    });
 
     // Curves Button (doesnt set a tool directly) 
-    let curvesButtonElement = createButton('Curves').class('button').parent(createSection);
-    curvesButtonElement.mouseReleased(() => {
+    SidePanel.curvesButton = new Button('Curves', createSection, () => {
       CurvesUI.toggleCurvesPanel(true);
     });
   
@@ -66,32 +77,27 @@ class SidePanel {
     let mirrorContainer = createDiv('').style('display', 'flex').style('gap', '5px').parent(createSection);
 
     // Button Mirror X 
-    let buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
-    buttonMirrorX.mouseReleased(() => {
+    new Button('Mirror X', mirrorContainer, () => {
       Mirror.mirror('y');
-    },);
+    });
 
     // Button Mirror Y 
-    let buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
-    buttonMirrorY.mouseReleased(() => {
+    new Button('Mirror Y', mirrorContainer, () => {
       Mirror.mirror('x');
     });
     
     // Button Shear Uniform 
-    let buttonShearU = createButton('Uniform Shear').class('button').parent(createSection);
-    buttonShearU.mouseReleased(() => {
+    new Button('Uniform Shear', createSection, () => { 
       Shear.ShearUniform();
     });
   
     // Button Shear Non-Uniform 
-    let buttonShearNU = createButton('Non-Uniform Shear').class('button').parent(createSection);
-    buttonShearNU.mouseReleased(() => {
+    new Button('Non-Uniform Shear', createSection, () => {
       Shear.ShearNonUniform();
     });
   
     // Button Reset Polygon 
-    let buttonResetPolygon = createButton('Reset Polygon').class('button').parent(createSection);
-    buttonResetPolygon.mouseReleased(() => {
+    new Button('Reset Polygon', createSection, () => {
       if(selectedPolygon) {
         selectedPolygon.resetPolygon();
       }
@@ -101,8 +107,7 @@ class SidePanel {
     createDiv('').class('section-title').html('Color').parent(createSection);
     
     // Button color picker
-    let buttonColorPicker = createButton('Color Picker').class('button').parent(createSection);
-    buttonColorPicker.mouseReleased(() => {
+    new Button('Color Picker', createSection, () => {
       ColorPickerUI.toggle();
     });
 

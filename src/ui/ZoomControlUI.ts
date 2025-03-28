@@ -1,8 +1,8 @@
 class ZoomControlUI {
   static zoomButtonsContainer: any;
-  static zoomInButton: any;
-  static zoomOutButton: any;
-  static homeButton: any;
+  static zoomInButton: Button;
+  static zoomOutButton: Button;
+  static homeButton: Button;
   
   static createZoomControls() {
     // Create container for zoom buttons
@@ -10,24 +10,24 @@ class ZoomControlUI {
     ZoomControlUI.zoomButtonsContainer.position(windowWidth - SidePanel.controlPanelSize.x - 30, 10);
     
     // Create zoom in button
-    ZoomControlUI.zoomInButton = createButton('+').class('zoom-button zoom-in-button');
-    ZoomControlUI.zoomInButton.parent(ZoomControlUI.zoomButtonsContainer);
-    ZoomControlUI.zoomInButton.mousePressed(() => {
+    ZoomControlUI.zoomInButton = new Button('+', ZoomControlUI.zoomButtonsContainer, () => {
       ZoomControlUI.zoomIn();
+    }, {
+      className: 'zoom-button zoom-in-button'
     });
     
     // Create zoom out button
-    ZoomControlUI.zoomOutButton = createButton('-').class('zoom-button zoom-out-button');
-    ZoomControlUI.zoomOutButton.parent(ZoomControlUI.zoomButtonsContainer);
-    ZoomControlUI.zoomOutButton.mousePressed(() => {
+    ZoomControlUI.zoomOutButton = new Button('-', ZoomControlUI.zoomButtonsContainer, () => {
       ZoomControlUI.zoomOut();
+    }, {
+      className: 'zoom-button zoom-out-button' 
     });
     
     // Create home button
-    ZoomControlUI.homeButton = createButton('⌂').class('zoom-button home-button');
-    ZoomControlUI.homeButton.parent(ZoomControlUI.zoomButtonsContainer);
-    ZoomControlUI.homeButton.mousePressed(() => {
+    ZoomControlUI.homeButton = new Button('⌂', ZoomControlUI.zoomButtonsContainer, () => {
       Camera.centerCamera();
+    }, {
+      className: 'zoom-button home-button'
     });
   }
   

@@ -50,28 +50,6 @@ let polygonsList: Polygon[] = [];
 // ---------------------------------
 
 
-function preload() {
-  const iconFiles = [
-    'rotate'
-    // 'create',
-    // 'translate',
-    // 'scale',
-    // 'rotate',
-    // 'curves',
-    // 'mirror-x',
-    // 'mirror-y',
-    // 'shear',
-    // 'reset',
-    // 'color',
-    // 'center'
-  ];
-  
-  // Preload each icon
-  iconFiles.forEach(icon => {
-    toolIcons[icon] = loadXML(`icons/${icon}.svg`);
-  });
-}
-
 function setup() {
   console.log("Setup!");
   //frameRate(144);

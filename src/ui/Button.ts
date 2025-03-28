@@ -46,7 +46,7 @@ class Button {
       // If its a tool button, set the selected tool
       if (this.tool !== null) {
         selectedTool = this.tool;
-        SidePanel.updateActiveToolButton();
+        SidePanel.updateActiveButton();
       }
       
       // Execute custom click handler if provided
@@ -55,7 +55,7 @@ class Button {
     
     // Register with SidePanel if its a tool button
     if (this.tool !== null) {
-      SidePanel.registerToolButton(this);
+      SidePanel.registerButton(this);
     }
   }
   

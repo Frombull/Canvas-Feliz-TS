@@ -39,7 +39,7 @@ class Keyboard {
     selectedCentroid = null;
     
     // Update button visuals
-    SidePanel.updateActiveToolButton();
+    SidePanel.updateActiveButton();
   }
 
   static handleDeleteKey() {

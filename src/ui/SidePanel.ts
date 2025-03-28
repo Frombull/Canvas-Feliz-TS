@@ -7,7 +7,7 @@ class SidePanel {
   static controlPanelSize = {x: 350, y: 10};
   
   // Tool management
-  static toolButtons: Button[] = [];
+  static Buttons: Button[] = [];
   static createButton: Button;
   static translateButton: Button;
   static scaleButton: Button;
@@ -15,12 +15,12 @@ class SidePanel {
   static curvesButton: Button;
   
   
-  static registerToolButton(toolButton: Button) {
-    SidePanel.toolButtons.push(toolButton);
+  static registerButton(button: Button) {
+    SidePanel.Buttons.push(button);
   }
   
-  static updateActiveToolButton() {
-    SidePanel.toolButtons.forEach(tb => {
+  static updateActiveButton() {
+    SidePanel.Buttons.forEach(tb => {
       tb.setActive(selectedTool === tb.tool);
     });
   }
@@ -33,17 +33,17 @@ class SidePanel {
     createDiv('').class('section-title').html('Tools').parent(createSection);
   
     // Create Polygon Button
-    SidePanel.createButton = new Button('Create Polygon', createSection, () => {
+    new Button('Create Polygon', createSection, () => {
       tempPolygon = [];
       selectedVertex = null;
       selectedCentroid = null;
     }, {
       tool: Tool.CREATE_POLYGON, 
-      iconPath: 'icons/create.svg'
+      iconPath: 'icons/create-v2.svg'
     });
   
     // Translate Tool Button
-    SidePanel.translateButton = new Button('Translate', createSection, () => { 
+    new Button('Translate', createSection, () => { 
       tempPolygon = [];
     }, {
       tool: Tool.TRANSLATE,
@@ -51,7 +51,7 @@ class SidePanel {
     });
   
     // Scale Tool Button
-    SidePanel.scaleButton = new Button('Scale', createSection, () => {
+    new Button('Scale', createSection, () => {
       tempPolygon = [];
     }, {
       tool: Tool.SCALE,
@@ -59,16 +59,18 @@ class SidePanel {
     });
 
     // Rotate Tool Button
-    SidePanel.rotateButton = new Button('Rotate', createSection, () => {
+    new Button('Rotate', createSection, () => {
       tempPolygon = [];
     }, {
       tool: Tool.ROTATE,
       iconPath: 'icons/rotate.svg'
     });
 
-    // Curves Button (doesnt set a tool directly) 
-    SidePanel.curvesButton = new Button('Curves', createSection, () => {
+    // Curves Button
+    new Button('Curves', createSection, () => {
       CurvesUI.toggleCurvesPanel(true);
+    }, {
+      iconPath: 'icons/curve.svg'
     });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
@@ -79,21 +81,29 @@ class SidePanel {
     // Button Mirror X 
     new Button('Mirror X', mirrorContainer, () => {
       Mirror.mirror('y');
+    }, {
+      iconPath: 'icons/mirror-x.svg'
     });
 
     // Button Mirror Y 
     new Button('Mirror Y', mirrorContainer, () => {
       Mirror.mirror('x');
+    }, {
+      iconPath: 'icons/mirror-y.svg'
     });
     
     // Button Shear Uniform 
     new Button('Uniform Shear', createSection, () => { 
       Shear.ShearUniform();
+    }, {
+      iconPath: 'icons/skew.svg'
     });
   
     // Button Shear Non-Uniform 
     new Button('Non-Uniform Shear', createSection, () => {
       Shear.ShearNonUniform();
+    }, {
+      iconPath: 'icons/skew.svg'
     });
   
     // Button Reset Polygon 
@@ -109,6 +119,8 @@ class SidePanel {
     // Button color picker
     new Button('Color Picker', createSection, () => {
       ColorPickerUI.toggle();
+    }, {
+      iconPath: 'icons/color-palette-v2.svg'
     });
 
     createDiv('').class('section-title').html('Display').parent(createSection);
@@ -141,7 +153,7 @@ class SidePanel {
     CurvesUI.setupCurvesUI();
     
     // Set the initial active tool
-    SidePanel.updateActiveToolButton();
+    SidePanel.updateActiveButton();
   }
   
   static initColorPickerUI() {

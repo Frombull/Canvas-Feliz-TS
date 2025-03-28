@@ -125,7 +125,7 @@ class Transform {
     stroke(Colors.BackgroundColor);
     strokeWeight(0.5);
     textAlign(LEFT, CENTER);
-    textSize(12/Camera.scaleFactor);
+    textSize(12/Camera.currentScaleFactor);
   
     // TODO: Esse código ta um pouco repetido em -> drawCoordinatesOnMouse()
     // Draw diferent if its a center instead of a vertex

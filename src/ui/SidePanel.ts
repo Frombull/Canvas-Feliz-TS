@@ -37,22 +37,22 @@ class SidePanel {
       tempPolygon = [];
       selectedVertex = null;
       selectedCentroid = null;
-    });
+    }, 'icons/create.svg');
   
     // Translate Tool Button
     SidePanel.translateButton = new ToolButton('Translate', Tool.TRANSLATE, createSection, () => {
       tempPolygon = [];
-    });
+    }, 'icons/translate.svg');
   
     // Scale Tool Button
     SidePanel.scaleButton = new ToolButton('Scale', Tool.SCALE, createSection, () => {
       tempPolygon = [];
-    });
+    }, 'icons/scale.svg');
 
     // Rotate Tool Button
     SidePanel.rotateButton = new ToolButton('Rotate', Tool.ROTATE, createSection, () => {
       tempPolygon = [];
-    });
+    }, 'icons/rotate.svg');
 
     // Curves Button (doesnt set a tool directly) 
     let curvesButtonElement = createButton('Curves').class('button').parent(createSection);
@@ -69,7 +69,7 @@ class SidePanel {
     let buttonMirrorX = createButton('Mirror X').class('button').parent(mirrorContainer);
     buttonMirrorX.mouseReleased(() => {
       Mirror.mirror('y');
-    });
+    },);
 
     // Button Mirror Y 
     let buttonMirrorY = createButton('Mirror Y').class('button').parent(mirrorContainer);
@@ -108,12 +108,6 @@ class SidePanel {
 
     createDiv('').class('section-title').html('Display').parent(createSection);
 
-    // Button Center Camera 
-    let buttonCenterCamera = createButton('Center Camera').class('button').parent(createSection);
-    buttonCenterCamera.mouseReleased(() => {
-      Camera.centerCamera();
-    });
-  
     // Checkbox for draw vertices
     let checkboxDrawVertexBalls: any = createCheckbox('Draw Vertices', SidePanel.shouldDrawVertexBalls).parent(createSection);
     checkboxDrawVertexBalls.changed(() => {

@@ -210,16 +210,16 @@ class Mouse {
   
   static mouseWheel(event: any) {
     let zoomFactor = event.delta > 0 ? 0.9 : 1.1;
-    let newScale = Camera.scaleFactor * zoomFactor;
+    let newScale = Camera.currentScaleFactor * zoomFactor;
   
     // Zoom limit
-    if (newScale < 1) {
-      zoomFactor = (1 / Camera.scaleFactor);
-    } else if (newScale > 10.0) {
-      zoomFactor = (10.0 / Camera.scaleFactor);
+    if (newScale < Camera.minScaleFactor) {
+      zoomFactor = (Camera.minScaleFactor / Camera.currentScaleFactor);
+    } else if (newScale > Camera.maxScaleFactor) {
+      zoomFactor = (Camera.maxScaleFactor / Camera.currentScaleFactor);
     }
   
-    newScale = Camera.scaleFactor * zoomFactor;
+    newScale = Camera.currentScaleFactor * zoomFactor;
   
     let centerX = (width / 2);
     let centerY = (height / 2);
@@ -227,7 +227,7 @@ class Mouse {
     Mouse.panX = (centerX - (centerX - Mouse.panX) * zoomFactor);
     Mouse.panY = (centerY - (centerY - Mouse.panY) * zoomFactor);
   
-    Camera.scaleFactor = newScale;
+    Camera.currentScaleFactor = newScale;
   }
 
   static isMouseOutOfBounds() {
@@ -262,15 +262,15 @@ class Mouse {
   
   private static getMousePosInGrid() {
     return createVector(
-      (mouseX - Mouse.panX) / (Grid.gridSize * Camera.scaleFactor) * Grid.gridSize,
-      (mouseY - Mouse.panY) / (Grid.gridSize * Camera.scaleFactor) * Grid.gridSize,
+      (mouseX - Mouse.panX) / (Grid.gridSize * Camera.currentScaleFactor) * Grid.gridSize,
+      (mouseY - Mouse.panY) / (Grid.gridSize * Camera.currentScaleFactor) * Grid.gridSize,
     );
   }
   
   private static getMousePosInGridSnapped() {
     return createVector(
-      Math.round((mouseX - Mouse.panX) / (Grid.gridSize * Camera.scaleFactor)) * Grid.gridSize,
-      Math.round((mouseY - Mouse.panY) / (Grid.gridSize * Camera.scaleFactor)) * Grid.gridSize
+      Math.round((mouseX - Mouse.panX) / (Grid.gridSize * Camera.currentScaleFactor)) * Grid.gridSize,
+      Math.round((mouseY - Mouse.panY) / (Grid.gridSize * Camera.currentScaleFactor)) * Grid.gridSize
     );
   }
   

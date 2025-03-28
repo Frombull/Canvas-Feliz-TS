@@ -346,3 +346,79 @@ input[type="text"]:focus {
 .reset-button:hover {
   background-color: #e8e8e8;
 }
+
+/* ------------------------------ Zoom+/Zoom-/Home buttons ------------------------------ */
+.zoom-buttons-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 100;
+  gap: 2px;
+}
+
+.zoom-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0;
+  margin-bottom: 2px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.zoom-button:hover {
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.zoom-button:active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-in-button, .zoom-out-button {
+  font-size: 20px;
+}
+
+.home-button {
+  font-size: 20px;
+}
+
+/* ------------------------------ Button with icons ------------------------------ */
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 18px;
+}
+
+.tool-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: currentColor;
+}
+
+/* Not working TODO: */
+.button.active .tool-icon svg {
+  fill: white;
+}
+
+.tool-label {
+  flex: 1;
+}

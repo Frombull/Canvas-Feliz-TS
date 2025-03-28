@@ -441,7 +441,7 @@ class CurvesUI {
     stroke(Colors.BackgroundColor);
     strokeWeight(myStrokeWeight);
     textAlign(CENTER, CENTER);
-    textSize(myTextSize/Camera.scaleFactor);
+    textSize(myTextSize/Camera.currentScaleFactor);
     text(myText, myVertex.x + offsetX, myVertex.y + offsetY);
     
     pop();

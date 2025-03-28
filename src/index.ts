@@ -9,6 +9,7 @@ let tempPolygon: { x: number; y: number }[] = [];
 let lastCompletePolygon: { x: number; y: number }[] = [];
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
+let toolIcons: {[key: string]: any} = {};
 enum BezierType {
   QUADRATIC,
   CUBIC
@@ -41,7 +42,7 @@ let polygonsList: Polygon[] = [];
 // - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
 // - Annimation with button CLICK       - 
-// - ShearU / ShearNU tool       - 
+// - ShearU / ShearNU tool              - 
 // - Undo / Redo                        - ~
 // - Save / Load                        - 
 // -                                    - 
@@ -49,8 +50,31 @@ let polygonsList: Polygon[] = [];
 // ---------------------------------
 
 
+function preload() {
+  const iconFiles = [
+    'rotate'
+    // 'create',
+    // 'translate',
+    // 'scale',
+    // 'rotate',
+    // 'curves',
+    // 'mirror-x',
+    // 'mirror-y',
+    // 'shear',
+    // 'reset',
+    // 'color',
+    // 'center'
+  ];
+  
+  // Preload each icon
+  iconFiles.forEach(icon => {
+    toolIcons[icon] = loadXML(`icons/${icon}.svg`);
+  });
+}
+
 function setup() {
   console.log("Setup!");
+  //frameRate(144);
 
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
@@ -68,7 +92,7 @@ function setup() {
 function draw() {
   background(Colors.BackgroundColor); 
   translate(Mouse.panX, Mouse.panY);
-  scale(Camera.scaleFactor);
+  scale(Camera.currentScaleFactor);
   cursor(ARROW);
 
   Mouse.updateMousePosition();
@@ -141,7 +165,7 @@ function drawCoordinatesOnMouse() {
   stroke(Colors.BackgroundColor);
   strokeWeight(0.5);
   textAlign(LEFT, CENTER);
-  textSize(12/Camera.scaleFactor);
+  textSize(12/Camera.currentScaleFactor);
   text(`(${cartesianX}, ${cartesianY})`, mousePos.x + 2, mousePos.y + 2);
 
   pop();

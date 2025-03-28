@@ -1,5 +1,7 @@
 class Camera {
-  public static scaleFactor: number = 5;     // Camera scale factor (zoom)
+  public static currentScaleFactor: number = 5;     // Camera scale factor (zoom)
+  public static minScaleFactor: number = 1;
+  public static maxScaleFactor: number = 10;
   public static isPanning: boolean = false;
 
   static centerCamera() {

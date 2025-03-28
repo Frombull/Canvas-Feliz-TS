@@ -76,7 +76,7 @@ class DebugUI {
     // this.addItem("Mouse Snapped", `[${Mouse.mousePosInGridSnapped.x}, ${Mouse.mousePosInGridSnapped.y}]`);
     // this.addItem("Mouse in Cartesian", `[${Mouse.mousePosInCartesianPlane.x}, ${Mouse.mousePosInCartesianPlane.y}]`);
     // this.addItem("Panning", `${Camera.isPanning}`);
-    this.addItem("Camera Scale", Camera.scaleFactor.toFixed(2));
+    this.addItem("Camera Scale", Camera.currentScaleFactor.toFixed(2));
     this.addItem("Current Tool", `${Tool[selectedTool]}`);
     this.addItem("Polygons Count", polygonsList.length);
     this.addItem("Selected Polygon", selectedPolygon?.id || "None");

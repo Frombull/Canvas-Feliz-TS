@@ -86,7 +86,7 @@ class CurvesUI {
       // Update progress based on slider value
       Curves.animationProgress = Number(animationTimeSlider.value());
       
-      // Update the display value with 2 decimal precision
+      // Update the display value
       CurvesUI.animationTimeValueBox.html(Curves.animationProgress.toFixed(2));
       
       // If we have complete bezier points, update the curve visualization
@@ -234,7 +234,7 @@ class CurvesUI {
 
   static drawBezierControls() {
     push();
-
+  
     // Connection lines
     if (Curves.bezierPoints.length > 1) {
       CurvesUI.drawConnectionLines();
@@ -254,12 +254,22 @@ class CurvesUI {
     } else {
       cursor(CROSS);
     }
-
+  
     // Control points
     if(SidePanel.shouldDrawVertexBalls){
       CurvesUI.drawControlPoints();
     }
   
+    // If mouse is over any control point
+    if (!Curves.isDraggingControlPoint && !Mouse.isDraggingControlPoint && Curves.bezierPoints.length >= maxPoints) {
+      for (let point of Curves.bezierPoints) {
+        if (dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, point.x, point.y) < 1.5) {
+          cursor(HAND);
+          break;
+        }
+      }
+    }
+    
     // Draw circle at mouse position
     const maxPointsForCurrentType = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
     const mousePos = Mouse.getMousePosForTransform();

@@ -38,8 +38,15 @@ class Curves {
   }
 
   static isNearControlPoint(x: number, y: number): Vertex | null {
+    const maxPoints = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
+    
+    if (Curves.bezierPoints.length < maxPoints) {
+      return null;
+    }
+
     for (let point of Curves.bezierPoints) {
       if (dist(x, y, point.x, point.y) < 5) {
+        cursor(HAND);
         return point;
       }
     }

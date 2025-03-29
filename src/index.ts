@@ -112,7 +112,6 @@ function handleToolsLogic() {
       if(!selectedPolygon) return;
       Scale.drawScaleGizmo();
       drawSnapToGridInfo();
-
       break;
 
     case Tool.ROTATE:

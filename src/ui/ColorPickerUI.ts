@@ -7,7 +7,8 @@ class ColorPickerUI {
   static valueBoxes: {[key: string]: any} = {};
   static currentColor: any;
   static onColorChangeCallback: ((colorObj: any) => void) | null = null;
-  
+  static colorPickerButton: Button | null = null;
+
   constructor() {
     ColorPickerUI.createContainer();
     ColorPickerUI.createColorPicker();
@@ -192,11 +193,19 @@ class ColorPickerUI {
   public static show() {
     ColorPickerUI.container.style('display', 'block');
     ColorPickerUI.visible = true;
+
+    if (ColorPickerUI.colorPickerButton) {
+      ColorPickerUI.colorPickerButton.setActive(true);
+    }
   }
 
   public static hide() {
     ColorPickerUI.container.style('display', 'none');
     ColorPickerUI.visible = false;
+
+    if (ColorPickerUI.colorPickerButton) {
+      ColorPickerUI.colorPickerButton.setActive(false);
+    }
   }
 
   public static toggle() {
@@ -261,5 +270,11 @@ class ColorPickerUI {
 
   public static onColorChange(callback: (colorObj: any) => void) {
     ColorPickerUI.onColorChangeCallback = callback;
+  }
+
+  public static syncButtonState() {
+    if (ColorPickerUI.colorPickerButton) {
+      ColorPickerUI.colorPickerButton.setActive(ColorPickerUI.visible);
+    }
   }
 }

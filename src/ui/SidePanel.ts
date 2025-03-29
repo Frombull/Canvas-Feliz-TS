@@ -39,7 +39,7 @@ class SidePanel {
       selectedCentroid = null;
     }, {
       tool: Tool.CREATE_POLYGON, 
-      iconPath: 'icons/create-v2.svg'
+      iconPath: 'icons/create.svg'
     });
   
     // Translate Tool Button
@@ -117,7 +117,7 @@ class SidePanel {
     createDiv('').class('section-title').html('Color').parent(createSection);
     
     // Button color picker
-    new Button('Color Picker', createSection, () => {
+    ColorPickerUI.colorPickerButton = new Button('Color Picker', createSection, () => {
       ColorPickerUI.toggle();
     }, {
       iconPath: 'icons/color-palette-v2.svg'

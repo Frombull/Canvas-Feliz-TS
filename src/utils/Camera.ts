@@ -1,5 +1,5 @@
 class Camera {
-  public static currentScaleFactor: number = 5;     // Camera scale factor (zoom)
+  public static currentScaleFactor: number = 8;     // Camera scale factor (zoom)
   public static minScaleFactor: number = 1;
   public static maxScaleFactor: number = 10;
   public static isPanning: boolean = false;

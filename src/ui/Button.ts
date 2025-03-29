@@ -2,7 +2,7 @@ class Button {
   button: any;
   iconElement: any;
   isActive: boolean = false;
-  tool: Tool | null = null; // Optional Tool association
+  tool: Tool | null = null;   // Optional Tool association
 
   constructor(
     label: string, 
@@ -12,7 +12,8 @@ class Button {
       iconPath?: string,
       tool?: Tool,
       className?: string,
-      initialActive?: boolean
+      initialActive?: boolean,
+      fixedWidth?: boolean,
     } = {}
   ) {
     this.tool = options.tool || null;
@@ -22,6 +23,11 @@ class Button {
     this.button = createButton('').class('button').parent(parent);
     if (options.className) {
       this.button.class(options.className);
+    }
+    
+    // Apply fixed width (default) or auto width
+    if (options.fixedWidth === false) {
+      this.button.addClass('auto-width');
     }
     
     // Set initial active state
@@ -36,10 +42,17 @@ class Button {
     if (options.iconPath) {
       this.iconElement = createDiv('').class('tool-icon').parent(contentDiv);
       this.loadSVGWithFetch(options.iconPath);
+      
+      // If no label, add a class for icon-only styling
+      if (!label || label.trim() === '') {
+        this.button.addClass('icon-only');
+      }
     }
     
-    // Add label
-    createSpan(label).class('tool-label').parent(contentDiv);
+    // Add label only if non-empty
+    if (label && label.trim() !== '') {
+      createSpan(label).class('tool-label').parent(contentDiv);
+    }
     
     // Set click handler
     this.button.mousePressed(() => {

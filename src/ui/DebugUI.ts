@@ -88,16 +88,16 @@ class DebugUI {
     // if (Scale.currentScale.x && Scale.currentScale.y)
     //   this.addItem("Current Scale", `[${Scale.currentScale.x.toFixed(2)}, ${Scale.currentScale.y.toFixed(2)}]`);
 
-    // Memory stuff (Chrome only)
-    if (window.performance && (performance as any).memory) {
-      const memoryInfo = (performance as any).memory;
-      const usedHeapSize = (memoryInfo.usedJSHeapSize / 1048576).toFixed(2);
-      const totalHeapSize = (memoryInfo.totalJSHeapSize / 1048576).toFixed(2);
-      this.addItem("Used Heap", `${usedHeapSize}MB`);
-      this.addItem("Total Heap", `${totalHeapSize}MB`);
-    }
+    // // Memory stuff (Chrome only)
+    // if (window.performance && (performance as any).memory) {
+    //   const memoryInfo = (performance as any).memory;
+    //   const usedHeapSize = (memoryInfo.usedJSHeapSize / 1048576).toFixed(2);
+    //   const totalHeapSize = (memoryInfo.totalJSHeapSize / 1048576).toFixed(2);
+    //   this.addItem("Used Heap", `${usedHeapSize}MB`);
+    //   this.addItem("Total Heap", `${totalHeapSize}MB`);
+    // }
 
-    // FPS
-    this.addItem("FPS", frameRate().toFixed(0));
+    // // FPS
+    // this.addItem("FPS", frameRate().toFixed(0));
   }
 }

@@ -24,10 +24,12 @@ class ZoomControlUI {
     });
     
     // Create home button
-    ZoomControlUI.homeButton = new Button('⌂', ZoomControlUI.zoomButtonsContainer, () => {
+    ZoomControlUI.homeButton = new Button('', ZoomControlUI.zoomButtonsContainer, () => {
       Camera.centerCamera();
     }, {
-      className: 'zoom-button home-button'
+      className: 'zoom-button home-button', 
+      iconPath: 'icons/home.svg',
+      fixedWidth: false,
     });
   }
   

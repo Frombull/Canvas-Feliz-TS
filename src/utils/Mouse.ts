@@ -83,20 +83,14 @@ class Mouse {
   
       }
       else if (selectedTool == Tool.SCALE) {
-        let selectedAxis = Scale.isClickingScaleHandle();
+        const handle = Scale.getClickedHandle();
 
-        if (selectedAxis && selectedPolygon) {
-          Scale.isScaling = true;
-          Scale.scaleStartPos = Mouse.mousePosInGrid;
-          Scale.scalePolygonOriginalForm = selectedPolygon.vertices.map(p => ({x: p.x, y: p.y})); // Deep copy..?
-          console.log("Saving current form for scale");
-  
-          if (selectedAxis == 1)
-            Scale.isScalingX = true;
-          else if (selectedAxis == 2)
-            Scale.isScalingY = true;
-        }
+        if (handle && selectedPolygon) {
+          // Iniciar operação de escala no eixo específico
+          Scale.startScaling(handle);
+        } 
         else {
+          // Se não clicou em nenhum handle, tenta selecionar um polígono
           Mouse.selectPolygonUnderMouse();
         }
       }
@@ -163,9 +157,7 @@ class Mouse {
     Transform.isDraggingX = false;
     Transform.isDraggingY = false;
 
-    Scale.isScalingX = false;
-    Scale.isScalingY = false;
-    Scale.isScaling = false;
+    Scale.endScaling();
 
     Rotate.isDragging = false;
 
@@ -180,14 +172,7 @@ class Mouse {
       Transform.translatePolygon();
     } 
     else if (Scale.isScaling) {
-      if (!Scale.scaleStartPos.x || !Scale.scaleStartPos.y) return;
-      let distanciaX = Mouse.mousePosInGrid.x - Scale.scaleStartPos.x;
-      let distanciaY = (Mouse.mousePosInGrid.y - Scale.scaleStartPos.y)*-1;
-      
-      Scale.currentScale.x = map(distanciaX, 0, 55, 1, 2);
-      Scale.currentScale.y = map(distanciaY, 0, 55, 1, 2);
-      
-      Scale.scalePolygon();
+      Scale.processScaling();
     }
     else if (Rotate.isDragging) {
       let angle = Rotate.calculateRotationAngle();

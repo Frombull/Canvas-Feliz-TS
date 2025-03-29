@@ -48,7 +48,7 @@ class Polygon {
     return vertices.map(p => ({x: p.x, y: p.y}));
   }
 
-  public drawPolygon(): void {
+  public drawPolygon() {
     push();
     stroke(this.edgeColor);
     strokeWeight(Polygon.edgeWidth);
@@ -85,7 +85,7 @@ class Polygon {
     };
   }
 
-  public drawPolygonCenter(): void {
+  public drawPolygonCenter() {
     const center = this.getCenter();
     const radius = this.hoveredCenter ? Polygon.hoveredVertexRadius : Polygon.normalVertexRadius;
 
@@ -97,7 +97,7 @@ class Polygon {
     pop();
   }
 
-  public drawVertices(): void {
+  public drawVertices() {
     if (selectedPolygon !== this) return;
 
     push();
@@ -112,7 +112,7 @@ class Polygon {
     pop();
   }
 
-  public resetPolygon(): void {
+  public resetPolygon() {
     this.vertices = this.copyVertices(this.initialShape);
     selectedVertex = null;
     selectedCentroid = null;
@@ -120,7 +120,7 @@ class Polygon {
     this.fillColor = Colors.PolygonBlue;
   }
 
-  public setAsSelectePolygon(): void {
+  public setAsSelectePolygon() {
     // Clear if theres a selected vertex that isnt from this polygon
     if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
       selectedVertex = null;
@@ -136,7 +136,7 @@ class Polygon {
     Rotate.loadPolygonRotation();
   }
 
-  public deleteVertex(targetVertex: Vertex): void {
+  public deleteVertex(targetVertex: Vertex) {
     if (this.vertices.length <= 3) {
       return; // Maintain minimum triangle
     }
@@ -149,7 +149,7 @@ class Polygon {
     }
   }
 
-  public deleteSelf(): void {
+  public deleteSelf() {
     if (selectedPolygon !== this) {
       return;
     }
@@ -166,7 +166,7 @@ class Polygon {
     }
   }
 
-  public saveState(): void {
+  public saveState() {
     // Create a deep copy of current vertices
     const oldVertices = this.copyVertices(this.vertices);
     this.history.push(oldVertices);
@@ -181,7 +181,7 @@ class Polygon {
     }
   }
 
-  public recordAction(oldVertices: Vertex[]): void {
+  public recordAction(oldVertices: Vertex[]) {
     const action = new ModifyPolygonAction(this, oldVertices);
     HistoryManager.getInstance().addAction(action);
   }
@@ -190,7 +190,7 @@ class Polygon {
     return this.copyVertices(this.vertices);
   }
 
-  public updateRotationAngle(degrees: number): void {
+  public updateRotationAngle(degrees: number) {
     this.rotationAngle = degrees;
     console.log(`Updated polygon ${this.id} rotation to ${this.rotationAngle}°`);
   }

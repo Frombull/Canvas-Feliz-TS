@@ -34,7 +34,9 @@ let polygonsList: Polygon[] = [];
 // TODOs:
 // ---------------------------------
 // - Bezier curve tool                  - ~~~
-// - Scale tool                         - 
+// - Scale tool                         - ~~
+// - Dashed line option to polygon      - 
+// - Set polygon pos menu (like blender)- 
 // - Rotate tool                        - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
@@ -209,6 +211,10 @@ function drawPolygonBeingCreated() {
     strokeJoin(ROUND);
     strokeWeight(Polygon.edgeWidth);
     fill(Colors.PolygonBlue);
+    
+    // Dashed line start
+    drawingContext.setLineDash([3, 1.5]);
+    
     beginShape();
     for (let p of tempPolygon) {
       vertex(p.x, p.y);
@@ -216,28 +222,8 @@ function drawPolygonBeingCreated() {
     vertex(mousePos.x, mousePos.y);
     endShape();
 
-    // Draw gradient line from last point to current mouse position
-    let lastPoint: { x: number, y: number } = tempPolygon[tempPolygon.length - 1];
-
-    drawingContext.save();
-
-    // Create gradient
-    let gradient = drawingContext.createLinearGradient(
-      lastPoint.x, lastPoint.y,
-      mousePos.x, mousePos.y
-    );
-    gradient.addColorStop(0, 'black');
-    gradient.addColorStop(1, Colors.Red);
-
-    // Apply gradient
-    drawingContext.strokeStyle = gradient;
-    drawingContext.beginPath();
-    drawingContext.moveTo(lastPoint.x, lastPoint.y);
-    drawingContext.lineTo(mousePos.x, mousePos.y);
-    drawingContext.stroke();
-
-    // Restore previous drawing context state
-    drawingContext.restore();
+    // Dashed line end
+    drawingContext.setLineDash([]);
 
     // Draw each vertex of tempPolygon
     if (SidePanel.shouldDrawVertexBalls) {
@@ -247,7 +233,6 @@ function drawPolygonBeingCreated() {
         ellipse(v.x, v.y, Polygon.normalVertexRadius);
       }
     }
-    
 
     // Draw red circle around first vertex
     noFill();

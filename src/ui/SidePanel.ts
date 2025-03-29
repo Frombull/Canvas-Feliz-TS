@@ -1,6 +1,6 @@
 class SidePanel {
   // User settings
-  static shouldDrawVertexBalls: boolean = true;
+  static shouldDrawVertices: boolean = true;
   static shouldDrawGrid: boolean = true;
   static shouldDrawAxis: boolean = true;
   static shouldDrawDebugWindow: boolean = true;
@@ -123,35 +123,44 @@ class SidePanel {
       iconPath: 'icons/color-palette-v2.svg'
     });
 
+    // ------------------------------  ------------------------------
     createDiv('').class('section-title').html('Display').parent(createSection);
 
-    // Checkbox for draw vertices
-    let checkboxDrawVertexBalls: any = createCheckbox('Draw Vertices', SidePanel.shouldDrawVertexBalls).parent(createSection);
-    checkboxDrawVertexBalls.changed(() => {
-      SidePanel.shouldDrawVertexBalls = checkboxDrawVertexBalls.checked();
+    // Draw vertices button
+    new Button('', createSection, () => {
+      SidePanel.shouldDrawVertices = !SidePanel.shouldDrawVertices;
+    }, {
+      iconPath: 'icons/draw-vertices-on.svg',
+      fixedWidth: false,
+    });
+
+    // Draw grid button
+    new Button('', createSection, () => {
+      SidePanel.shouldDrawGrid = !SidePanel.shouldDrawGrid;
+    }, {
+      iconPath: 'icons/grid.svg',
+      fixedWidth: false,
     });
   
-    // Checkbox for grid
-    let checkboxDrawGrid: any = createCheckbox('Draw Grid', SidePanel.shouldDrawGrid).parent(createSection);
-    checkboxDrawGrid.changed(() => {
-      SidePanel.shouldDrawGrid = checkboxDrawGrid.checked();
+    // Draw axis button
+    new Button('', createSection, () => {
+      SidePanel.shouldDrawAxis = !SidePanel.shouldDrawAxis;
+    }, {
+      iconPath: 'icons/axis.svg',
+      fixedWidth: false,
     });
   
-    // Checkbox for axis
-    let checkboxDrawAxis: any = createCheckbox('Draw Axis', SidePanel.shouldDrawAxis).parent(createSection);
-    checkboxDrawAxis.changed(() => {
-      SidePanel.shouldDrawAxis = checkboxDrawAxis.checked();
-    });
-  
-    // Checkbox for debug window
-    let checkboxDebugWindow: any = createCheckbox('Debug Window', SidePanel.shouldDrawDebugWindow).parent(createSection);
-    checkboxDebugWindow.changed(() => {
-      SidePanel.shouldDrawDebugWindow = checkboxDebugWindow.checked();
+    // Draw debug window button
+    new Button('', createSection, () => {
+      SidePanel.shouldDrawDebugWindow = !SidePanel.shouldDrawDebugWindow;
+    }, {
+      iconPath: 'icons/debug.svg',
+      fixedWidth: false,
     });
     
     SidePanel.initColorPickerUI();
     CurvesUI.setupCurvesUI();
-    
+
     // Set the initial active tool
     SidePanel.updateActiveButton();
   }

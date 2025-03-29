@@ -5,25 +5,25 @@ class ZoomControlUI {
   static homeButton: Button;
   
   static createZoomControls() {
-    // Create container for zoom buttons
+    // Container for zoom buttons
     ZoomControlUI.zoomButtonsContainer = createDiv('').class('zoom-buttons-container');
     ZoomControlUI.zoomButtonsContainer.position(windowWidth - SidePanel.controlPanelSize.x - 30, 10);
     
-    // Create zoom in button
+    // Zoom in button
     ZoomControlUI.zoomInButton = new Button('+', ZoomControlUI.zoomButtonsContainer, () => {
       ZoomControlUI.zoomIn();
     }, {
       className: 'zoom-button zoom-in-button'
     });
     
-    // Create zoom out button
+    // Zoom out button
     ZoomControlUI.zoomOutButton = new Button('-', ZoomControlUI.zoomButtonsContainer, () => {
       ZoomControlUI.zoomOut();
     }, {
       className: 'zoom-button zoom-out-button' 
     });
     
-    // Create home button
+    // Home button
     ZoomControlUI.homeButton = new Button('', ZoomControlUI.zoomButtonsContainer, () => {
       Camera.centerCamera();
     }, {

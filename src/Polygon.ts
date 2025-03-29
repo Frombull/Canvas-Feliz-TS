@@ -61,7 +61,7 @@ class Polygon {
     }
     endShape(CLOSE);
     
-    if (SidePanel.shouldDrawVertexBalls) {
+    if (SidePanel.shouldDrawVertices) {
       this.drawVertices();
     }
     

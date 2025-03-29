@@ -256,7 +256,7 @@ class CurvesUI {
     }
   
     // Control points
-    if(SidePanel.shouldDrawVertexBalls){
+    if(SidePanel.shouldDrawVertices){
       CurvesUI.drawControlPoints();
     }
   

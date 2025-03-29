@@ -226,7 +226,7 @@ function drawPolygonBeingCreated() {
     drawingContext.setLineDash([]);
 
     // Draw each vertex of tempPolygon
-    if (SidePanel.shouldDrawVertexBalls) {
+    if (SidePanel.shouldDrawVertices) {
       noStroke();
       fill(Colors.vertexColor);
       for(let v of tempPolygon) {

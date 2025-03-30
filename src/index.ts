@@ -99,33 +99,33 @@ function handleToolsLogic() {
   switch (selectedTool) {
     case Tool.CREATE_POLYGON:
       drawPolygonBeingCreated();
-      drawSnapToGridInfo();
+      ToolInfo.drawSnapToGridInfo();
       cursor(CROSS); 
       break;
 
     case Tool.TRANSLATE:
       if(!selectedPolygon) return;
       Transform.drawTransformGizmo();
-      drawSnapToGridInfo();
+      ToolInfo.drawSnapToGridInfo();
 
       break;
 
     case Tool.SCALE:
       if(!selectedPolygon) return;
       Scale.drawScaleGizmo();
-      drawSnapToGridInfo();
+      ToolInfo.drawSnapToGridInfo();
       break;
 
     case Tool.ROTATE:
       if(!selectedPolygon) return;
       Rotate.drawRotationGizmo();
-      drawSnapToGridInfo();
+      ToolInfo.drawSnapRotationInfo();
       break;
 
     case Tool.BEZIER:
       CurvesUI.drawBezierControls();
       Curves.updateAnimation();
-      drawSnapToGridInfo();
+      ToolInfo.drawSnapToGridInfo();
       break;
 
     default:
@@ -290,24 +290,6 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   SidePanel.handleWindowResize();
   redraw();
-}
-
-function drawSnapToGridInfo() {
-  push();
-  resetMatrix();
-  
-  fill(0, 0, 0, 220);
-  noStroke();
-  textSize(16);
-  textAlign(LEFT, BOTTOM);
-  if (Keyboard.isShiftPressed) {
-    text("SNAP-TO-GRID: OFF ", 10, height - 10);
-  }
-  else {
-    text("SNAP-TO-GRID: ON", 10, height - 10);
-  }
-
-  pop();
 }
 
 

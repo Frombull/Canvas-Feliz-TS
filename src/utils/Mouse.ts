@@ -164,6 +164,22 @@ class Mouse {
       // Calculate angle difference
       let angleDifference = currentAngle - Rotate.initialClickAngle;
       
+      // Snapping
+
+
+      if (Keyboard.isShiftPressed) {
+        // Convert to degrees, round, convert back to radians
+        let angleDegrees = degrees(angleDifference);
+        angleDegrees = Math.round(angleDegrees);
+        angleDifference = radians(angleDegrees);
+      }
+      else {
+        // Convert to degrees, round to nearest multiple, convert back to radians
+        let angleDegrees = degrees(angleDifference);
+        angleDegrees = Math.round(angleDegrees / Rotate.snapAngleDegrees) * Rotate.snapAngleDegrees;
+        angleDifference = radians(angleDegrees);
+      }
+      
       let newAngle = Rotate.rotationStartAngle + angleDifference;
       
       // Apply rotation

@@ -34,10 +34,10 @@ let polygonsList: Polygon[] = [];
 // TODOs:
 // ---------------------------------
 // - Bezier curve tool                  - ~~~
-// - Scale tool                         - ~~
+// - Scale tool                         - ~~~
+// - Rotate tool && add snap            - ~~ 
 // - Dashed line option to polygon      - 
 // - Set polygon pos menu (like blender)- 
-// - Rotate tool                        - 
 // - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
 // - Hermite curve tool                 - 

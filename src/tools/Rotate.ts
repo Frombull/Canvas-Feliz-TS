@@ -4,13 +4,14 @@ class Rotate {
   static isDragging: boolean = false;
   static rotationStartAngle: number = 0;
   static initialClickAngle: number = 0;
+  static snapAngleDegrees: number = 15; // Snap angle for rotation tool
 
 
   static drawRotationGizmo() {
     if (!selectedPolygon) return;
 
     // Use selected vertex if available, otherwise use polygon center
-    let center = selectedVertex || selectedPolygon.getCenter();
+    let center = selectedVertex || selectedCentroid;
     if (!center) return;
     
     // Draw rotation handle
@@ -46,26 +47,15 @@ class Rotate {
   static isClickingRotationHandle(): boolean {
     if (!selectedPolygon) return false;
     
-    let center = selectedVertex || selectedPolygon.getCenter();
+    let center = selectedVertex || selectedCentroid;
+    if (!center) return false;
+
     let handleX = center.x + cos(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
     let handleY = center.y + sin(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
     
     let distanceToHandle = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, handleX, handleY);
     
     return distanceToHandle < 3;
-  }
-  
-  static calculateRotationAngleInRadians(): number {
-    if (!selectedPolygon) return 0;
-    
-    let center = selectedVertex || selectedPolygon.getCenter();
-    
-    // Angle between center and mouse pos
-    let dx = Mouse.mousePosInGrid.x - center.x;
-    let dy = Mouse.mousePosInGrid.y - center.y;
-    let currentAngle = atan2(dy, dx);
-    
-    return (currentAngle - Rotate.initialClickAngle); // Radians
   }
 
   static resetRotationGizmo() {
@@ -86,7 +76,9 @@ class Rotate {
     Rotate.isDragging = true;
     
     // Calculate initial angle between mouse and center
-    let center = selectedVertex || selectedPolygon.getCenter();
+    let center = selectedVertex || selectedCentroid;
+    if (!center) return;
+
     let dx = Mouse.mousePosInGrid.x - center.x;
     let dy = Mouse.mousePosInGrid.y - center.y;
     Rotate.initialClickAngle = atan2(dy, dx);

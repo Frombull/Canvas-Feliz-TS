@@ -25,7 +25,7 @@ class Mouse {
   
   static mousePressed() {
     if (Mouse.isMouseOutOfBounds()) return;
-
+  
     if (mouseButton === RIGHT) {
       Camera.startPanning();
       return;
@@ -84,7 +84,7 @@ class Mouse {
       }
       else if (selectedTool == Tool.SCALE) {
         const handle = Scale.getClickedHandle();
-
+  
         if (handle && selectedPolygon) {
           // Iniciar operação de escala no eixo específico
           Scale.startScaling(handle);
@@ -95,40 +95,17 @@ class Mouse {
         }
       }
       else if (selectedTool == Tool.ROTATE) {
-        if (!selectedPolygon) {
-          Mouse.selectPolygonUnderMouse();
+        if (Rotate.isClickingRotationHandle()) {
+          Rotate.startRotation();
           return;
         }
 
-        if (Rotate.isClickingRotationHandle()) {
-          Rotate.isDragging = true;
-          
-          let center = selectedVertex || selectedPolygon.getCenter();
-          let dx = Mouse.mousePosInGrid.x - center.x;
-          let dy = Mouse.mousePosInGrid.y - center.y;
-          Rotate.rotationStartAngle = atan2(dy, dx);
-          Rotate.rotationCenter = center;
+        if (selectNearestVertex()) {
+          Rotate.loadPolygonRotation();
+          return;
         }
-        else {
-          if (Rotate.isClickingCenter()) {
-            selectedVertex = null;
-            Rotate.loadPolygonRotation();
-            return;
-          }
 
-          Rotate.saveRotationState();
-
-          let previousVertex = selectedVertex;
-
-          if (!selectNearestVertex()) {
-            if(!Mouse.selectPolygonUnderMouse()) {
-              deselectVertex();
-            }
-          } 
-          else if (previousVertex !== selectedVertex) {
-            Rotate.loadPolygonRotation();
-          }
-        }
+        Mouse.selectPolygonUnderMouse();
       }
       else if (selectedTool == Tool.BEZIER) {
         let controlPoint = Curves.isNearControlPoint(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y);
@@ -175,14 +152,17 @@ class Mouse {
     else if (Scale.isScaling) {
       Scale.processScaling();
     }
-    else if (Rotate.isDragging) {
-      let angle = Rotate.calculateRotationAngle();
-      Rotate.rotatePolygon(angle);
-      // Update the start angle for smooth rotation
+    else if (Rotate.isDragging && selectedPolygon) {
+      let angle = Rotate.calculateRotationAngleInRadians();
+      selectedPolygon.setRotationInRadians(angle);
+      // Update the initial click angle for smooth rotation
       if (Rotate.rotationCenter) {
         let dx = Mouse.mousePosInGrid.x - Rotate.rotationCenter.x;
         let dy = Mouse.mousePosInGrid.y - Rotate.rotationCenter.y;
-        Rotate.rotationStartAngle = atan2(dy, dx);
+        Rotate.initialClickAngle = atan2(dy, dx);
+        
+        // Also update the rotation handle position
+        Rotate.rotationStartAngle += angle;
       }
     }
     if (Mouse.isDraggingControlPoint && Mouse.selectedControlPoint) {
@@ -295,6 +275,7 @@ class Mouse {
         return true;
       }
     }
+
     // No polygon was clicked, deselect current vertex but keep selected polygon
     deselectVertex();
     return false;

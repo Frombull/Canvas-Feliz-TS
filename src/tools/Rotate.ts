@@ -1,9 +1,10 @@
 class Rotate {
+  private static rotationHandleLength: number = 30;
+
   static isDragging: boolean = false;
   static rotationStartAngle: number = 0;
   static rotationCenter: Vertex | null = null;
-  static rotationHandleLength: number = 30;
-  static currentRotationDegrees: number = 0;
+  static initialClickAngle: number = 0;
 
 
   static drawRotationGizmo() {
@@ -38,7 +39,7 @@ class Rotate {
     strokeWeight(0.1);
     textSize(2);
     textAlign(CENTER, CENTER);
-    text(Math.round(Rotate.currentRotationDegrees) + "°", handleX, handleY);
+    text(Math.round(selectedPolygon.getRotationInDegrees()) + "°", handleX, handleY);
     pop();
   }
   
@@ -54,36 +55,7 @@ class Rotate {
     return distanceToHandle < 4;
   }
   
-  static rotatePolygon(angle: number) {
-    if (!selectedPolygon) return;
-    
-    let center = selectedVertex || selectedPolygon.getCenter();
-    
-    for (let vertex of selectedPolygon.vertices) {
-      // Skip vertex if its the selected vertex (pivot)
-      if (selectedVertex && vertex === selectedVertex) continue;
-      
-      // Translate point to origin
-      let x = vertex.x - center.x;
-      let y = vertex.y - center.y;
-      
-      // Rotate point
-      let newX = x * cos(angle) - y * sin(angle);
-      let newY = x * sin(angle) + y * cos(angle);
-      
-      // Translate point back
-      vertex.x = newX + center.x;
-      vertex.y = newY + center.y;
-    }
-
-    // Radians to degrees
-    Rotate.currentRotationDegrees = (Rotate.currentRotationDegrees + angle * 180 / Math.PI) % 360;
-
-    // Store rotation in polygon
-    selectedPolygon.updateRotationAngle(Rotate.currentRotationDegrees);
-  }
-  
-  static calculateRotationAngle(): number {
+  static calculateRotationAngleInRadians(): number {
     if (!selectedPolygon) return 0;
     
     let center = selectedVertex || selectedPolygon.getCenter();
@@ -93,37 +65,33 @@ class Rotate {
     let dy = Mouse.mousePosInGrid.y - center.y;
     let currentAngle = atan2(dy, dx);
     
-    // Difference from the starting angle
-    return (currentAngle - Rotate.rotationStartAngle);
+    return (currentAngle - Rotate.initialClickAngle); // Radians
   }
 
-  static isClickingCenter(): boolean {
-    if (!selectedPolygon) return false;
-
-    let center = selectedPolygon.getCenter();
-    let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
-    
-    return distanceToCenter < 3;
-  }
-
-  static resetAngle() {
+  static resetRotationGizmo() {
+    Rotate.isDragging = false;
     Rotate.rotationStartAngle = 0;
-    Rotate.currentRotationDegrees = selectedPolygon ? selectedPolygon.rotationAngle : 0;
+    Rotate.initialClickAngle = 0;
   }
 
   static loadPolygonRotation() {
-    if (selectedPolygon) {
-      Rotate.currentRotationDegrees = selectedPolygon.rotationAngle;
-      // Update handle displays when loading angle stuff
-      Rotate.rotationStartAngle = selectedPolygon.rotationAngle * Math.PI / 180.0;
-      
-      console.log(`Loaded rotation angle: ${Rotate.currentRotationDegrees}°`);
-    }
+    if (!selectedPolygon) return;
+
+    Rotate.rotationStartAngle = selectedPolygon.getRotationInRadians();
+    console.log(`Loaded rotation angle: ${Rotate.rotationStartAngle} rad`);
   }
 
-  static saveRotationState() {
-    if (selectedPolygon) {
-      selectedPolygon.updateRotationAngle(Rotate.currentRotationDegrees);
-    }
+  static startRotation() {
+    if (!selectedPolygon) return;
+    
+    Rotate.isDragging = true;
+    
+    let center = selectedVertex || selectedPolygon.getCenter();
+    let dx = Mouse.mousePosInGrid.x - center.x;
+    let dy = Mouse.mousePosInGrid.y - center.y;
+    Rotate.initialClickAngle = atan2(dy, dx);
+    Rotate.rotationCenter = center;
+    
+    // Not modifying rotationStartAngle here to prevent handle snapping
   }
 }

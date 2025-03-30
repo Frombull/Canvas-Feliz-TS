@@ -160,7 +160,7 @@ function drawCircleOnMouse(circleColor: any, mousePos: Vertex) {
 }
 
 function selectNearestVertex(): boolean { // Selects vertex or center
-  let selectDistance = 3;
+  let selectDistance = 2;
 
   // Selecting center
   for (let p of polygonsList) {
@@ -168,13 +168,16 @@ function selectNearestVertex(): boolean { // Selects vertex or center
     let distanceToCenter = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, center.x, center.y);
 
     if (distanceToCenter < selectDistance) {
-      // If selecting a different polygon, reset rotation angle
-      if (p !== selectedPolygon) {
-        Rotate.resetAngle();
-      }
       p.setAsSelectePolygon();
       selectedCentroid = center;
       selectedVertex = null;
+
+      // If selecting a different polygon
+      if (p !== selectedPolygon) {
+        Rotate.loadPolygonRotation();
+      }
+
+      console.log(`Selected center of polygon ${p.id}!`);
       return true;
     }
   }
@@ -185,13 +188,15 @@ function selectNearestVertex(): boolean { // Selects vertex or center
       let distanceToVertex = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, v.x, v.y);
   
       if (distanceToVertex < selectDistance) {
-        // If selecting a different polygon
-        if (p !== selectedPolygon) {
-          Rotate.resetAngle();
-        }
         p.setAsSelectePolygon();
         selectedVertex = v;
         selectedCentroid = null;
+        
+        // If selecting a different polygon
+        if (p !== selectedPolygon) {
+          Rotate.loadPolygonRotation();
+        }
+
         console.log(`Selected vertex of polygon ${p.id}!`);
         return true;
       }

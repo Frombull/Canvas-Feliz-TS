@@ -9,6 +9,11 @@ class Polygon {
   public static normalVertexRadius: number = 3;
   public static hoveredVertexRadius: number = 3.5;
   public static edgeWidth: number = 0.8;
+
+  // Private properties
+  private history: Vertex[][];
+  private redoHistory: Vertex[][];
+  private rotationInRadians: number = 0;   // Polygon rotation in radians
   
   // Instance properties
   public readonly id: number;
@@ -18,12 +23,8 @@ class Polygon {
   public initialShape: Vertex[];
   public hoveredVertex: Vertex | null = null;
   public hoveredCenter: boolean = false;
-  
-  // History management
-  private history: Vertex[][];
-  private redoHistory: Vertex[][];
 
-  public rotationAngle: number = 0;
+  // Color properties
   public vertexColor: any;
   public edgeColor: any;
   public fillColor: any;
@@ -69,6 +70,8 @@ class Polygon {
       this.drawPolygonCenter();
     }
     pop();
+
+    this.rotatePolygon();
   }
 
   public getCenter(): Vertex {
@@ -116,8 +119,9 @@ class Polygon {
     this.vertices = this.copyVertices(this.initialShape);
     selectedVertex = null;
     selectedCentroid = null;
-    this.rotationAngle = 0;
     this.fillColor = Colors.PolygonBlue;
+    Rotate.resetRotationGizmo();
+    this.setRotationInRadians(0);
   }
 
   public setAsSelectePolygon() {
@@ -125,8 +129,6 @@ class Polygon {
     if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
       selectedVertex = null;
     }
-
-    Rotate.resetAngle();
     
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);
@@ -190,8 +192,37 @@ class Polygon {
     return this.copyVertices(this.vertices);
   }
 
-  public updateRotationAngle(degrees: number) {
-    this.rotationAngle = degrees;
-    console.log(`Updated polygon ${this.id} rotation to ${this.rotationAngle}°`);
+  private rotatePolygon() {
+    let center = selectedVertex || this.getCenter();
+    if (!center) return;
+
+    for (let vertex of this.vertices) {
+      // Skip vertex if its the selected vertex (pivot)
+      if (selectedVertex && vertex === selectedVertex) continue;
+      
+      // Translate point to origin
+      let x = vertex.x - center.x;
+      let y = vertex.y - center.y;
+      
+      // Rotate point
+      let newX = x * cos(this.rotationInRadians) - y * sin(this.rotationInRadians);
+      let newY = x * sin(this.rotationInRadians) + y * cos(this.rotationInRadians);
+      
+      // Translate point back
+      vertex.x = newX + center.x;
+      vertex.y = newY + center.y;
+    }
+  }
+
+  public getRotationInDegrees(): number {
+    return degrees(this.rotationInRadians);
+  }
+
+  public getRotationInRadians(): number {
+    return this.rotationInRadians;
+  }
+  public setRotationInRadians(newAngleInRadians: number) {
+    this.rotationInRadians = newAngleInRadians;
+    console.log(`Updated polygon ${this.id} rotation to: ${this.getRotationInDegrees()}°`);
   }
 }

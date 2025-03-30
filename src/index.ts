@@ -271,7 +271,6 @@ function cancelPolygonCreation() {
   selectedTool = Tool.NONE;
   tempPolygon = [];
   buttonCreate.setActive(false);
-  //SidePanel.updateButtonStyles(null);
 }
 
 function deselectPolygon() {

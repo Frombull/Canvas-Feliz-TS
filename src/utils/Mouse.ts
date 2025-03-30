@@ -152,18 +152,22 @@ class Mouse {
     else if (Scale.isScaling) {
       Scale.processScaling();
     }
-    else if (Rotate.isDragging && selectedPolygon) {
-      let angle = Rotate.calculateRotationAngleInRadians();
-      selectedPolygon.setRotationInRadians(angle);
-      // Update the initial click angle for smooth rotation
-      if (Rotate.rotationCenter) {
-        let dx = Mouse.mousePosInGrid.x - Rotate.rotationCenter.x;
-        let dy = Mouse.mousePosInGrid.y - Rotate.rotationCenter.y;
-        Rotate.initialClickAngle = atan2(dy, dx);
-        
-        // Also update the rotation handle position
-        Rotate.rotationStartAngle += angle;
-      }
+    else if (Rotate.isDragging) { // TODO: Move this logic to Rotate.ts
+      // Get current angle between mouse and center
+      let center = selectedVertex || selectedCentroid;
+      if (!center || !selectedPolygon) return;
+      
+      let dx = Mouse.mousePosInGrid.x - center.x;
+      let dy = Mouse.mousePosInGrid.y - center.y;
+      let currentAngle = atan2(dy, dx);
+      
+      // Calculate angle difference
+      let angleDifference = currentAngle - Rotate.initialClickAngle;
+      
+      let newAngle = Rotate.rotationStartAngle + angleDifference;
+      
+      // Apply rotation
+      selectedPolygon.setRotationInRadians(newAngle);
     }
     if (Mouse.isDraggingControlPoint && Mouse.selectedControlPoint) {
       // Update pos of dragged control point

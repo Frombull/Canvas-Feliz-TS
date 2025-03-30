@@ -70,11 +70,9 @@ class Polygon {
       this.drawPolygonCenter();
     }
     pop();
-
-    this.rotatePolygon();
   }
 
-  public getCenter(): Vertex {
+  public getCenter(): Vertex { //TODO: Make prive so I start using the fucking selectedCentroid instead
     if (this.vertices.length === 0) {
       return { x: 0, y: 0 };
     }    
@@ -119,9 +117,8 @@ class Polygon {
     this.vertices = this.copyVertices(this.initialShape);
     selectedVertex = null;
     selectedCentroid = null;
-    this.fillColor = Colors.PolygonBlue;
     Rotate.resetRotationGizmo();
-    this.setRotationInRadians(0);
+    this.rotationInRadians = 0;
   }
 
   public setAsSelectePolygon() {
@@ -192,10 +189,17 @@ class Polygon {
     return this.copyVertices(this.vertices);
   }
 
-  private rotatePolygon() {
-    let center = selectedVertex || this.getCenter();
-    if (!center) return;
-
+  public rotatePolygon(angleInRadians: number) {
+    // Store the last rotation angle
+    this.rotationInRadians = angleInRadians;
+    
+    // First, backup vertices before rotation if needed
+    const originalVertices = this.saveStateBeforeChange();
+    
+    // Get rotation center (selected vertex or polygon center)
+    const center = selectedVertex || this.getCenter();
+    
+    // Apply rotation to all vertices except the center (if it's a vertex)
     for (let vertex of this.vertices) {
       // Skip vertex if its the selected vertex (pivot)
       if (selectedVertex && vertex === selectedVertex) continue;
@@ -205,13 +209,15 @@ class Polygon {
       let y = vertex.y - center.y;
       
       // Rotate point
-      let newX = x * cos(this.rotationInRadians) - y * sin(this.rotationInRadians);
-      let newY = x * sin(this.rotationInRadians) + y * cos(this.rotationInRadians);
+      let newX = x * cos(angleInRadians) - y * sin(angleInRadians);
+      let newY = x * sin(angleInRadians) + y * cos(angleInRadians);
       
       // Translate point back
       vertex.x = newX + center.x;
       vertex.y = newY + center.y;
     }
+    
+    console.log(`Rotated polygon ${this.id} by ${this.getRotationInDegrees()}°`);
   }
 
   public getRotationInDegrees(): number {
@@ -222,7 +228,34 @@ class Polygon {
     return this.rotationInRadians;
   }
   public setRotationInRadians(newAngleInRadians: number) {
+    // Skip if angle is the same
+    if (this.rotationInRadians === newAngleInRadians) return;
+
+    // Get rotation center
+    const center = selectedVertex || selectedCentroid;
+    if (!center) return;
+    
+    // Apply rotation
+    let deltaAngle = newAngleInRadians - this.rotationInRadians;
+    
+    for (let vertex of this.vertices) {
+      // Skip if its the selected vertex (pivot)
+      if (selectedVertex && vertex === selectedVertex) continue;
+      
+      // Translate point to origin
+      let x = vertex.x - center.x;
+      let y = vertex.y - center.y;
+      
+      // Rotate point
+      let newX = x * cos(deltaAngle) - y * sin(deltaAngle);
+      let newY = x * sin(deltaAngle) + y * cos(deltaAngle);
+      
+      // Translate point back
+      vertex.x = newX + center.x;
+      vertex.y = newY + center.y;
+    }
+    
+    // Update stored angle
     this.rotationInRadians = newAngleInRadians;
-    console.log(`Updated polygon ${this.id} rotation to: ${this.getRotationInDegrees()}°`);
   }
 }

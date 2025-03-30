@@ -111,11 +111,12 @@ class Mouse {
         }
         else {
           if (Rotate.isClickingCenter()) {
-            // Select the center as rotation point by clearing selectedVertex
             selectedVertex = null;
-            Rotate.resetAngle();
+            Rotate.loadPolygonRotation();
             return;
           }
+
+          Rotate.saveRotationState();
 
           let previousVertex = selectedVertex;
 
@@ -125,7 +126,7 @@ class Mouse {
             }
           } 
           else if (previousVertex !== selectedVertex) {
-            Rotate.resetAngle();
+            Rotate.loadPolygonRotation();
           }
         }
       }

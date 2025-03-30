@@ -19,8 +19,10 @@ class Rotate {
     noFill();
     
     // Draw circle
+    drawingContext.setLineDash([2, 2]);
     ellipse(center.x, center.y, Rotate.rotationHandleLength * 2);
-    
+    drawingContext.setLineDash([]);
+
     // Draw handle
     let handleX = center.x + cos(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
     let handleY = center.y + sin(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
@@ -113,9 +115,15 @@ class Rotate {
     if (selectedPolygon) {
       Rotate.currentRotationDegrees = selectedPolygon.rotationAngle;
       // Update handle displays when loading angle stuff
-      Rotate.rotationStartAngle = selectedPolygon.rotationAngle * Math.PI / 180;
+      Rotate.rotationStartAngle = selectedPolygon.rotationAngle * Math.PI / 180.0;
       
       console.log(`Loaded rotation angle: ${Rotate.currentRotationDegrees}°`);
+    }
+  }
+
+  static saveRotationState() {
+    if (selectedPolygon) {
+      selectedPolygon.updateRotationAngle(Rotate.currentRotationDegrees);
     }
   }
 }

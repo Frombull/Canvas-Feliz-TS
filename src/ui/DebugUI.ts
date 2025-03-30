@@ -13,6 +13,7 @@ class DebugUI {
 
   }
   
+  
   static drawDebugWindow(): void {
     if (!SidePanel.shouldDrawDebugWindow) return;
     

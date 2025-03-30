@@ -3,7 +3,6 @@ class Rotate {
 
   static isDragging: boolean = false;
   static rotationStartAngle: number = 0;
-  static rotationCenter: Vertex | null = null;
   static initialClickAngle: number = 0;
 
 
@@ -12,6 +11,7 @@ class Rotate {
 
     // Use selected vertex if available, otherwise use polygon center
     let center = selectedVertex || selectedPolygon.getCenter();
+    if (!center) return;
     
     // Draw rotation handle
     push();
@@ -25,8 +25,8 @@ class Rotate {
     drawingContext.setLineDash([]);
 
     // Draw handle
-    let handleX = center.x + cos(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
-    let handleY = center.y + sin(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
+    let handleX = center.x + cos(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
+    let handleY = center.y + sin(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
     line(center.x, center.y, handleX, handleY);
     
     // Draw handle grip
@@ -52,7 +52,7 @@ class Rotate {
     
     let distanceToHandle = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, handleX, handleY);
     
-    return distanceToHandle < 4;
+    return distanceToHandle < 3;
   }
   
   static calculateRotationAngleInRadians(): number {
@@ -78,7 +78,6 @@ class Rotate {
     if (!selectedPolygon) return;
 
     Rotate.rotationStartAngle = selectedPolygon.getRotationInRadians();
-    console.log(`Loaded rotation angle: ${Rotate.rotationStartAngle} rad`);
   }
 
   static startRotation() {
@@ -86,12 +85,15 @@ class Rotate {
     
     Rotate.isDragging = true;
     
+    // Calculate initial angle between mouse and center
     let center = selectedVertex || selectedPolygon.getCenter();
     let dx = Mouse.mousePosInGrid.x - center.x;
     let dy = Mouse.mousePosInGrid.y - center.y;
     Rotate.initialClickAngle = atan2(dy, dx);
-    Rotate.rotationCenter = center;
     
+    // Store current rotation angle
+    Rotate.rotationStartAngle = selectedPolygon.getRotationInRadians();
+
     // Not modifying rotationStartAngle here to prevent handle snapping
   }
 }

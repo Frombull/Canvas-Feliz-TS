@@ -48,10 +48,11 @@ class Rotate {
     if (!selectedPolygon) return false;
     
     let center = selectedVertex || selectedCentroid;
-    if (!center) return false;
-
-    let handleX = center.x + cos(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
-    let handleY = center.y + sin(Rotate.rotationStartAngle) * Rotate.rotationHandleLength;
+    if (!center)
+      center = selectedPolygon.getCenter();
+  
+    let handleX = center.x + cos(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
+    let handleY = center.y + sin(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
     
     let distanceToHandle = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, handleX, handleY);
     

@@ -8,24 +8,25 @@ class Scale {
   static initialCenter: Vertex | null = null;
   static initialVertices: Vertex[] = [];
   static currentScale = {x: 1, y: 1};
-  static snapScaleAmmount: number = 4;
+  static snapScaleAmmount: number = 10;
+  static scalePivot: Vertex | null = null; // New property to store the scaling pivot point
   
   static drawScaleGizmo() {
     if (!selectedPolygon) return;
     
-    const center = selectedPolygon.getCenter();
-    if (!center) return;
+    const pivot = selectedVertex || selectedCentroid;
+    if (!pivot) return;
     
     push();
     
     const xHandlePos = {
-      x: center.x + Scale.gizmoScaleDistance,
-      y: center.y
+      x: pivot.x + Scale.gizmoScaleDistance,
+      y: pivot.y
     };
     
     stroke(Colors.GizmoScaleColor);
     strokeWeight(1.2);
-    line(center.x, center.y, xHandlePos.x, xHandlePos.y);
+    line(pivot.x, pivot.y, xHandlePos.x, xHandlePos.y);
     
     fill(Colors.GizmoScaleColor);
     if (Scale.scaleAxis === "x") {
@@ -38,13 +39,13 @@ class Scale {
     ellipse(xHandlePos.x, xHandlePos.y, Scale.gizmoScaleHandleSize);
     
     const yHandlePos = {
-      x: center.x,
-      y: center.y - Scale.gizmoScaleDistance
+      x: pivot.x,
+      y: pivot.y - Scale.gizmoScaleDistance
     };
     
     stroke(Colors.GizmoScaleColor);
     strokeWeight(1.2);
-    line(center.x, center.y, yHandlePos.x, yHandlePos.y);
+    line(pivot.x, pivot.y, yHandlePos.x, yHandlePos.y);
     
     fill(Colors.GizmoScaleColor);
     if (Scale.scaleAxis === "y") {
@@ -57,14 +58,14 @@ class Scale {
     ellipse(yHandlePos.x, yHandlePos.y, Scale.gizmoScaleHandleSize);
     
     const xyHandlePos = {
-      x: center.x + Scale.cornerHandleDistance * 0.707,
-      y: center.y - Scale.cornerHandleDistance * 0.707
+      x: pivot.x + Scale.cornerHandleDistance * 0.707,
+      y: pivot.y - Scale.cornerHandleDistance * 0.707
     };
     
     stroke(Colors.GizmoScaleColor);
     strokeWeight(0.8);
     drawingContext.setLineDash([3, 2]);
-    line(center.x, center.y, xyHandlePos.x, xyHandlePos.y);
+    line(pivot.x, pivot.y, xyHandlePos.x, xyHandlePos.y);
     drawingContext.setLineDash([]);
     
     fill(Colors.GizmoScaleColor);
@@ -104,31 +105,32 @@ class Scale {
   static getClickedHandle(): "x" | "y" | "xy" | "" {
     if (!selectedPolygon) return "";
     
-    const center = selectedPolygon.getCenter();
-    if (!center) return "";
+    // Use selected vertex as pivot if available, otherwise use polygon center
+    const pivot = selectedVertex || selectedCentroid;
+    if (!pivot) return "";
     
     const mousePos = Mouse.mousePosInGrid;
     const detectRange = Scale.gizmoScaleHandleSize;
     
     const xHandle = {
-      x: center.x + Scale.gizmoScaleDistance,
-      y: center.y
+      x: pivot.x + Scale.gizmoScaleDistance,
+      y: pivot.y
     };
     if (dist(mousePos.x, mousePos.y, xHandle.x, xHandle.y) < detectRange) {
       return "x";
     }
     
     const yHandle = {
-      x: center.x,
-      y: center.y - Scale.gizmoScaleDistance
+      x: pivot.x,
+      y: pivot.y - Scale.gizmoScaleDistance
     };
     if (dist(mousePos.x, mousePos.y, yHandle.x, yHandle.y) < detectRange) {
       return "y";
     }
     
     const xyHandle = {
-      x: center.x + Scale.cornerHandleDistance * 0.707,
-      y: center.y - Scale.cornerHandleDistance * 0.707
+      x: pivot.x + Scale.cornerHandleDistance * 0.707,
+      y: pivot.y - Scale.cornerHandleDistance * 0.707
     };
     if (dist(mousePos.x, mousePos.y, xyHandle.x, xyHandle.y) < detectRange) {
       return "xy";
@@ -139,28 +141,30 @@ class Scale {
   
   static startScaling(axis: "x" | "y" | "xy") {
     if (!selectedPolygon) return;
+
+    const pivot = selectedVertex || selectedCentroid;
+    if (!pivot) return;
     
     Scale.isScaling = true;
     Scale.scaleAxis = axis;
     Scale.initialMousePos = { ...Mouse.mousePosInGrid };
     
-    const center = selectedPolygon.getCenter();
-    Scale.initialCenter = { x: center.x, y: center.y };
+    Scale.scalePivot = { x: pivot.x, y: pivot.y };
     
     Scale.initialVertices = selectedPolygon.vertices.map(v => ({ x: v.x, y: v.y }));
     
-    console.log(`Started scaling on ${axis} axis`);
+    console.log(`Started scaling on ${axis} axis with pivot at (${Scale.scalePivot.x}, ${Scale.scalePivot.y})`);
   }
   
   static snapScale(value: number): number {
     if (Keyboard.isShiftPressed)
-      return (Math.round(value * 10) / 10);
+      return (Math.round(value));
     else
       return (Math.round(value * Scale.snapScaleAmmount) / Scale.snapScaleAmmount);
   }
 
   static processScaling() {
-    if (!Scale.isScaling || !selectedPolygon || !Scale.initialMousePos || !Scale.initialCenter) return;
+    if (!Scale.isScaling || !selectedPolygon || !Scale.initialMousePos || !Scale.scalePivot) return;
     
     const currentMousePos = Mouse.mousePosInGrid;
     
@@ -215,21 +219,22 @@ class Scale {
   }
   
   static applyScaleToPolygon(scaleX: number, scaleY: number) {
-    if (!selectedPolygon || !Scale.initialCenter || Scale.initialVertices.length === 0) return;
+    if (!selectedPolygon || !Scale.scalePivot || Scale.initialVertices.length === 0) return;
     
     const oldVertices = selectedPolygon.saveStateBeforeChange();
     
     for (let i = 0; i < Scale.initialVertices.length; i++) {
       const origVertex = Scale.initialVertices[i];
       
-      const dx = origVertex.x - Scale.initialCenter.x;
-      const dy = origVertex.y - Scale.initialCenter.y;
+      // Use the scale pivot point (selected vertex or center) as the reference point
+      const dx = origVertex.x - Scale.scalePivot.x;
+      const dy = origVertex.y - Scale.scalePivot.y;
       
       const scaledX = dx * scaleX;
       const scaledY = dy * scaleY;
       
-      selectedPolygon.vertices[i].x = Scale.initialCenter.x + scaledX;
-      selectedPolygon.vertices[i].y = Scale.initialCenter.y + scaledY;
+      selectedPolygon.vertices[i].x = Scale.scalePivot.x + scaledX;
+      selectedPolygon.vertices[i].y = Scale.scalePivot.y + scaledY;
     }
     
     selectedPolygon.recordAction(oldVertices);
@@ -243,14 +248,24 @@ class Scale {
     Scale.isScaling = false;
     Scale.scaleAxis = "";
     Scale.initialMousePos = null;
+    Scale.scalePivot = null; // Reset scale pivot
   }
   
   static setScaleTo(newX: number, newY: number) {
     if (!selectedPolygon) return;
     
-    if (!Scale.initialCenter || Scale.initialVertices.length === 0) {
+    // Use selected vertex or polygon center as pivot
+    let pivot;
+    if (selectedVertex) {
+      pivot = { x: selectedVertex.x, y: selectedVertex.y };
+    } else {
       const center = selectedPolygon.getCenter();
-      Scale.initialCenter = { x: center.x, y: center.y };
+      pivot = { x: center.x, y: center.y };
+    }
+    
+    Scale.scalePivot = pivot;
+    
+    if (Scale.initialVertices.length === 0) {
       Scale.initialVertices = selectedPolygon.vertices.map(v => ({ x: v.x, y: v.y }));
     }
     

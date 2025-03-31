@@ -96,7 +96,7 @@ class Transform {
     let hitboxWidth = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
     let hitboxHeight = Transform.gizmoHitboxWidth;
 
-    this.drawHitboxX(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+    // this.drawHitboxX(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
     
     return (Mouse.mousePosInGrid.x >= hitboxX && 
             Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth &&
@@ -113,7 +113,7 @@ class Transform {
     let hitboxWidth = Transform.gizmoHitboxWidth;
     let hitboxHeight = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
 
-    this.drawHitboxY(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
+    // this.drawHitboxY(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
     
     return (Mouse.mousePosInGrid.x >= hitboxX - hitboxWidth/2 && 
             Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth/2 &&

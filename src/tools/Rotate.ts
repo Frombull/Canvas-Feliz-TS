@@ -69,6 +69,7 @@ class Rotate {
     Rotate.isHoveringHandle = distanceToHandle < 3;
   }
   
+  
   static isClickingRotationHandle(): boolean {
     if (!selectedPolygon) return false;
     

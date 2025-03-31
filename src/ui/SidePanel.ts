@@ -8,11 +8,6 @@ class SidePanel {
   
   // Tool management
   static Buttons: Button[] = [];
-  static createButton: Button;
-  static translateButton: Button;
-  static scaleButton: Button;
-  static rotateButton: Button;
-  static curvesButton: Button;
   
   
   static registerButton(button: Button) {
@@ -50,20 +45,20 @@ class SidePanel {
       iconPath: 'icons/translate.svg'
     });
   
-    // Scale Tool Button
-    new Button('Scale', createSection, () => {
-      tempPolygon = [];
-    }, {
-      tool: Tool.SCALE,
-      iconPath: 'icons/scale.svg'
-    });
-
     // Rotate Tool Button
     new Button('Rotate', createSection, () => {
       tempPolygon = [];
     }, {
       tool: Tool.ROTATE,
       iconPath: 'icons/rotate.svg'
+    });
+
+    // Scale Tool Button
+    new Button('Scale', createSection, () => {
+      tempPolygon = [];
+    }, {
+      tool: Tool.SCALE,
+      iconPath: 'icons/scale.svg'
     });
 
     // Curves Button

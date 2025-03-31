@@ -2,27 +2,47 @@ class Keyboard {
   static isShiftPressed: boolean = false;
 
   static keyPressed() {
-    // ESC
-    if (keyCode === ESCAPE) {
-      Keyboard.handleEscapeKey();
-      return;
+    switch(key.toLowerCase()) {
+      case 'n':                               // Create polygon
+        selectedTool = Tool.CREATE_POLYGON;
+        SidePanel.updateActiveButton();
+        return;
+      case 't':                               // Transform
+        selectedTool = Tool.TRANSLATE;
+        SidePanel.updateActiveButton();
+        return;
+      case 'r':                               // Rotate
+        selectedTool = Tool.ROTATE;
+        SidePanel.updateActiveButton();
+        return;
+      case 's':                               // Scale
+        selectedTool = Tool.SCALE;
+        SidePanel.updateActiveButton();
+        return;
+      case 'c':                               // Color palette
+        ColorPickerUI.toggle();
+        SidePanel.updateActiveButton();
+        return;
     }
 
-    // DELETE
-    if (keyCode === DELETE) {
-      Keyboard.handleDeleteKey();
-      return;
+    switch (keyCode) {
+      case ESCAPE:
+        Keyboard.handleEscapeKey();
+        break;
+      
+      case DELETE:
+        Keyboard.handleDeleteKey();
+        break;
+      
+      case SHIFT:
+        Keyboard.isShiftPressed = true;
+        break;
     }
 
     // CTRL+Z
     if (keyIsDown(CONTROL) && key === 'z') {
       Keyboard.handleUndo();
       return;
-    }
-
-    // SHIFT
-    if (keyCode === SHIFT) {
-      Keyboard.isShiftPressed = true;
     }
   }
 

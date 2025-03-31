@@ -37,7 +37,7 @@ class Mouse {
       }
       else if (selectedTool == Tool.CREATE_POLYGON) { 
         if (tempPolygon.length > 2) {
-          if (Mouse.isCloseToFirstVertex()) {
+          if (Mouse.isCloseToFirstVertex()) {   // Close polygon
             // Force snap to first vertex
             let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
             Scale.currentScale = {x: 1, y: 1}
@@ -52,6 +52,9 @@ class Mouse {
             // Add the creation action to history
             const action = new CreatePolygonAction(newPolygon);
             HistoryManager.getInstance().addAction(action);
+
+            // Update UI button
+            SidePanel.updateActiveButton();
             
             tempPolygon = [];
             return;
@@ -62,13 +65,11 @@ class Mouse {
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
           if (Transform.isClickingTransformHandleX()) {
-            //console.log("Clicking X handle");
             Mouse.translateInitialX = Mouse.getMousePosForTransform().x;
             Transform.isDraggingX = true;
             return;
           }
           else if (Transform.isClickingTransformHandleY()) {
-            //console.log("Clicking Y handle");
             Mouse.translateInitialY = Mouse.getMousePosForTransform().y;
             Transform.isDraggingY = true;
             return;
@@ -77,7 +78,7 @@ class Mouse {
             Mouse.selectPolygonUnderMouse();
           }
         }
-        if (!selectNearestVertex()){
+        if (!selectNearestVertex()) {
           Mouse.selectPolygonUnderMouse();
         }
   
@@ -85,12 +86,12 @@ class Mouse {
       else if (selectedTool == Tool.SCALE) {
         const handle = Scale.getClickedHandle();
   
-        if (handle && selectedPolygon) {
-          // Iniciar operação de escala no eixo específico
+        if (handle && (selectedVertex || selectedCentroid)) {
           Scale.startScaling(handle);
-        } 
-        else {
-          // Se não clicou em nenhum handle, tenta selecionar um polígono
+          return;
+        }
+
+        if (!selectNearestVertex()) {
           Mouse.selectPolygonUnderMouse();
         }
       }

@@ -126,6 +126,11 @@ class Polygon {
     if (selectedVertex && !Transform.isVertexInPolygon(selectedVertex, this)) {
       selectedVertex = null;
     }
+
+    // If had a selected centroid, keep the selected centroid of new polygon
+    if (selectedCentroid) {
+      selectedCentroid = this.getCenter();
+    }
     
     selectedPolygon = this;
     console.log(`Selected polygon ${this.id}`);

@@ -33,6 +33,7 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
+// - File for keybinds                  -
 // - Bezier curve tool                  - ~~~
 // - Scale tool                         - ~~~
 // - Rotate tool                        - ~~~
@@ -171,11 +172,6 @@ function selectNearestVertex(): boolean { // Selects vertex or center
       p.setAsSelectePolygon();
       selectedCentroid = center;
       selectedVertex = null;
-
-      // If selecting a different polygon
-      if (p !== selectedPolygon) {
-        Rotate.loadPolygonRotation();
-      }
 
       console.log(`Selected center of polygon ${p.id}!`);
       return true;

@@ -3,23 +3,27 @@ class Keyboard {
 
   static keyPressed() {
     switch(key.toLowerCase()) {
-      case 'n':                               // Create polygon
+      case Keybinds.CREATE_POLYGON:               // Create polygon
         selectedTool = Tool.CREATE_POLYGON;
         SidePanel.updateActiveButton();
         return;
-      case 't':                               // Transform
+
+      case Keybinds.TRANSLATE:                    // Transform
         selectedTool = Tool.TRANSLATE;
         SidePanel.updateActiveButton();
         return;
-      case 'r':                               // Rotate
+
+      case Keybinds.ROTATE:                       // Rotate
         selectedTool = Tool.ROTATE;
         SidePanel.updateActiveButton();
         return;
-      case 's':                               // Scale
+
+      case Keybinds.SCALE:                        // Scale
         selectedTool = Tool.SCALE;
         SidePanel.updateActiveButton();
         return;
-      case 'c':                               // Color palette
+        
+      case Keybinds.OPEN_COLOR_PALETTE:           // Color palette
         ColorPickerUI.toggle();
         SidePanel.updateActiveButton();
         return;

@@ -31,7 +31,8 @@ class Scale {
     if (Scale.scaleAxis === "x") {
       stroke(255);
       strokeWeight(0.8);
-    } else {
+    } 
+    else {
       noStroke();
     }
     ellipse(xHandlePos.x, xHandlePos.y, Scale.gizmoScaleHandleSize);
@@ -49,7 +50,8 @@ class Scale {
     if (Scale.scaleAxis === "y") {
       stroke(255);
       strokeWeight(0.8);
-    } else {
+    } 
+    else {
       noStroke();
     }
     ellipse(yHandlePos.x, yHandlePos.y, Scale.gizmoScaleHandleSize);
@@ -69,7 +71,8 @@ class Scale {
     if (Scale.scaleAxis === "xy") {
       stroke(255);
       strokeWeight(0.8);
-    } else {
+    } 
+    else {
       noStroke();
     }
     rect(xyHandlePos.x - Scale.gizmoScaleHandleSize/2, 
@@ -86,9 +89,11 @@ class Scale {
       
       if (Scale.scaleAxis === "x") {
         text(`X: ${Scale.currentScale.x.toFixed(2)}`, xHandlePos.x, xHandlePos.y - 8);
-      } else if (Scale.scaleAxis === "y") {
+      } 
+      else if (Scale.scaleAxis === "y") {
         text(`Y: ${Scale.currentScale.y.toFixed(2)}`, yHandlePos.x, yHandlePos.y - 8);
-      } else if (Scale.scaleAxis === "xy") {
+      } 
+      else if (Scale.scaleAxis === "xy") {
         text(`${Scale.currentScale.x.toFixed(2)}`, xyHandlePos.x, xyHandlePos.y - 8);
       }
     }

@@ -1,7 +1,10 @@
 class Rotate {
   private static rotationHandleLength: number = 30;
+  private static normalHandleRadius: number = 4;  
+  private static hoveredHandleRadius: number = 5;
 
   static isDragging: boolean = false;
+  static isHoveringHandle: boolean = false;
   static rotationStartAngle: number = 0;
   static initialClickAngle: number = 0;
   static snapAngleDegrees: number = 15; // Snap angle for rotation tool
@@ -13,6 +16,8 @@ class Rotate {
     // Use selected vertex if available, otherwise use polygon center
     let center = selectedVertex || selectedCentroid;
     if (!center) return;
+    
+    Rotate.checkHandleHover(center);
     
     // Draw rotation handle
     push();
@@ -30,9 +35,18 @@ class Rotate {
     let handleY = center.y + sin(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
     line(center.x, center.y, handleX, handleY);
     
-    // Draw handle grip
-    fill(Colors.rotationHandleColor);
-    ellipse(handleX, handleY, 4);
+    // Draw handle grip with different size based on hover state
+    const handleRadius = Rotate.isHoveringHandle || Rotate.isDragging ? Rotate.hoveredHandleRadius : Rotate.normalHandleRadius;
+    
+    // Highlight color if hovering
+    if (Rotate.isHoveringHandle) {
+      fill(Colors.rotationHandleColor.levels[0], Colors.rotationHandleColor.levels[1], Colors.rotationHandleColor.levels[2], 255);
+      cursor(HAND);
+    } else {
+      fill(Colors.rotationHandleColor);
+    }
+    
+    ellipse(handleX, handleY, handleRadius);
     
     // Draw degree text
     fill(0);
@@ -42,6 +56,17 @@ class Rotate {
     textAlign(CENTER, CENTER);
     text(Math.round(selectedPolygon.getRotationInDegrees()) + "°", handleX, handleY);
     pop();
+  }
+  
+  static checkHandleHover(center: Vertex) {
+    if (!selectedPolygon) return;
+
+    let handleX = center.x + cos(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
+    let handleY = center.y + sin(selectedPolygon.getRotationInRadians()) * Rotate.rotationHandleLength;
+    
+    let distanceToHandle = dist(Mouse.mousePosInGrid.x, Mouse.mousePosInGrid.y, handleX, handleY);
+    
+    Rotate.isHoveringHandle = distanceToHandle < 3;
   }
   
   static isClickingRotationHandle(): boolean {
@@ -61,6 +86,7 @@ class Rotate {
 
   static resetRotationGizmo() {
     Rotate.isDragging = false;
+    Rotate.isHoveringHandle = false;
     Rotate.rotationStartAngle = 0;
     Rotate.initialClickAngle = 0;
   }

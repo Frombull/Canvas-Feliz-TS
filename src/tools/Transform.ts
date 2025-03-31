@@ -3,12 +3,21 @@ class Transform {
   static isDraggingY: boolean = false;
   static dx: number = 0;
   static dy: number = 0;
+  static isHoveringX: boolean = false;
+  static isHoveringY: boolean = false;
 
-  static gizmoArrowLength:    number = 18;
-  static gizmoArrowWidth:     number = 2;
-  static gizmoArrowHeadSize:  number = 2;
-  static gizmoLineOffset:     number = 1.5;
-  static gizmoHitboxWidth:    number = 6;
+  // Gizmo dimensions
+  static gizmoArrowLength: number = 18;
+  static gizmoLineOffset: number = 1.5;
+  static gizmoHitboxWidth: number = 4;
+
+  // Gizmo appearance
+  static normalOpacity: number = 0.85;
+  static hoverOpacity: number = 1.0;
+  static normalStrokeWeight: number = 1.5;
+  static hoverStrokeWeight: number = 1.7;
+  static arrowHeadNormalSize: number = 2.0;
+  static arrowHeadHoverSize: number = 2.4;
 
 
   static translatePolygon() {
@@ -47,7 +56,7 @@ class Transform {
       }
     }
   
-    // Update the initial translation coordinates with appropriate method
+    // Update the initial translation coordinates
     Mouse.translateInitialX = Mouse.getMousePosForTransform().x;
     Mouse.translateInitialY = Mouse.getMousePosForTransform().y;
   
@@ -59,16 +68,26 @@ class Transform {
 
     if (selectedCentroid) {
       selectedCentroid = selectedPolygon.getCenter();
+      Transform.updateHoverState();
       Transform.drawGizmoArrows(selectedCentroid.x, selectedCentroid.y);
     }
     else if (selectedVertex) {
+      Transform.updateHoverState();
       Transform.drawGizmoArrows(selectedVertex.x, selectedVertex.y);
+    }
+  }
+
+  static updateHoverState() {
+    Transform.isHoveringX = Transform.isClickingTransformHandleX();
+    Transform.isHoveringY = Transform.isClickingTransformHandleY();
+    
+    if (Transform.isHoveringX || Transform.isHoveringY) {
+      cursor(HAND);
     }
   }
 
   static isClickingTransformHandleX(): boolean {
     let center = selectedVertex ? selectedVertex : selectedCentroid;
-    
     if (!center) return false;
     
     // The X hitbox should extend from the starting point of the line to the end of the arrow
@@ -76,6 +95,8 @@ class Transform {
     let hitboxY = center.y;
     let hitboxWidth = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
     let hitboxHeight = Transform.gizmoHitboxWidth;
+
+    this.drawHitboxX(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
     
     return (Mouse.mousePosInGrid.x >= hitboxX && 
             Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth &&
@@ -85,13 +106,14 @@ class Transform {
   
   static isClickingTransformHandleY(): boolean {
     let center = selectedVertex ? selectedVertex : selectedCentroid;
-    
     if (!center) return false;
     
     let hitboxX = center.x;
     let hitboxY = center.y + Transform.gizmoLineOffset;
     let hitboxWidth = Transform.gizmoHitboxWidth;
     let hitboxHeight = Transform.gizmoArrowLength - Transform.gizmoLineOffset;
+
+    this.drawHitboxY(hitboxX, hitboxY, hitboxWidth, hitboxHeight);
     
     return (Mouse.mousePosInGrid.x >= hitboxX - hitboxWidth/2 && 
             Mouse.mousePosInGrid.x <= hitboxX + hitboxWidth/2 &&
@@ -101,35 +123,72 @@ class Transform {
 
   private static drawGizmoArrows(centerX: number, centerY: number) {
     push();
-  
-    // Draw X arrow
-    stroke(Colors.Red);
-    strokeWeight(1.6);
-    strokeCap(ROUND);
-    line(centerX + Transform.gizmoLineOffset, centerY, centerX + Transform.gizmoArrowLength, centerY);    // ----
-    strokeWeight(2);
-    line(centerX + Transform.gizmoArrowLength, centerY, centerX + Transform.gizmoArrowLength - Transform.gizmoArrowHeadSize, centerY + Transform.gizmoArrowHeadSize); // \
-    line(centerX + Transform.gizmoArrowLength, centerY, centerX + Transform.gizmoArrowLength - Transform.gizmoArrowHeadSize, centerY - Transform.gizmoArrowHeadSize); // /
     
-    // Draw Y arrow
-    stroke(Colors.Blue);
-    strokeWeight(1.6);
+    // Draw X arrow with hover effect
+    const xStrokeWeight = Transform.isHoveringX || Transform.isDraggingX ? 
+                         Transform.hoverStrokeWeight : Transform.normalStrokeWeight;
+    const xArrowHeadSize = Transform.isHoveringX || Transform.isDraggingX ? 
+                          Transform.arrowHeadHoverSize : Transform.arrowHeadNormalSize;
+                          
+    // X-axis arrow
+    stroke(Colors.Red);
+    strokeWeight(xStrokeWeight);
     strokeCap(ROUND);
-    line(centerX, centerY + Transform.gizmoLineOffset, centerX, centerY + Transform.gizmoArrowLength);    // ----
-    strokeWeight(2);
-    line(centerX, centerY + Transform.gizmoArrowLength, centerX + Transform.gizmoArrowHeadSize, centerY + Transform.gizmoArrowLength - Transform.gizmoArrowHeadSize); // \
-    line(centerX, centerY + Transform.gizmoArrowLength, centerX - Transform.gizmoArrowHeadSize, centerY + Transform.gizmoArrowLength - Transform.gizmoArrowHeadSize); // /
-  
-    // Draw coords next to transform gizmo arrows
+    
+    // Draw X arrow shaft
+    line(centerX + Transform.gizmoLineOffset, centerY, centerX + Transform.gizmoArrowLength, centerY);
+    
+    // X arrow head
+    strokeWeight(xStrokeWeight * 1.1);
+    line(centerX + Transform.gizmoArrowLength, centerY, 
+         centerX + Transform.gizmoArrowLength - xArrowHeadSize, centerY + xArrowHeadSize);
+    line(centerX + Transform.gizmoArrowLength, centerY, 
+         centerX + Transform.gizmoArrowLength - xArrowHeadSize, centerY - xArrowHeadSize);
+    
+    // Draw "X" label
+    noStroke();
+    fill(Colors.Red);
+    textSize(3);
+    textAlign(CENTER, CENTER);
+    text("X", centerX + Transform.gizmoArrowLength + 4, centerY);
+    
+    // Draw Y arrow with hover effect
+    const yStrokeWeight = Transform.isHoveringY || Transform.isDraggingY ? 
+                         Transform.hoverStrokeWeight : Transform.normalStrokeWeight;
+    const yArrowHeadSize = Transform.isHoveringY || Transform.isDraggingY ? 
+                          Transform.arrowHeadHoverSize : Transform.arrowHeadNormalSize;
+    
+    // Y-axis arrow
+    stroke(Colors.Blue);
+    strokeWeight(yStrokeWeight);
+    strokeCap(ROUND);
+    
+    // Draw Y arrow shaft
+    line(centerX, centerY + Transform.gizmoLineOffset, centerX, centerY + Transform.gizmoArrowLength);
+    
+    // Y arrow head
+    strokeWeight(yStrokeWeight * 1.1);
+    line(centerX, centerY + Transform.gizmoArrowLength, 
+         centerX + yArrowHeadSize, centerY + Transform.gizmoArrowLength - yArrowHeadSize);
+    line(centerX, centerY + Transform.gizmoArrowLength, 
+         centerX - yArrowHeadSize, centerY + Transform.gizmoArrowLength - yArrowHeadSize);
+    
+    // Draw "Y" label
+    noStroke();
+    fill(Colors.Blue);
+    textSize(3);
+    textAlign(CENTER, CENTER);
+    text("Y", centerX, centerY + Transform.gizmoArrowLength + 4);
+    
+    // Draw coordinates next to transform gizmo
     fill(0);
     stroke(Colors.BackgroundColor);
     strokeWeight(0.5);
     textAlign(LEFT, CENTER);
     textSize(12/Camera.currentScaleFactor);
   
-    // TODO: Esse código ta um pouco repetido em -> drawCoordinatesOnMouse()
-    // Draw diferent if its a center instead of a vertex
-    if(centerX % 5 == 0 && centerX % 5 == 0)
+    // Format coordinates
+    if(centerX % 5 == 0 && centerY % 5 == 0)
       text(`(${(centerX/5).toFixed(0)}, ${(centerY/5 *-1).toFixed(0)})`, centerX + 2, centerY + 2);
     else 
       text(`(${(centerX/5).toFixed(2)}, ${(centerY/5*-1).toFixed(2)})`, centerX + 2, centerY + 2);
@@ -147,5 +206,23 @@ class Transform {
     const currentMousePos = Mouse.getMousePosForTransform();
     Transform.dx = currentMousePos.x - Mouse.translateInitialX;
     Transform.dy = currentMousePos.y - Mouse.translateInitialY;
+  }
+
+  static drawHitboxX(hitboxX: number, hitboxY: number, hitboxWidth: number, hitboxHeight: number) {
+    push();
+    noFill();
+    stroke(250, 250, 0);
+    strokeWeight(0.2);
+    rect(hitboxX, hitboxY - (hitboxHeight/2), hitboxWidth, hitboxHeight)
+    pop();
+  }
+  
+  static drawHitboxY(hitboxX: number, hitboxY: number, hitboxWidth: number, hitboxHeight: number) {
+    push();
+    noFill();
+    stroke(250, 250, 0);
+    strokeWeight(0.2);
+    rect(hitboxX - (hitboxWidth/2), hitboxY, hitboxWidth, hitboxHeight)
+    pop();
   }
 }

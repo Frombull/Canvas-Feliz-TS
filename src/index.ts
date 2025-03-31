@@ -35,7 +35,7 @@ let polygonsList: Polygon[] = [];
 // ---------------------------------
 // - Bezier curve tool                  - ~~~
 // - Scale tool                         - ~~~
-// - Rotate tool && add snap            - ~~ 
+// - Rotate tool                        - ~~~
 // - Dashed line option to polygon      - 
 // - Set polygon pos menu (like blender)- 
 // - New polygon random color id based  - 

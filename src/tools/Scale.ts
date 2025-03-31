@@ -9,7 +9,8 @@ class Scale {
   static initialVertices: Vertex[] = [];
   static currentScale = {x: 1, y: 1};
   static snapScaleAmmount: number = 10;
-  static scalePivot: Vertex | null = null; // New property to store the scaling pivot point
+  static scalePivot: Vertex | null = null;
+  
   
   static drawScaleGizmo() {
     if (!selectedPolygon) return;
@@ -18,6 +19,9 @@ class Scale {
     if (!pivot) return;
     
     push();
+    
+    // Check for handle hover
+    const hoveredHandle = Scale.checkHandleHover();
     
     const xHandlePos = {
       x: pivot.x + Scale.gizmoScaleDistance,
@@ -29,7 +33,7 @@ class Scale {
     line(pivot.x, pivot.y, xHandlePos.x, xHandlePos.y);
     
     fill(Colors.GizmoScaleColor);
-    if (Scale.scaleAxis === "x") {
+    if (Scale.scaleAxis === "x" || hoveredHandle === "x") {
       stroke(255);
       strokeWeight(0.8);
     } 
@@ -48,7 +52,7 @@ class Scale {
     line(pivot.x, pivot.y, yHandlePos.x, yHandlePos.y);
     
     fill(Colors.GizmoScaleColor);
-    if (Scale.scaleAxis === "y") {
+    if (Scale.scaleAxis === "y" || hoveredHandle === "y") {
       stroke(255);
       strokeWeight(0.8);
     } 
@@ -69,7 +73,7 @@ class Scale {
     drawingContext.setLineDash([]);
     
     fill(Colors.GizmoScaleColor);
-    if (Scale.scaleAxis === "xy") {
+    if (Scale.scaleAxis === "xy" || hoveredHandle === "xy") {
       stroke(255);
       strokeWeight(0.8);
     } 
@@ -275,5 +279,44 @@ class Scale {
     Scale.applyScaleToPolygon(newX, newY);
     
     console.log(`Scale set to: X=${newX.toFixed(2)}, Y=${newY.toFixed(2)}`);
+  }
+
+  static checkHandleHover(): "x" | "y" | "xy" | "" {
+    if (!selectedPolygon) return "";
+    
+    const pivot = selectedVertex || selectedCentroid;
+    if (!pivot) return "";
+    
+    const mousePos = Mouse.mousePosInGrid;
+    const detectRange = Scale.gizmoScaleHandleSize / 2;
+
+    const xHandle = {
+      x: pivot.x + Scale.gizmoScaleDistance,
+      y: pivot.y
+    };
+    if (dist(mousePos.x, mousePos.y, xHandle.x, xHandle.y) < detectRange) {
+      cursor(HAND);
+      return "x";
+    }
+    
+    const yHandle = {
+      x: pivot.x,
+      y: pivot.y - Scale.gizmoScaleDistance
+    };
+    if (dist(mousePos.x, mousePos.y, yHandle.x, yHandle.y) < detectRange) {
+      cursor(HAND);
+      return "y";
+    }
+    
+    const xyHandle = {
+      x: pivot.x + Scale.cornerHandleDistance * 0.707,
+      y: pivot.y - Scale.cornerHandleDistance * 0.707
+    };
+    if (dist(mousePos.x, mousePos.y, xyHandle.x, xyHandle.y) < detectRange) {
+      cursor(HAND);
+      return "xy";
+    }
+    
+    return "";
   }
 }

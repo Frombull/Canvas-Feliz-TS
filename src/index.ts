@@ -33,7 +33,6 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
-// - File for keybinds                  -
 // - Bezier curve tool                  - ~~~
 // - Scale tool                         - ~~~
 // - Rotate tool                        - ~~~

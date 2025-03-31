@@ -8,6 +8,7 @@ class Scale {
   static initialCenter: Vertex | null = null;
   static initialVertices: Vertex[] = [];
   static currentScale = {x: 1, y: 1};
+  static snapScaleAmmount: number = 4;
   
   static drawScaleGizmo() {
     if (!selectedPolygon) return;
@@ -146,57 +147,67 @@ class Scale {
     console.log(`Started scaling on ${axis} axis`);
   }
   
+  static snapScale(value: number): number {
+    if (Keyboard.isShiftPressed)
+      return (Math.round(value * 10) / 10);
+    else
+      return (Math.round(value * Scale.snapScaleAmmount) / Scale.snapScaleAmmount);
+  }
 
-static processScaling() {
-  if (!Scale.isScaling || !selectedPolygon || !Scale.initialMousePos || !Scale.initialCenter) return;
-  
-  const currentMousePos = Mouse.mousePosInGrid;
-  
-  let scaleX = 1;
-  let scaleY = 1;
-  
-  try {
+  static processScaling() {
+    if (!Scale.isScaling || !selectedPolygon || !Scale.initialMousePos || !Scale.initialCenter) return;
     
-    if (Scale.scaleAxis === "x" || Scale.scaleAxis === "xy") {
-      const mouseDeltaX = currentMousePos.x - Scale.initialMousePos.x;
+    const currentMousePos = Mouse.mousePosInGrid;
+    
+    let scaleX = 1;
+    let scaleY = 1;
+    
+    try {
+      if (Scale.scaleAxis === "x" || Scale.scaleAxis === "xy") {
+        const mouseDeltaX = currentMousePos.x - Scale.initialMousePos.x;
+        
+        scaleX = 1 + mouseDeltaX / 25;
+      }
       
-      scaleX = 1 + mouseDeltaX / 25;
-    }
-    
-    if (Scale.scaleAxis === "y" || Scale.scaleAxis === "xy") {
-      const mouseDeltaY = Scale.initialMousePos.y - currentMousePos.y;
+      if (Scale.scaleAxis === "y" || Scale.scaleAxis === "xy") {
+        const mouseDeltaY = Scale.initialMousePos.y - currentMousePos.y;
+        
+        scaleY = 1 + mouseDeltaY / 25;
+      }
       
-      scaleY = 1 + mouseDeltaY / 25;
-    }
-    
-    if (Scale.scaleAxis === "xy") {
-      const dx = currentMousePos.x - Scale.initialMousePos.x;
-      const dy = Scale.initialMousePos.y - currentMousePos.y;  // invertido para Y
-      const delta = (dx + dy) / 2; 
+      if (Scale.scaleAxis === "xy") {
+        const dx = currentMousePos.x - Scale.initialMousePos.x;
+        const dy = Scale.initialMousePos.y - currentMousePos.y;  // invertido para Y
+        const delta = (dx + dy) / 2; 
+        
+        scaleX = scaleY = 1 + delta / 25;
+      }
       
-      scaleX = scaleY = 1 + delta / 25;
-    }
-    
-    scaleX = Math.max(-10, Math.min(scaleX, 10));
-    scaleY = Math.max(-10, Math.min(scaleY, 10));
-    
-    if (Scale.scaleAxis === "x") {
-      scaleY = 1;
-    } else if (Scale.scaleAxis === "y") {
-      scaleX = 1;
-    }
-    
-    Scale.currentScale = { x: scaleX, y: scaleY };
-    
-    Scale.applyScaleToPolygon(scaleX, scaleY);
-    
-  } catch (err) {
-    console.error("Error during scaling:", err);
-    if (selectedPolygon) {
-      selectedPolygon.vertices = Scale.initialVertices.map(v => ({ x: v.x, y: v.y }));
+      scaleX = Scale.snapScale(scaleX);
+      scaleY = Scale.snapScale(scaleY);
+      
+      // Clamp values
+      scaleX = Math.max(-10, Math.min(scaleX, 10));
+      scaleY = Math.max(-10, Math.min(scaleY, 10));
+      
+      if (Scale.scaleAxis === "x") {
+        scaleY = 1;
+      } 
+      else if (Scale.scaleAxis === "y") {
+        scaleX = 1;
+      }
+      
+      Scale.currentScale = { x: scaleX, y: scaleY };
+      
+      Scale.applyScaleToPolygon(scaleX, scaleY);
+      
+    } catch (err) {
+      console.error("Error during scaling:", err);
+      if (selectedPolygon) {
+        selectedPolygon.vertices = Scale.initialVertices.map(v => ({ x: v.x, y: v.y }));
+      }
     }
   }
-}
   
   static applyScaleToPolygon(scaleX: number, scaleY: number) {
     if (!selectedPolygon || !Scale.initialCenter || Scale.initialVertices.length === 0) return;
@@ -227,8 +238,6 @@ static processScaling() {
     Scale.isScaling = false;
     Scale.scaleAxis = "";
     Scale.initialMousePos = null;
-    
-    drawingContext.setLineDash([]);
   }
   
   static setScaleTo(newX: number, newY: number) {

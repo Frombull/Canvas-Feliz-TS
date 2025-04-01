@@ -36,14 +36,12 @@ class Mouse {
         Mouse.selectPolygonUnderMouse();
       }
       else if (selectedTool == Tool.CREATE_POLYGON) { 
-        if (tempPolygon.length > 2) {
-          if (Mouse.isCloseToFirstVertex()) {   // Close polygon
+        if (CreatePolygon.tempPolygon.length > 2) {
+          if (Mouse.isCloseToFirstVertex()) {   // Close polygon // TODO: Move this to the CreatePolygon.ts
             // Force snap to first vertex
-            let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
+            let newPolygon = new Polygon(CreatePolygon.tempPolygon.map(v => ({ x: v.x, y: v.y })));
             
             selectedTool = Tool.NONE;
-            
-            lastCompletePolygon = newPolygon.vertices.map(p => ({x: p.x, y: p.y}));
             
             polygonsList.push(newPolygon);
             newPolygon.setAsSelectePolygon();
@@ -55,11 +53,11 @@ class Mouse {
             // Update UI button
             SidePanel.updateActiveButton();
             
-            tempPolygon = [];
+            CreatePolygon.tempPolygon = [];
             return;
           }
         }
-        tempPolygon.push(Mouse.getMousePosForTransform());
+        CreatePolygon.tempPolygon.push(Mouse.getMousePosForTransform());
       }
       else if (selectedTool == Tool.TRANSLATE) {
         if (selectedCentroid || selectedVertex) {
@@ -306,9 +304,9 @@ class Mouse {
   }
 
   static isCloseToFirstVertex(): boolean {
-    if (tempPolygon.length < 3) return false;
+    if (CreatePolygon.tempPolygon.length < 3) return false;
     
-    const firstVertex = tempPolygon[0];
+    const firstVertex = CreatePolygon.tempPolygon[0];
     const mousePos = Mouse.getMousePosForTransform();
     
     const distance = dist(mousePos.x, mousePos.y, firstVertex.x, firstVertex.y);

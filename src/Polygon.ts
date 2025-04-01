@@ -126,6 +126,7 @@ class Polygon {
     selectedCentroid = null;
     Rotate.resetRotationGizmo();
     this.rotationInRadians = 0;
+    this.scale = {x: 1, y: 1};
   }
 
   public setAsSelectePolygon() {

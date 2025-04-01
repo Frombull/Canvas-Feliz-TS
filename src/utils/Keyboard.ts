@@ -51,14 +51,18 @@ class Keyboard {
   }
 
   static handleEscapeKey() {
-    // If no tool is selected, also deselect polygon
+    // If no tool is selected, deselect polygon
     if (selectedTool == Tool.NONE) {
       selectedPolygon = null;
     }
     
-    // Reset selection states
+    if (selectedTool == Tool.CREATE_POLYGON && CreatePolygon.tempPolygon) {
+      CreatePolygon.cancelPolygonCreation();
+      SidePanel.updateActiveButton();
+      return;
+    }
+
     selectedTool = Tool.NONE;
-    tempPolygon = [];
     selectedVertex = null;
     selectedCentroid = null;
     

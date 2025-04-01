@@ -29,7 +29,7 @@ class SidePanel {
   
     // Create Polygon Button
     new Button('Create Polygon', createSection, () => {
-      tempPolygon = [];
+      CreatePolygon.tempPolygon = [];
       selectedVertex = null;
       selectedCentroid = null;
     }, {
@@ -39,7 +39,7 @@ class SidePanel {
   
     // Translate Tool Button
     new Button('Translate', createSection, () => { 
-      tempPolygon = [];
+      CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.TRANSLATE,
       iconPath: 'icons/translate.svg'
@@ -47,7 +47,7 @@ class SidePanel {
   
     // Rotate Tool Button
     new Button('Rotate', createSection, () => {
-      tempPolygon = [];
+      CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.ROTATE,
       iconPath: 'icons/rotate.svg'
@@ -55,7 +55,7 @@ class SidePanel {
 
     // Scale Tool Button
     new Button('Scale', createSection, () => {
-      tempPolygon = [];
+      CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.SCALE,
       iconPath: 'icons/scale.svg'

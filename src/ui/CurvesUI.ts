@@ -274,7 +274,7 @@ class CurvesUI {
     const maxPointsForCurrentType = Curves.bezierType === BezierType.CUBIC ? 4 : 3;
     const mousePos = Mouse.getMousePosForTransform();
     if(Curves.bezierPoints.length < maxPointsForCurrentType){
-      drawCircleOnMouse(Colors.bezierControlPointColor, mousePos);
+      CurvesUI.drawCircleOnMouse(Colors.bezierControlPointColor, mousePos);
       drawCoordinatesOnMouse();
     }
     
@@ -516,4 +516,14 @@ class CurvesUI {
       }
     }
   }
+
+
+  private static drawCircleOnMouse(circleColor: any, mousePos: Vertex) {
+    push();
+    fill(circleColor);
+    noStroke();
+    ellipse(mousePos.x, mousePos.y, Polygon.normalVertexRadius);
+    pop();
+  }
+
 }

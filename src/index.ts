@@ -5,11 +5,8 @@ let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: an
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
  buttonBezier: any, buttonCurves: any;;
 let canvas: any;
-let tempPolygon: { x: number; y: number }[] = [];
-let lastCompletePolygon: { x: number; y: number }[] = [];
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
-let toolIcons: {[key: string]: any} = {};
 enum BezierType {
   QUADRATIC,
   CUBIC
@@ -33,10 +30,9 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
-// - Fix scale showing wrong numbers    - 
 // - Bezier curve tool                  - ~~~
-// - Scale tool                         - ~~~
-// - Rotate tool                        - ~~~
+// - Scale tool                         - OK
+// - Rotate tool                        - OK
 // - Dashed line option to polygon      - 
 // - Set polygon pos menu (like blender)- 
 // - New polygon random color id based  - 
@@ -99,7 +95,7 @@ function draw() {
 function handleToolsLogic() {
   switch (selectedTool) {
     case Tool.CREATE_POLYGON:
-      drawPolygonBeingCreated();
+      CreatePolygon.drawPolygonBeingCreated();
       ToolInfo.drawSnapToGridInfo();
       cursor(CROSS); 
       break;
@@ -151,15 +147,6 @@ function drawCoordinatesOnMouse() {
   pop();
 }
 
-function drawCircleOnMouse(circleColor: any, mousePos: Vertex) {
-  push();
-  fill(circleColor);
-  noStroke();
-  //strokeWeight(0.4);
-  ellipse(mousePos.x, mousePos.y, Polygon.normalVertexRadius);
-  pop();
-}
-
 function selectNearestVertex(): boolean { // Selects vertex or center
   let selectDistance = 2;
 
@@ -199,74 +186,6 @@ function selectNearestVertex(): boolean { // Selects vertex or center
     }
   }
   return false;
-}
-
-function drawPolygonBeingCreated() {
-  push();
-
-  const mousePos = Mouse.getMousePosForTransform();
-
-  // Draw filled shape up to current points
-  if (tempPolygon.length > 0) {
-    stroke(Colors.edgeColor);
-    strokeJoin(ROUND);
-    strokeWeight(Polygon.edgeWidth);
-    fill(Colors.PolygonBlue);
-    
-    // Dashed line start
-    drawingContext.setLineDash([3, 1.5]);
-    
-    beginShape();
-    for (let p of tempPolygon) {
-      vertex(p.x, p.y);
-    }
-    vertex(mousePos.x, mousePos.y);
-    endShape();
-
-    // Dashed line end
-    drawingContext.setLineDash([]);
-
-    // Draw each vertex of tempPolygon
-    if (SidePanel.shouldDrawVertices) {
-      noStroke();
-      fill(Colors.vertexColor);
-      for(let v of tempPolygon) {
-        ellipse(v.x, v.y, Polygon.normalVertexRadius);
-      }
-    }
-
-    // Draw red circle around first vertex
-    noFill();
-    stroke(Colors.Red);
-    strokeWeight(0.2);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.normalVertexRadius);
-  }
-
-  // Draw circle around first vertex when you're about to close the polygon
-  if (tempPolygon.length > 2 && Mouse.isCloseToFirstVertex()) {
-    noFill();
-    stroke(Colors.Red);
-    strokeWeight(0.4);
-    ellipse(tempPolygon[0].x, tempPolygon[0].y, Polygon.normalVertexRadius * 2);
-    
-    const mousePos = {x: tempPolygon[0].x, y: tempPolygon[0].y};
-    vertex(mousePos.x, mousePos.y);
-  } 
-  else {
-    const mousePos = Mouse.getMousePosForTransform();
-    vertex(mousePos.x, mousePos.y);
-  }
-
-  pop();
-
-  drawCircleOnMouse(Colors.GrayWithAlpha, mousePos);
-  drawCoordinatesOnMouse();
-}
-
-function cancelPolygonCreation() {
-  selectedTool = Tool.NONE;
-  tempPolygon = [];
-  buttonCreate.setActive(false);
 }
 
 function deselectPolygon() {

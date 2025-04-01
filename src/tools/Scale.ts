@@ -9,7 +9,7 @@ class Scale {
   static initialVertices: Vertex[] = [];
   static snapScaleAmount: number = 10;
   static scalePivot: Vertex | null = null;
-  static initialScale: { x: number, y: number } = { x: 1, y: 1 };
+  static initialScale: { x: number, y: number };
   
   static drawScaleGizmo() {
     if (!selectedPolygon) return;
@@ -156,18 +156,10 @@ class Scale {
     Scale.scalePivot = { x: pivot.x, y: pivot.y };
     Scale.initialVertices = selectedPolygon.vertices.map(v => ({ x: v.x, y: v.y }));
     
-    // Store the initial scale of the polygon
     Scale.initialScale = { ...selectedPolygon.getScale() };
     
     console.log(`Started scaling on ${axis} axis with pivot at (${Scale.scalePivot.x}, ${Scale.scalePivot.y})`);
     console.log(`Initial scale: X=${Scale.initialScale.x}, Y=${Scale.initialScale.y}`);
-  }
-  
-  static snapScale(value: number): number {
-    if (Keyboard.isShiftPressed)
-      return (Math.round(value));
-    else
-      return (Math.round(value * Scale.snapScaleAmount) / Scale.snapScaleAmount);
   }
 
   static processScaling() {
@@ -179,30 +171,26 @@ class Scale {
     let scaleFactorY = 1;
     
     try {
+      // Calculate relative scale change based on mouse movement
+      const scaleSensitivity = 0.04; // Adjust scaling sensitivity
+      
       if (Scale.scaleAxis === "x" || Scale.scaleAxis === "xy") {
         const mouseDeltaX = currentMousePos.x - Scale.initialMousePos.x;
-        scaleFactorX = 1 + mouseDeltaX / 25;
+        scaleFactorX = 1 + (mouseDeltaX * scaleSensitivity);
       }
       
       if (Scale.scaleAxis === "y" || Scale.scaleAxis === "xy") {
         const mouseDeltaY = Scale.initialMousePos.y - currentMousePos.y;
-        scaleFactorY = 1 + mouseDeltaY / 25;
+        scaleFactorY = 1 + (mouseDeltaY * scaleSensitivity);
       }
       
       if (Scale.scaleAxis === "xy") {
         const dx = currentMousePos.x - Scale.initialMousePos.x;
-        const dy = Scale.initialMousePos.y - currentMousePos.y;  // inverted for Y
-        const delta = (dx + dy) / 2; 
+        const dy = Scale.initialMousePos.y - currentMousePos.y; // inverted for Y
+        const delta = (dx + dy) / 2;
         
-        scaleFactorX = scaleFactorY = 1 + delta / 25;
+        scaleFactorX = scaleFactorY = 1 + (delta * scaleSensitivity);
       }
-      
-      scaleFactorX = Scale.snapScale(scaleFactorX);
-      scaleFactorY = Scale.snapScale(scaleFactorY);
-      
-      // Clamp values
-      scaleFactorX = Math.max(-10, Math.min(scaleFactorX, 10));
-      scaleFactorY = Math.max(-10, Math.min(scaleFactorY, 10));
       
       if (Scale.scaleAxis === "x") {
         scaleFactorY = 1;
@@ -211,18 +199,33 @@ class Scale {
         scaleFactorX = 1;
       }
       
-      // Calculate new scale based on initial scale and scaling factor
-      const newScaleX = Scale.initialScale.x * scaleFactorX;
-      const newScaleY = Scale.initialScale.y * scaleFactorY;
+      let newScaleX = Scale.initialScale.x * scaleFactorX;
+      let newScaleY = Scale.initialScale.y * scaleFactorY;
       
-      // Update the polygon's scale property
+      if (!Keyboard.isShiftPressed) {
+        newScaleX = Math.round(newScaleX * Scale.snapScaleAmount) / Scale.snapScaleAmount;
+        newScaleY = Math.round(newScaleY * Scale.snapScaleAmount) / Scale.snapScaleAmount;
+      } else {
+        newScaleX = Math.round(newScaleX);
+        newScaleY = Math.round(newScaleY);
+      }
+      
+      // Clamp scales to reasonable values
+      newScaleX = Math.max(-10, Math.min(newScaleX, 10));
+      newScaleY = Math.max(-10, Math.min(newScaleY, 10));
+      
+      // Update polygon scale property with new calculated values
       selectedPolygon.setScale({
         x: newScaleX,
         y: newScaleY
       });
       
-      // Apply the scale transformation to the vertices
-      Scale.applyScaleToPolygon(scaleFactorX, scaleFactorY);
+      // Calculate effective scale factors based on snapped/clamped values
+      const effectiveScaleFactorX = newScaleX / Scale.initialScale.x;
+      const effectiveScaleFactorY = newScaleY / Scale.initialScale.y;
+      
+      // Apply the actual scale transformation to vertices using effective scale factors
+      Scale.applyScaleToPolygon(effectiveScaleFactorX, effectiveScaleFactorY);
       
     } catch (err) {
       console.error("Error during scaling:", err);
@@ -241,7 +244,7 @@ class Scale {
     for (let i = 0; i < Scale.initialVertices.length; i++) {
       const origVertex = Scale.initialVertices[i];
       
-      // Use the scale pivot point (selected vertex or center) as the reference point
+      // Use scale pivot point (selected vertex or center) as reference point
       const dx = origVertex.x - Scale.scalePivot.x;
       const dy = origVertex.y - Scale.scalePivot.y;
       

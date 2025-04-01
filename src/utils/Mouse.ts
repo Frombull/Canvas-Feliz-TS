@@ -40,7 +40,6 @@ class Mouse {
           if (Mouse.isCloseToFirstVertex()) {   // Close polygon
             // Force snap to first vertex
             let newPolygon = new Polygon(tempPolygon.map(v => ({ x: v.x, y: v.y })));
-            Scale.currentScale = {x: 1, y: 1}
             
             selectedTool = Tool.NONE;
             

@@ -33,6 +33,7 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
+// - Fix scale showing wrong numbers    - 
 // - Bezier curve tool                  - ~~~
 // - Scale tool                         - ~~~
 // - Rotate tool                        - ~~~

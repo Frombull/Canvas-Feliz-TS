@@ -7,7 +7,6 @@ class Scale {
   static initialMousePos: Vertex | null = null;
   static initialCenter: Vertex | null = null;
   static initialVertices: Vertex[] = [];
-  static currentScale = {x: 1, y: 1};
   static snapScaleAmmount: number = 10;
   static scalePivot: Vertex | null = null;
   
@@ -93,13 +92,13 @@ class Scale {
       textSize(3);
       
       if (Scale.scaleAxis === "x") {
-        text(`X: ${Scale.currentScale.x.toFixed(2)}`, xHandlePos.x, xHandlePos.y - 8);
+        text(`X: ${selectedPolygon.getScale().x.toFixed(2)}`, xHandlePos.x, xHandlePos.y - 8);
       } 
       else if (Scale.scaleAxis === "y") {
-        text(`Y: ${Scale.currentScale.y.toFixed(2)}`, yHandlePos.x, yHandlePos.y - 8);
+        text(`Y: ${selectedPolygon.getScale().y.toFixed(2)}`, yHandlePos.x, yHandlePos.y - 8);
       } 
       else if (Scale.scaleAxis === "xy") {
-        text(`${Scale.currentScale.x.toFixed(2)}`, xyHandlePos.x, xyHandlePos.y - 8);
+        text(`${selectedPolygon.getScale().x.toFixed(2)}`, xyHandlePos.x, xyHandlePos.y - 8);
       }
     }
     
@@ -210,14 +209,14 @@ class Scale {
         scaleX = 1;
       }
       
-      Scale.currentScale = { x: scaleX, y: scaleY };
+      selectedPolygon.setScale({x: scaleX, y: scaleY});
       
       Scale.applyScaleToPolygon(scaleX, scaleY);
       
     } catch (err) {
       console.error("Error during scaling:", err);
       if (selectedPolygon) {
-        selectedPolygon.vertices = Scale.initialVertices.map(v => ({ x: v.x, y: v.y }));
+        selectedPolygon.vertices = Scale.initialVertices.map(v => ({x: v.x, y: v.y}));
       }
     }
   }
@@ -245,40 +244,10 @@ class Scale {
   }
   
   static endScaling() {
-    if (Scale.isScaling) {
-      console.log(`Scaling ended. Final scale: X=${Scale.currentScale.x.toFixed(2)}, Y=${Scale.currentScale.y.toFixed(2)}`);
-    }
-    
     Scale.isScaling = false;
     Scale.scaleAxis = "";
     Scale.initialMousePos = null;
     Scale.scalePivot = null; // Reset scale pivot
-  }
-  
-  static setScaleTo(newX: number, newY: number) {
-    if (!selectedPolygon) return;
-    
-    // Use selected vertex or polygon center as pivot
-    let pivot;
-    if (selectedVertex) {
-      pivot = { x: selectedVertex.x, y: selectedVertex.y };
-    } else {
-      const center = selectedPolygon.getCenter();
-      pivot = { x: center.x, y: center.y };
-    }
-    
-    Scale.scalePivot = pivot;
-    
-    if (Scale.initialVertices.length === 0) {
-      Scale.initialVertices = selectedPolygon.vertices.map(v => ({ x: v.x, y: v.y }));
-    }
-    
-    Scale.currentScale.x = newX;
-    Scale.currentScale.y = newY;
-    
-    Scale.applyScaleToPolygon(newX, newY);
-    
-    console.log(`Scale set to: X=${newX.toFixed(2)}, Y=${newY.toFixed(2)}`);
   }
 
   static checkHandleHover(): "x" | "y" | "xy" | "" {

@@ -13,7 +13,8 @@ class Polygon {
   // Private properties
   private history: Vertex[][];
   private redoHistory: Vertex[][];
-  private rotationInRadians: number = 0;   // Polygon rotation in radians
+  private rotationInRadians: number;   // Polygon rotation in radians
+  private scale: {x: number, y: number};   // Polygon scale
   
   // Instance properties
   public readonly id: number;
@@ -33,6 +34,7 @@ class Polygon {
   constructor(initialVertices: Vertex[] = []) {
     this.id = Polygon.nextId++;
     
+    // Set color stuff
     this.vertexColor = Colors.vertexColor;
     this.edgeColor = Colors.edgeColor;
     this.fillColor = Colors.PolygonBlue;
@@ -41,8 +43,13 @@ class Polygon {
     this.vertices = this.copyVertices(initialVertices);
     this.initialShape = this.copyVertices(initialVertices);
     
+    // Set history stuff
     this.history = [];
     this.redoHistory = [];
+
+    // Set transform stuff
+    this.rotationInRadians = 0;
+    this.scale = {x: 1, y: 1};
   }
 
   private copyVertices(vertices: Vertex[]): Vertex[] {
@@ -201,6 +208,7 @@ class Polygon {
   public getRotationInRadians(): number {
     return this.rotationInRadians;
   }
+
   public setRotationInRadians(newAngleInRadians: number) {
     // Skip if angle is the same
     if (this.rotationInRadians === newAngleInRadians) return;
@@ -239,5 +247,13 @@ class Polygon {
     
     // Update stored angle
     this.rotationInRadians = newAngleInRadians;
+  }
+
+  public getScale(): { x: number; y: number; } {
+    return this.scale;
+  }
+  
+  public setScale(newScale: { x: number; y: number; }) {
+    this.scale = newScale;
   }
 }

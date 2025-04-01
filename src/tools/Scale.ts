@@ -7,9 +7,9 @@ class Scale {
   static initialMousePos: Vertex | null = null;
   static initialCenter: Vertex | null = null;
   static initialVertices: Vertex[] = [];
-  static snapScaleAmmount: number = 10;
+  static snapScaleAmount: number = 10;
   static scalePivot: Vertex | null = null;
-  
+  static initialScale: { x: number, y: number } = { x: 1, y: 1 };
   
   static drawScaleGizmo() {
     if (!selectedPolygon) return;
@@ -91,14 +91,16 @@ class Scale {
       textAlign(CENTER, CENTER);
       textSize(3);
       
+      const currentScale = selectedPolygon.getScale();
+      
       if (Scale.scaleAxis === "x") {
-        text(`X: ${selectedPolygon.getScale().x.toFixed(2)}`, xHandlePos.x, xHandlePos.y - 8);
+        text(`X: ${currentScale.x.toFixed(2)}`, xHandlePos.x, xHandlePos.y - 8);
       } 
       else if (Scale.scaleAxis === "y") {
-        text(`Y: ${selectedPolygon.getScale().y.toFixed(2)}`, yHandlePos.x, yHandlePos.y - 8);
+        text(`Y: ${currentScale.y.toFixed(2)}`, yHandlePos.x, yHandlePos.y - 8);
       } 
       else if (Scale.scaleAxis === "xy") {
-        text(`${selectedPolygon.getScale().x.toFixed(2)}`, xyHandlePos.x, xyHandlePos.y - 8);
+        text(`${currentScale.x.toFixed(2)}`, xyHandlePos.x, xyHandlePos.y - 8);
       }
     }
     
@@ -151,19 +153,21 @@ class Scale {
     Scale.isScaling = true;
     Scale.scaleAxis = axis;
     Scale.initialMousePos = { ...Mouse.mousePosInGrid };
-    
     Scale.scalePivot = { x: pivot.x, y: pivot.y };
-    
     Scale.initialVertices = selectedPolygon.vertices.map(v => ({ x: v.x, y: v.y }));
     
+    // Store the initial scale of the polygon
+    Scale.initialScale = { ...selectedPolygon.getScale() };
+    
     console.log(`Started scaling on ${axis} axis with pivot at (${Scale.scalePivot.x}, ${Scale.scalePivot.y})`);
+    console.log(`Initial scale: X=${Scale.initialScale.x}, Y=${Scale.initialScale.y}`);
   }
   
   static snapScale(value: number): number {
     if (Keyboard.isShiftPressed)
       return (Math.round(value));
     else
-      return (Math.round(value * Scale.snapScaleAmmount) / Scale.snapScaleAmmount);
+      return (Math.round(value * Scale.snapScaleAmount) / Scale.snapScaleAmount);
   }
 
   static processScaling() {
@@ -171,57 +175,65 @@ class Scale {
     
     const currentMousePos = Mouse.mousePosInGrid;
     
-    let scaleX = 1;
-    let scaleY = 1;
+    let scaleFactorX = 1;
+    let scaleFactorY = 1;
     
     try {
       if (Scale.scaleAxis === "x" || Scale.scaleAxis === "xy") {
         const mouseDeltaX = currentMousePos.x - Scale.initialMousePos.x;
-        
-        scaleX = 1 + mouseDeltaX / 25;
+        scaleFactorX = 1 + mouseDeltaX / 25;
       }
       
       if (Scale.scaleAxis === "y" || Scale.scaleAxis === "xy") {
         const mouseDeltaY = Scale.initialMousePos.y - currentMousePos.y;
-        
-        scaleY = 1 + mouseDeltaY / 25;
+        scaleFactorY = 1 + mouseDeltaY / 25;
       }
       
       if (Scale.scaleAxis === "xy") {
         const dx = currentMousePos.x - Scale.initialMousePos.x;
-        const dy = Scale.initialMousePos.y - currentMousePos.y;  // invertido para Y
+        const dy = Scale.initialMousePos.y - currentMousePos.y;  // inverted for Y
         const delta = (dx + dy) / 2; 
         
-        scaleX = scaleY = 1 + delta / 25;
+        scaleFactorX = scaleFactorY = 1 + delta / 25;
       }
       
-      scaleX = Scale.snapScale(scaleX);
-      scaleY = Scale.snapScale(scaleY);
+      scaleFactorX = Scale.snapScale(scaleFactorX);
+      scaleFactorY = Scale.snapScale(scaleFactorY);
       
       // Clamp values
-      scaleX = Math.max(-10, Math.min(scaleX, 10));
-      scaleY = Math.max(-10, Math.min(scaleY, 10));
+      scaleFactorX = Math.max(-10, Math.min(scaleFactorX, 10));
+      scaleFactorY = Math.max(-10, Math.min(scaleFactorY, 10));
       
       if (Scale.scaleAxis === "x") {
-        scaleY = 1;
+        scaleFactorY = 1;
       } 
       else if (Scale.scaleAxis === "y") {
-        scaleX = 1;
+        scaleFactorX = 1;
       }
       
-      selectedPolygon.setScale({x: scaleX, y: scaleY});
+      // Calculate new scale based on initial scale and scaling factor
+      const newScaleX = Scale.initialScale.x * scaleFactorX;
+      const newScaleY = Scale.initialScale.y * scaleFactorY;
       
-      Scale.applyScaleToPolygon(scaleX, scaleY);
+      // Update the polygon's scale property
+      selectedPolygon.setScale({
+        x: newScaleX,
+        y: newScaleY
+      });
+      
+      // Apply the scale transformation to the vertices
+      Scale.applyScaleToPolygon(scaleFactorX, scaleFactorY);
       
     } catch (err) {
       console.error("Error during scaling:", err);
       if (selectedPolygon) {
         selectedPolygon.vertices = Scale.initialVertices.map(v => ({x: v.x, y: v.y}));
+        selectedPolygon.setScale(Scale.initialScale);
       }
     }
   }
   
-  static applyScaleToPolygon(scaleX: number, scaleY: number) {
+  static applyScaleToPolygon(scaleFactorX: number, scaleFactorY: number) {
     if (!selectedPolygon || !Scale.scalePivot || Scale.initialVertices.length === 0) return;
     
     const oldVertices = selectedPolygon.saveStateBeforeChange();
@@ -233,8 +245,8 @@ class Scale {
       const dx = origVertex.x - Scale.scalePivot.x;
       const dy = origVertex.y - Scale.scalePivot.y;
       
-      const scaledX = dx * scaleX;
-      const scaledY = dy * scaleY;
+      const scaledX = dx * scaleFactorX;
+      const scaledY = dy * scaleFactorY;
       
       selectedPolygon.vertices[i].x = Scale.scalePivot.x + scaledX;
       selectedPolygon.vertices[i].y = Scale.scalePivot.y + scaledY;
@@ -247,7 +259,8 @@ class Scale {
     Scale.isScaling = false;
     Scale.scaleAxis = "";
     Scale.initialMousePos = null;
-    Scale.scalePivot = null; // Reset scale pivot
+    Scale.scalePivot = null;
+    Scale.initialScale = { x: 1, y: 1 };
   }
 
   static checkHandleHover(): "x" | "y" | "xy" | "" {

@@ -31,8 +31,6 @@ let polygonsList: Polygon[] = [];
 // TODOs:
 // ---------------------------------
 // - Bezier curve tool                  - ~~~
-// - Scale tool                         - OK
-// - Rotate tool                        - OK
 // - Dashed line option to polygon      - 
 // - Set polygon pos menu (like blender)- 
 // - New polygon random color id based  - 
@@ -83,13 +81,8 @@ function draw() {
 
   handleToolsLogic();
 
-  // if (!selectedPolygon){
-  //   SidePanel.colorPicker.value('#ffffff');
-  // }
-
   // Debug
   DebugUI.drawDebugWindow();
-  //debugDrawArrowHitboxes();
 }
 
 function handleToolsLogic() {
@@ -206,7 +199,6 @@ function windowResized() {
   SidePanel.handleWindowResize();
   redraw();
 }
-
 
 // --------- MOUSE & KEYBOARD ---------
 

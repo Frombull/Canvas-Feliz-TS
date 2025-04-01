@@ -409,15 +409,12 @@ input[type="text"]:focus {
 }
 
 .tool-icon svg {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   fill: currentColor;
   display: block;
-}
-
-/* Not working TODO: */
-.button.active .tool-icon svg {
-  fill: white;
+  overflow: visible;
+  box-sizing: content-box;
 }
 
 .tool-label {
@@ -445,10 +442,10 @@ input[type="text"]:focus {
 
 .button.icon-only .tool-icon {
   margin: 0;
-  min-width: auto;
+  min-width: 24px; 
 }
 
 .button.icon-only svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }

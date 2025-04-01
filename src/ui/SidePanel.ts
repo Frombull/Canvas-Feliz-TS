@@ -106,6 +106,8 @@ class SidePanel {
       if(selectedPolygon) {
         selectedPolygon.resetPolygon();
       }
+    }, {
+      iconPath: 'icons/reset.svg'
     });
 
     // ------------------------------ COLOR PICKER ------------------------------
@@ -115,7 +117,7 @@ class SidePanel {
     ColorPickerUI.colorPickerButton = new Button('Color Picker', createSection, () => {
       ColorPickerUI.toggle();
     }, {
-      iconPath: 'icons/color-palette-v2.svg'
+      iconPath: 'icons/color-palette.svg' // TODO: Edit color-palette-v2.svg to remove outline
     });
 
     // ------------------------------  ------------------------------
@@ -149,7 +151,7 @@ class SidePanel {
     new Button('', createSection, () => {
       SidePanel.shouldDrawDebugWindow = !SidePanel.shouldDrawDebugWindow;
     }, {
-      iconPath: 'icons/debug.svg',
+      iconPath: 'icons/debug-v2.svg', // TODO: Edit debug.svg to remove outline
       fixedWidth: false,
     });
     

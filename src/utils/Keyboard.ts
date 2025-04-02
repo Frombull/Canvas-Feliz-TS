@@ -65,6 +65,7 @@ class Keyboard {
     selectedTool = Tool.NONE;
     selectedVertex = null;
     selectedCentroid = null;
+    // TODO Hide collor picker
     
     // Update button visuals
     SidePanel.updateActiveButton();

@@ -449,3 +449,132 @@ input[type="text"]:focus {
   width: 24px;
   height: 24px;
 }
+
+/* ----------------- */
+/* Animation Panel Styles */
+
+.animation-panel.playing .play-animation-button {
+  background-color: #f5f5f5;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Timeline Styles */
+.timeline-wrapper {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timeline-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.keyframe-indicators {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Timeline markers */
+.timeline-marker {
+  position: absolute;
+  pointer-events: none;
+}
+
+.timeline-marker-label {
+  font-family: monospace;
+  pointer-events: none;
+}
+
+.current-frame-indicator {
+  pointer-events: none;
+}
+
+.playhead {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Playback Controls */
+.playback-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.playback-buttons-container .button {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.prev-keyframe-button, .next-keyframe-button {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Keyframe Controls */
+.keyframe-controls-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.keyframe-controls-container .button {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.add-keyframe-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.add-keyframe-button:hover {
+  background-color: #45a049;
+}
+
+.delete-keyframe-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-keyframe-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Frame and Settings Sliders */
+.frame-control-container,
+.framerate-container,
+.max-frames-container {
+  margin-bottom: 10px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider {
+  flex: 1;
+}

@@ -5,4 +5,5 @@ class Keybinds {
   static readonly ROTATE = "r";
   static readonly SCALE = "s";
   static readonly OPEN_COLOR_PALETTE = "c";
+  static readonly ANIMATION = "a";
 }

@@ -67,6 +67,15 @@ class SidePanel {
     }, {
       iconPath: 'icons/curve.svg'
     });
+    
+    // Animation Button
+    new Button('Animation', createSection, () => {
+      selectedTool = Tool.ANIMATION;
+      AnimationUI.toggleAnimationPanel(true);
+    }, {
+      tool: Tool.ANIMATION,
+      iconPath: 'icons/animation-icon.svg'
+    });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
   
@@ -106,8 +115,6 @@ class SidePanel {
       if(selectedPolygon) {
         selectedPolygon.resetPolygon();
       }
-    }, {
-      iconPath: 'icons/reset.svg'
     });
 
     // ------------------------------ COLOR PICKER ------------------------------
@@ -157,6 +164,7 @@ class SidePanel {
     
     SidePanel.initColorPickerUI();
     CurvesUI.setupCurvesUI();
+    AnimationUI.createAnimationPanel();
 
     // Set the initial active tool
     SidePanel.updateActiveButton();
@@ -185,12 +193,13 @@ class SidePanel {
   }
 
   static handleWindowResize() {
-    let controlPanel = select('.control-panel:not(.curves-panel)');
+    let controlPanel = select('.control-panel:not(.curves-panel):not(.animation-panel)');
     
     if (controlPanel) {
       controlPanel.position(windowWidth - SidePanel.controlPanelSize.x, SidePanel.controlPanelSize.y);
     }
     
     CurvesUI.handleWindowResize();
+    AnimationUI.handleWindowResize();
   }
 }

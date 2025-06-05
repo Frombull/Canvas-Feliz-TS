@@ -81,8 +81,26 @@ class DebugUI {
     this.addSpacing();
     this.updateItem("Polygons Count", polygonsList.length);
     this.updateItem("Snap to Grid", Keyboard.isShiftPressed ? "OFF" : "ON");
-    this.updateItem("Rotation Rad", selectedPolygon?.getRotationInRadians())
-    this.updateItem("Rotation Deg", selectedPolygon?.getRotationInDegrees())
+    
+    if (selectedPolygon) {
+      this.updateItem("Rotation Rad", selectedPolygon.getRotationInRadians().toFixed(2));
+      this.updateItem("Rotation Deg", selectedPolygon.getRotationInDegrees().toFixed(1));
+    } else {
+      this.updateItem("Rotation Rad", "-");
+      this.updateItem("Rotation Deg", "-");
+    }
+    
+    // Animation info if Animation tool is selected
+    if (selectedTool === Tool.ANIMATION) {
+      this.addSpacing();
+      this.updateItem("Animation Frame", PolygonAnimation.currentFrame);
+      this.updateItem("Animation Status", PolygonAnimation.isPlaying ? "Playing" : "Paused");
+      
+      if (selectedPolygon) {
+        const keyframeCount = PolygonAnimation.getPolygonKeyframes(selectedPolygon.id).length;
+        this.updateItem("Polygon Keyframes", keyframeCount);
+      }
+    }
 
 //     // Memory stuff (Chrome only)
 //     if (window.performance && (performance as any).memory) {

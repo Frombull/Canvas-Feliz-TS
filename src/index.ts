@@ -3,7 +3,7 @@
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any,
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,
- buttonBezier: any, buttonCurves: any;;
+ buttonBezier: any, buttonCurves: any, buttonAnimation: any;
 let canvas: any;
 let selectedVertex: {x: number, y: number} | null;          // Selected vertex for transformation
 let selectedCentroid: {x: any, y: any} | null;              // Selected centroid for transformation
@@ -20,7 +20,8 @@ enum Tool {
   SHEAR_U,
   SHEAR_NU,
   ROTATE,
-  BEZIER
+  BEZIER,
+  ANIMATION
 }
 let selectedTool: Tool = Tool.NONE;
 
@@ -30,20 +31,9 @@ let polygonsList: Polygon[] = [];
 
 // TODOs:
 // ---------------------------------
-// - Bezier curve tool                  - ~~~
-// - Dashed line option to polygon      - 
-// - Set polygon pos menu (like blender)- 
-// - New polygon random color id based  - 
 // - X/Y axis arrow                     - 
-// - Hermite curve tool                 - 
-// - Ruler tool                         - 
 // - Create ToolsManager.ts?            - 
 // - Annimation with button CLICK       - 
-// - ShearU / ShearNU tool              - 
-// - Undo / Redo                        - ~
-// - Save / Load                        - 
-// -                                    - 
-// - Start working on 3D version        - 
 // ---------------------------------
 
 
@@ -115,6 +105,14 @@ function handleToolsLogic() {
     case Tool.BEZIER:
       CurvesUI.drawBezierControls();
       Curves.updateAnimation();
+      ToolInfo.drawSnapToGridInfo();
+      break;
+      
+    case Tool.ANIMATION:
+      // Update animation state if playing
+      PolygonAnimation.updateAnimation();
+      // Draw visualization of animation state
+      PolygonAnimation.drawAnimationState();
       ToolInfo.drawSnapToGridInfo();
       break;
 

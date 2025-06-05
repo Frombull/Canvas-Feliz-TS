@@ -52,7 +52,7 @@ class Polygon {
     this.scale = {x: 1, y: 1};
   }
 
-  private copyVertices(vertices: Vertex[]): Vertex[] {
+  public copyVertices(vertices: Vertex[]): Vertex[] {
     return vertices.map(p => ({x: p.x, y: p.y}));
   }
 

@@ -27,6 +27,12 @@ class Keyboard {
         ColorPickerUI.toggle();
         SidePanel.updateActiveButton();
         return;
+
+      case Keybinds.ANIMATION:                   // Animation
+        selectedTool = Tool.ANIMATION;
+        AnimationUI.toggleAnimationPanel(true);
+        SidePanel.updateActiveButton();
+        return;
     }
 
     switch (keyCode) {

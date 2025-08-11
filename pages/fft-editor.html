@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFT Image Editor - PixelForge</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 32px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 42px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 16px;
+            color: #1e3c72;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 42px;
+            margin-top: 0px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .upload-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 36px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .file-input-wrapper:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 14px 32px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            background: hsl(210, 60%, 97%);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 0 10px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .control-group input[type="range"] {
+            width: 120px;
+        }
+
+        .control-group select {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+
+        #brushSizeValue {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-bottom: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .canvas-section {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-section h3 {
+            color: #4a5568;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .canvas-section canvas {
+            border: 4px solid hsl(210, 60%, 97%);
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+
+        .canvas-section:first-child canvas {
+            cursor: default;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .canvas-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-group label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="main.html" class="back-button">← Voltar</a>
+    
+    <div class="container">
+        <h1>Editor de Imagens FFT</h1>
+        
+        <div class="canvas-container" style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div class="canvas-section" style="flex: 1">
+                <h3>Imagem Original</h3>
+                <canvas id="originalCanvas" width="512" height="512"></canvas>
+                <div class="upload-section">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="imageUpload" accept="image/*">
+                        📸 Escolha uma Imagem 📸
+                    </div>
+                </div>
+            </div>
+            <div class="canvas-section" style="flex: 1;">
+                <h3>Domínio da Frequência</h3>
+                <canvas id="fftCanvas" width="512" height="512"></canvas>
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Pincel:</label>
+                        <select id="drawMode">
+                            <option value="erase">⚫ Preto</option>
+                            <option value="smooth">⚫ Suavizar</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Tamanho:</label>
+                        <input type="range" id="brushSize" min="10" max="100" value="20">
+                        <span id="brushSizeValue">20</span>
+                    </div>
+                    <button onclick="resetFFT()">🔄 Limpar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../FFT-image-editor/sketch.js"></script>
+</body>
+</html>

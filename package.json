@@ -9,7 +9,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/p5": "^1.7.6"
+    "@types/p5": "^1.7.6",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "@jaames/iro": "^5.5.2",

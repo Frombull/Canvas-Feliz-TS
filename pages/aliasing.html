@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Feliz - Demonstração de Aliasing</title>
+    
+    <style>
+        body {
+            background-color: #1a1a1a;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .back-to-main {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 10px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .back-to-main:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(40, 40, 40, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 280px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #555;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ff6b35;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ff6b35;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(255, 107, 53, 0.1);
+            color: #ff6b35;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(40, 40, 40, 0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .info h3 {
+            margin: 0 0 8px 0;
+            color: #ff6b35;
+            font-size: 14px;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+
+<body>
+    <a href="main.html" class="back-to-main">← Menu Principal</a>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label class="control-label">
+                Frequência de Amostragem
+                <span class="value-display" id="samplingDisplay">5 Hz</span>
+            </label>
+            <input type="range" id="samplingSlider" class="slider" min="1" max="20" value="5" step="0.5">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                Número de Pontos
+                <span class="value-display" id="pointsDisplay">20</span>
+            </label>
+            <input type="range" id="pointsSlider" class="slider" min="5" max="50" value="20" step="1">
+        </div>
+    </div>
+    
+    <div class="info">
+        <h3>Aliasing em Sinais</h3>
+        <p>A senoide azul tem frequência de <strong>3 Hz</strong>. Os pontos laranja mostram a amostragem do sinal.</p>
+        <p>Quando a frequência de amostragem é menor que 2× a frequência do sinal (6 Hz), ocorre <strong>aliasing</strong>.</p>
+    </div>
+
+    <script>
+        let sineFrequency = 3; // 3 Hz
+        let samplingFrequency = 5; // Hz
+        let numPoints = 20;
+        let time = 0;
+        let amplitude;
+        let centerY;
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            amplitude = height * 0.2;
+            centerY = height / 2;
+            
+            // Setup sliders
+            setupSliders();
+        }
+        
+        function setupSliders() {
+            const samplingSlider = document.getElementById('samplingSlider');
+            const pointsSlider = document.getElementById('pointsSlider');
+            const samplingDisplay = document.getElementById('samplingDisplay');
+            const pointsDisplay = document.getElementById('pointsDisplay');
+            
+            samplingSlider.addEventListener('input', function() {
+                samplingFrequency = parseFloat(this.value);
+                samplingDisplay.textContent = samplingFrequency + ' Hz';
+            });
+            
+            pointsSlider.addEventListener('input', function() {
+                numPoints = parseInt(this.value);
+                pointsDisplay.textContent = numPoints;
+            });
+        }
+        
+        function draw() {
+            background(26, 26, 26);
+            
+            // Draw grid
+            drawGrid();
+            
+            // Draw continuous sine wave
+            drawContinuousSine();
+            
+            // Draw sampled points
+            drawSampledPoints();
+            
+            // Draw legend
+            drawLegend();
+        }
+        
+        function drawGrid() {
+            stroke(60, 60, 60);
+            strokeWeight(1);
+            
+            // Horizontal lines
+            for (let y = 0; y <= height; y += 50) {
+                line(0, y, width, y);
+            }
+            
+            // Vertical lines
+            for (let x = 0; x <= width; x += 50) {
+                line(x, 0, x, height);
+            }
+            
+            // Center line
+            stroke(100, 100, 100);
+            strokeWeight(2);
+            line(0, centerY, width, centerY);
+        }
+        
+        function drawContinuousSine() {
+            stroke(100, 150, 255);
+            strokeWeight(3);
+            noFill();
+            
+            beginShape();
+            for (let x = 0; x <= width; x += 2) {
+                let t = x / width * 4; // 4 cycles across screen
+                let y = centerY + amplitude * sin(2 * PI * sineFrequency * t);
+                vertex(x, y);
+            }
+            endShape();
+        }
+        
+        function drawSampledPoints() {
+            // Calculate sampling interval
+            let samplingInterval = 1 / samplingFrequency;
+            let totalTime = 4; // 4 seconds worth of signal
+            
+            stroke(255, 107, 53);
+            strokeWeight(3);
+            fill(255, 107, 53);
+            
+            let points = [];
+            
+            // Calculate sampled points
+            for (let i = 0; i < numPoints; i++) {
+                let t = (i / (numPoints - 1)) * totalTime;
+                let x = (t / totalTime) * width;
+                let y = centerY + amplitude * sin(2 * PI * sineFrequency * t);
+                points.push({x: x, y: y, t: t});
+            }
+            
+            // Draw connecting lines
+            strokeWeight(2);
+            noFill();
+            beginShape();
+            for (let point of points) {
+                vertex(point.x, point.y);
+            }
+            endShape();
+            
+            // Draw points
+            fill(255, 107, 53);
+            noStroke();
+            for (let point of points) {
+                circle(point.x, point.y, 8);
+            }
+            
+            // Draw sampling frequency visualization
+            drawSamplingVisualization(points);
+        }
+        
+        function drawSamplingVisualization(points) {
+            // Show the apparent frequency of the sampled signal
+            if (points.length > 2) {
+                stroke(255, 200, 50, 150);
+                strokeWeight(2);
+                noFill();
+                
+                // Draw a smoother interpolation between points to show aliasing effect
+                beginShape();
+                for (let i = 0; i < points.length - 1; i++) {
+                    let p1 = points[i];
+                    let p2 = points[i + 1];
+                    
+                    // Simple linear interpolation for demonstration
+                    for (let t = 0; t <= 1; t += 0.1) {
+                        let x = lerp(p1.x, p2.x, t);
+                        let y = lerp(p1.y, p2.y, t);
+                        vertex(x, y);
+                    }
+                }
+                endShape();
+            }
+        }
+        
+        function drawLegend() {
+            // Status information
+            fill(255);
+            textSize(16);
+            textAlign(LEFT);
+            
+            let statusY = height - 120;
+            let statusX = width - 300;
+            
+            fill(255, 255, 255, 200);
+            textSize(14);
+            text(`Frequência do Sinal: ${sineFrequency} Hz`, statusX, statusY);
+            text(`Frequência de Amostragem: ${samplingFrequency} Hz`, statusX, statusY + 20);
+            text(`Frequência de Nyquist: ${sineFrequency * 2} Hz`, statusX, statusY + 40);
+            
+            // Aliasing warning
+            if (samplingFrequency < sineFrequency * 2) {
+                fill(255, 100, 100);
+                textSize(16);
+                textStyle(BOLD);
+                text("⚠ ALIASING DETECTADO!", statusX, statusY + 70);
+                textStyle(NORMAL);
+            } else {
+                fill(100, 255, 100);
+                textSize(16);
+                text("✓ Amostragem adequada", statusX, statusY + 70);
+            }
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            amplitude = height * 0.2;
+            centerY = height / 2;
+        }
+    </script>
+</body>
+</html>

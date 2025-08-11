@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Canvas Feliz - Transformações 2D</title>
+
+    <style>
+      body {
+        background-color: #000000;
+        margin: 0;
+        overflow: hidden;
+      }
+      
+      .back-to-main {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 10px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .back-to-main:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateX(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../../../style.css">
+
+    <script src="../../../node_modules/p5/lib/p5.js"></script>
+    <script src="../../../node_modules/@jaames/iro/dist/iro.js"></script>
+
+    <script src="../../../dist/CG/Canvas2D/Canvas2D.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/Polygon.js"></script>
+
+    <script src="../../../dist/CG/Canvas2D/utils/Grid.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/Mouse.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/Keyboard.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/Camera.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/BrowserUtils.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/Colors.js"></script>
+    <script src="../../../dist/CG/Canvas2D/utils/HistoryManager.js"></script>
+
+    <script src="../../../dist/CG/Canvas2D/tools/CreatePolygon.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Transform.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Rotate.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Scale.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Mirror.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Shear.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Curves.js"></script>
+    <script src="../../../dist/CG/Canvas2D/tools/Animation.js"></script>
+
+    <script src="../../../dist/CG/Canvas2D/ui/DebugUI.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/SidePanel.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/ColorPickerUI.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/CurvesUI.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/Button.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/ZoomControlUI.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/ToolInfo.js"></script>
+    <script src="../../../dist/CG/Canvas2D/ui/AnimationUI.js"></script>
+
+    <script src="../../../dist/CG/Canvas2D/config/Keybinds.js"></script>
+  </head>
+  <body>
+    <a href="../../main-page.html" class="back-to-main">← Menu Principal</a>
+  </body>
+</html>

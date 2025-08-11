@@ -1,7 +1,7 @@
 {
-  "name": "canvas-feliz-ts",
+  "name": "pixel-forge",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "Canvas2D.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

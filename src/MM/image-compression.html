@@ -372,7 +372,7 @@
 </head>
 
 <body>
-    <a href="main.html" class="back-to-main">← Menu Principal</a>
+    <a href="../main-page.html" class="back-to-main">← Menu Principal</a>
     
     <div class="container">
         <div class="header">
@@ -487,6 +487,58 @@
     <script>
         let originalImageData = null;
         let currentCompressionType = 'jpeg';
+        
+        // Auto-load Lenna image on page start
+        window.addEventListener('load', function() {
+            loadLennaImage();
+        });
+        
+        function loadLennaImage() {
+            // Fetch the Lenna image
+            fetch('../../public/images/Lenna_colored.png')
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a File object from the blob
+                    const file = new File([blob], 'Lenna_colored.png', { type: 'image/png' });
+                    originalImageData = file;
+                    
+                    // Load the image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.getElementById('originalImage');
+                        img.src = e.target.result;
+                        
+                        img.onload = function() {
+                            displayOriginalImageInfo(file, img);
+                            contentGrid.style.display = 'grid';
+                            document.getElementById('compressButton').disabled = false;
+                            
+                            // Update upload section to show image is loaded
+                            updateUploadSectionForLoadedImage();
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar imagem Lenna:', error);
+                    // If Lenna image fails to load, keep the normal upload interface
+                });
+        }
+        
+        function updateUploadSectionForLoadedImage() {
+            const uploadSection = document.getElementById('uploadSection');
+            uploadSection.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <div class="upload-text">Imagem Lenna carregada com sucesso!</div>
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                    Trocar Imagem
+                </button>
+            `;
+            
+            // Re-attach event listener to the new file input
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        }
         
         // File input and drag & drop handling
         const fileInput = document.getElementById('fileInput');

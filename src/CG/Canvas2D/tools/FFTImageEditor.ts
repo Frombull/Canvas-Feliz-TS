@@ -1,6 +1,3 @@
-// FFT Image Editor - Converted to TypeScript
-// Original code converted and organized into classes
-
 interface Complex {
     real: number;
     imag: number;
@@ -45,11 +42,9 @@ class FFTImageEditor {
     }
 
     private init(): void {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.initializeCanvases();
-            this.setupControls();
-            this.loadDefaultImage();
-        });
+        this.initializeCanvases();
+        this.setupControls();
+        this.loadDefaultImage();
     }
 
     private initializeCanvases(): void {
@@ -227,7 +222,7 @@ class FFTImageEditor {
             alert('Não foi possível carregar a imagem padrão.');
         };
         
-        img.src = '../src/assets/Lenna.png';
+        img.src = '../../../public/images/Lenna_grayscale.png';
     }
 
     private handleImageUpload(event: Event): void {

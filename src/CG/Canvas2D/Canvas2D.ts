@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/@types/p5/global.d.ts" />
-/// <reference path="../node_modules/@irojs/iro-core/dist/index.d.ts" />
+/// <reference path="../../../node_modules/@types/p5/global.d.ts" />
+/// <reference path="../../../node_modules/@irojs/iro-core/dist/index.d.ts" />
 
 let buttonCreate: any, buttonTranslate: any, buttonScale: any, buttonMirrorX: any, buttonMirrorY: any,
  buttonResetPolygon: any, buttonCenterCamera: any, buttonShearU: any, buttonShearNU: any, buttonRotate: any,

@@ -34,7 +34,7 @@ class SidePanel {
       selectedCentroid = null;
     }, {
       tool: Tool.CREATE_POLYGON, 
-      iconPath: 'icons/create.svg'
+      iconPath: '../../../public/icons/create.svg'
     });
   
     // Translate Tool Button
@@ -42,7 +42,7 @@ class SidePanel {
       CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.TRANSLATE,
-      iconPath: 'icons/translate.svg'
+      iconPath: '../../../public/icons/translate.svg'
     });
   
     // Rotate Tool Button
@@ -50,7 +50,7 @@ class SidePanel {
       CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.ROTATE,
-      iconPath: 'icons/rotate.svg'
+      iconPath: '../../../public/icons/rotate.svg'
     });
 
     // Scale Tool Button
@@ -58,14 +58,14 @@ class SidePanel {
       CreatePolygon.cancelPolygonCreation();
     }, {
       tool: Tool.SCALE,
-      iconPath: 'icons/scale.svg'
+      iconPath: '../../../public/icons/scale.svg'
     });
 
     // Curves Button
     new Button('Curves', createSection, () => {
       CurvesUI.toggleCurvesPanel(true);
     }, {
-      iconPath: 'icons/curve.svg'
+      iconPath: '../../../public/icons/curve.svg'
     });
     
     // Animation Button
@@ -74,7 +74,7 @@ class SidePanel {
       AnimationUI.toggleAnimationPanel(true);
     }, {
       tool: Tool.ANIMATION,
-      iconPath: 'icons/animation-icon.svg'
+      iconPath: '../../../public/icons/animation-icon.svg'
     });
   
     createDiv('').class('section-title').html('Transformations').parent(createSection);
@@ -86,28 +86,28 @@ class SidePanel {
     new Button('Mirror X', mirrorContainer, () => {
       Mirror.mirror('y');
     }, {
-      iconPath: 'icons/mirror-x.svg'
+      iconPath: '../../../public/icons/mirror-x.svg'
     });
 
     // Button Mirror Y 
     new Button('Mirror Y', mirrorContainer, () => {
       Mirror.mirror('x');
     }, {
-      iconPath: 'icons/mirror-y.svg'
+      iconPath: '../../../public/icons/mirror-y.svg'
     });
     
     // Button Shear Uniform 
     new Button('Uniform Shear', createSection, () => { 
       Shear.ShearUniform();
     }, {
-      iconPath: 'icons/skew.svg'
+      iconPath: '../../../public/icons/skew.svg'
     });
   
     // Button Shear Non-Uniform 
     new Button('Non-Uniform Shear', createSection, () => {
       Shear.ShearNonUniform();
     }, {
-      iconPath: 'icons/skew.svg'
+      iconPath: '../../../public/icons/skew.svg'
     });
   
     // Button Reset Polygon 
@@ -124,7 +124,7 @@ class SidePanel {
     ColorPickerUI.colorPickerButton = new Button('Color Picker', createSection, () => {
       ColorPickerUI.toggle();
     }, {
-      iconPath: 'icons/color-palette.svg' // TODO: Edit color-palette-v2.svg to remove outline
+      iconPath: '../../../public/icons/color-palette.svg' // TODO: Edit color-palette-v2.svg to remove outline
     });
 
     // ------------------------------  ------------------------------
@@ -134,7 +134,7 @@ class SidePanel {
     new Button('', createSection, () => {
       SidePanel.shouldDrawVertices = !SidePanel.shouldDrawVertices;
     }, {
-      iconPath: 'icons/draw-vertices-on.svg',
+      iconPath: '../../../public/icons/draw-vertices-on.svg',
       fixedWidth: false,
     });
 
@@ -142,7 +142,7 @@ class SidePanel {
     new Button('', createSection, () => {
       SidePanel.shouldDrawGrid = !SidePanel.shouldDrawGrid;
     }, {
-      iconPath: 'icons/grid.svg',
+      iconPath: '../../../public/icons/grid.svg',
       fixedWidth: false,
     });
   
@@ -150,7 +150,7 @@ class SidePanel {
     new Button('', createSection, () => {
       SidePanel.shouldDrawAxis = !SidePanel.shouldDrawAxis;
     }, {
-      iconPath: 'icons/axis.svg',
+      iconPath: '../../../public/icons/axis.svg',
       fixedWidth: false,
     });
   
@@ -158,7 +158,7 @@ class SidePanel {
     new Button('', createSection, () => {
       SidePanel.shouldDrawDebugWindow = !SidePanel.shouldDrawDebugWindow;
     }, {
-      iconPath: 'icons/debug-v2.svg', // TODO: Edit debug.svg to remove outline
+      iconPath: '../../../public/icons/debug-v2.svg', // TODO: Edit debug.svg to remove outline
       fixedWidth: false,
     });
     

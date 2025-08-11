@@ -28,7 +28,7 @@ class ZoomControlUI {
       Camera.centerCamera();
     }, {
       className: 'zoom-button home-button', 
-      iconPath: 'icons/home.svg',
+      iconPath: '../../../public/icons/home.svg',
       fixedWidth: false,
     });
   }

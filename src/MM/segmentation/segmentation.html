@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segmentação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2196F3;
+            background-color: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        .upload-btn {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .tools-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.active {
+            border-color: #333;
+            transform: scale(1.15);
+        }
+
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .size-slider {
+            width: 120px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-undo {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .canvas-container {
+            text-align: center;
+            position: relative;
+            display: none;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        #imageCanvas,
+        #segmentationCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        #segmentationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        .brush-preview {
+            position: absolute;
+            border: 2px solid #333;
+            border-radius: 50%;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .opacity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .opacity-slider {
+            width: 100px;
+        }
+
+        .tolerance-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tolerance-slider {
+            width: 120px;
+        }
+
+        .mode-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .mode-btn:hover {
+            border-color: #2196F3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <p>Arraste uma nova imagem aqui!</p>
+                    <br>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Escolher Nova Imagem
+                    </button>
+                </div>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <div class="tools-panel" id="toolsPanel">
+                <div class="tools-row">
+                    <div class="tool-group mode-selector">
+                        <label><strong>Modo:</strong></label>
+                        <button class="mode-btn active" id="smartMode" data-mode="smart">🎯 Segmentação
+                            Inteligente</button>
+                        <button class="mode-btn" id="paintMode" data-mode="paint">🖌️ Pincel Manual</button>
+                    </div>
+
+                    <div class="tool-group">
+                        <label><strong>Cores:</strong></label>
+                        <div class="color-palette">
+                            <div class="color-btn active" style="background-color: #ff0000" data-color="#ff0000"
+                                title="Vermelho"></div>
+                            <div class="color-btn" style="background-color: #00ff00" data-color="#00ff00" title="Verde">
+                            </div>
+                            <div class="color-btn" style="background-color: #0000ff" data-color="#0000ff" title="Azul">
+                            </div>
+                            <div class="color-btn" style="background-color: #ffff00" data-color="#ffff00"
+                                title="Amarelo"></div>
+                            <div class="color-btn" style="background-color: #ff00ff" data-color="#ff00ff"
+                                title="Magenta"></div>
+                            <div class="color-btn" style="background-color: #00ffff" data-color="#00ffff" title="Ciano">
+                            </div>
+                            <div class="color-btn" style="background-color: #ffa500" data-color="#ffa500"
+                                title="Laranja"></div>
+                            <div class="color-btn" style="background-color: #800080" data-color="#800080" title="Roxo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tools-row">
+                    <div class="tool-group brush-size">
+                        <label><strong>Tamanho do Pincel:</strong></label>
+                        <input type="range" class="size-slider" id="brushSize" min="5" max="50" value="15">
+                        <span id="brushSizeValue">15px</span>
+                    </div>
+
+                    <div class="tool-group tolerance-control">
+                        <label><strong>Tolerância:</strong></label>
+                        <input type="range" class="tolerance-slider" id="toleranceSlider" min="5" max="100" value="30">
+                        <span id="toleranceValue">30</span>
+                    </div>
+
+                    <div class="tool-group opacity-control">
+                        <label><strong>Opacidade global:</strong></label>
+                        <input type="range" class="opacity-slider" id="opacitySlider" min="0.1" max="1" step="0.1"
+                            value="0.7">
+                        <span id="opacityValue">70%</span>
+                    </div>
+                </div>
+
+                <div class="tools-row">
+                    <div class="action-buttons">
+                        <button class="btn btn-clear" id="clearBtn">🗑️ Limpar Tudo</button>
+                        <button class="btn btn-undo" id="undoBtn">↶ Desfazer</button>
+                        <button class="btn btn-save" id="saveBtn">💾 Salvar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-container" id="canvasContainer">
+                <div class="canvas-wrapper">
+                    <canvas id="imageCanvas"></canvas>
+                    <canvas id="segmentationCanvas"></canvas>
+                    <div class="brush-preview" id="brushPreview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ImageSegmentation {
+            constructor() {
+                this.imageCanvas = document.getElementById('imageCanvas');
+                this.segmentationCanvas = document.getElementById('segmentationCanvas');
+                this.imageCtx = this.imageCanvas.getContext('2d');
+                this.segCtx = this.segmentationCanvas.getContext('2d');
+
+                this.isDrawing = false;
+                this.currentColor = '#ff0000';
+                this.brushSize = 15;
+                this.opacity = 0.7;
+                this.tolerance = 30;
+                this.mode = 'smart'; // 'smart' or 'paint'
+                this.undoStack = [];
+                this.imageData = null;
+
+                this.setupEventListeners();
+                this.loadDefaultImage();
+            }
+
+            setupEventListeners() {
+                // File upload
+                const fileInput = document.getElementById('fileInput');
+                const uploadArea = document.getElementById('uploadArea');
+
+                fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.loadImage(files[0]);
+                    }
+                });
+
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                // Color selection
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelector('.color-btn.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        this.currentColor = e.target.dataset.color;
+                    });
+                });
+
+                // Brush size
+                const brushSizeSlider = document.getElementById('brushSize');
+                const brushSizeValue = document.getElementById('brushSizeValue');
+                brushSizeSlider.addEventListener('input', (e) => {
+                    this.brushSize = parseInt(e.target.value);
+                    brushSizeValue.textContent = this.brushSize + 'px';
+                    this.updateBrushPreview();
+                });
+
+                // Tolerance
+                const toleranceSlider = document.getElementById('toleranceSlider');
+                const toleranceValue = document.getElementById('toleranceValue');
+                toleranceSlider.addEventListener('input', (e) => {
+                    this.tolerance = parseInt(e.target.value);
+                    toleranceValue.textContent = this.tolerance;
+                });
+
+                // Mode selection
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelector('.mode-btn.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        this.mode = e.target.dataset.mode;
+
+                        // Update cursor and instructions
+                        if (this.mode === 'smart') {
+                            this.segmentationCanvas.style.cursor = 'crosshair';
+                        } else {
+                            this.segmentationCanvas.style.cursor = 'crosshair';
+                        }
+                    });
+                });
+
+                // Opacity
+                const opacitySlider = document.getElementById('opacitySlider');
+                const opacityValue = document.getElementById('opacityValue');
+                opacitySlider.addEventListener('input', (e) => {
+                    this.opacity = parseFloat(e.target.value);
+                    opacityValue.textContent = Math.round(this.opacity * 100) + '%';
+                    this.segmentationCanvas.style.opacity = this.opacity;
+                });
+
+                // Action buttons
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearSegmentation());
+                document.getElementById('undoBtn').addEventListener('click', () => this.undo());
+                document.getElementById('saveBtn').addEventListener('click', () => this.saveSegmentation());
+
+                // Canvas drawing events
+                this.segmentationCanvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.segmentationCanvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.segmentationCanvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.segmentationCanvas.addEventListener('mouseout', () => this.stopDrawing());
+
+                // Brush preview
+                this.segmentationCanvas.addEventListener('mousemove', (e) => this.updateBrushPosition(e));
+                this.segmentationCanvas.addEventListener('mouseenter', () => this.showBrushPreview());
+                this.segmentationCanvas.addEventListener('mouseleave', () => this.hideBrushPreview());
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    this.loadImage(file);
+                }
+            }
+
+            loadImage(file) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione um arquivo de imagem válido.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.setupCanvas(img);
+                        this.showTools();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            setupCanvas(img) {
+                // Calculate canvas size maintaining aspect ratio
+                const maxWidth = 800;
+                const maxHeight = 600;
+
+                let { width, height } = img;
+
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
+                }
+
+                // Set canvas dimensions
+                this.imageCanvas.width = width;
+                this.imageCanvas.height = height;
+                this.segmentationCanvas.width = width;
+                this.segmentationCanvas.height = height;
+
+                // Draw image
+                this.imageCtx.drawImage(img, 0, 0, width, height);
+
+                // Store image data for smart segmentation
+                this.imageData = this.imageCtx.getImageData(0, 0, width, height);
+
+                // Clear segmentation canvas
+                this.segCtx.clearRect(0, 0, width, height);
+
+                // Set initial opacity
+                this.segmentationCanvas.style.opacity = this.opacity;
+
+                // Clear undo stack
+                this.undoStack = [];
+
+                // Save initial state
+                this.saveState();
+            }
+
+            showTools() {
+                document.getElementById('toolsPanel').style.display = 'block';
+                document.getElementById('canvasContainer').style.display = 'block';
+            }
+
+            handleMouseDown(e) {
+                if (this.mode === 'smart') {
+                    this.smartSegmentation(e);
+                } else {
+                    this.startDrawing(e);
+                }
+            }
+
+            handleMouseMove(e) {
+                if (this.mode === 'paint') {
+                    this.draw(e);
+                }
+            }
+
+            startDrawing(e) {
+                this.isDrawing = true;
+                this.saveState();
+                this.draw(e);
+            }
+
+            draw(e) {
+                if (!this.isDrawing) return;
+
+                const rect = this.segmentationCanvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (this.segmentationCanvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (this.segmentationCanvas.height / rect.height);
+
+                this.segCtx.globalCompositeOperation = 'source-over';
+                this.segCtx.fillStyle = this.currentColor;
+                this.segCtx.beginPath();
+                this.segCtx.arc(x, y, this.brushSize / 2, 0, Math.PI * 2);
+                this.segCtx.fill();
+            }
+
+            smartSegmentation(e) {
+                if (!this.imageData) return;
+
+                this.saveState();
+
+                const rect = this.segmentationCanvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) * (this.segmentationCanvas.width / rect.width));
+                const y = Math.floor((e.clientY - rect.top) * (this.segmentationCanvas.height / rect.height));
+
+                // Get the color at the clicked point
+                const targetColor = this.getPixelColor(x, y);
+
+                // Perform flood fill with tolerance
+                this.floodFill(x, y, targetColor, this.currentColor);
+            }
+
+            getPixelColor(x, y) {
+                const index = (y * this.imageData.width + x) * 4;
+                return {
+                    r: this.imageData.data[index],
+                    g: this.imageData.data[index + 1],
+                    b: this.imageData.data[index + 2],
+                    a: this.imageData.data[index + 3]
+                };
+            }
+
+            colorDistance(color1, color2) {
+                const dr = color1.r - color2.r;
+                const dg = color1.g - color2.g;
+                const db = color1.b - color2.b;
+                return Math.sqrt(dr * dr + dg * dg + db * db);
+            }
+
+            floodFill(startX, startY, targetColor, fillColor) {
+                const width = this.imageData.width;
+                const height = this.imageData.height;
+                const visited = new Set();
+                const stack = [{ x: startX, y: startY }];
+
+                // Convert hex color to RGB
+                const fillRGB = this.hexToRgb(fillColor);
+
+                while (stack.length > 0) {
+                    const { x, y } = stack.pop();
+
+                    if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                    const key = `${x},${y}`;
+                    if (visited.has(key)) continue;
+                    visited.add(key);
+
+                    const currentColor = this.getPixelColor(x, y);
+                    const distance = this.colorDistance(currentColor, targetColor);
+
+                    if (distance <= this.tolerance) {
+                        // Fill this pixel
+                        this.segCtx.fillStyle = fillColor;
+                        this.segCtx.fillRect(x, y, 1, 1);
+
+                        // Add neighboring pixels to stack
+                        stack.push({ x: x + 1, y: y });
+                        stack.push({ x: x - 1, y: y });
+                        stack.push({ x: x, y: y + 1 });
+                        stack.push({ x: x, y: y - 1 });
+                    }
+                }
+            }
+
+            hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            stopDrawing() {
+                this.isDrawing = false;
+            }
+
+            updateBrushPosition(e) {
+                const rect = this.segmentationCanvas.getBoundingClientRect();
+                const brushPreview = document.getElementById('brushPreview');
+
+                brushPreview.style.left = (e.clientX - this.brushSize / 2) + 'px';
+                brushPreview.style.top = (e.clientY - this.brushSize / 2) + 'px';
+            }
+
+            updateBrushPreview() {
+                const brushPreview = document.getElementById('brushPreview');
+                brushPreview.style.width = this.brushSize + 'px';
+                brushPreview.style.height = this.brushSize + 'px';
+            }
+
+            showBrushPreview() {
+                document.getElementById('brushPreview').style.display = 'block';
+                this.updateBrushPreview();
+            }
+
+            hideBrushPreview() {
+                document.getElementById('brushPreview').style.display = 'none';
+            }
+
+            saveState() {
+                const imageData = this.segCtx.getImageData(0, 0, this.segmentationCanvas.width, this.segmentationCanvas.height);
+                this.undoStack.push(imageData);
+
+                // Limit undo stack size
+                if (this.undoStack.length > 20) {
+                    this.undoStack.shift();
+                }
+            }
+
+            undo() {
+                if (this.undoStack.length > 1) {
+                    this.undoStack.pop(); // Remove current state
+                    const previousState = this.undoStack[this.undoStack.length - 1];
+                    this.segCtx.putImageData(previousState, 0, 0);
+                }
+            }
+
+            clearSegmentation() {
+                this.segCtx.clearRect(0, 0, this.segmentationCanvas.width, this.segmentationCanvas.height);
+                this.undoStack = [];
+                this.saveState();
+            }
+
+            loadDefaultImage() {
+                const img = new Image();
+                img.onload = () => {
+                    this.setupCanvas(img);
+                    this.showTools();
+                };
+                img.onerror = () => {
+                    console.log('Não foi possível carregar a imagem padrão Lenna');
+                };
+                // Lenna my beloved
+                img.src = '../../../public/images/Lenna_colored.png';
+            }
+
+            loadImageFromUrl(url) {
+                const img = new Image();
+                img.onload = () => {
+                    this.setupCanvas(img);
+                    this.showTools();
+                };
+                img.onerror = () => {
+                    console.error('Erro ao carregar imagem:', url);
+                };
+                img.src = url;
+            }
+
+            saveSegmentation() {
+                // Create a composite canvas
+                const compositeCanvas = document.createElement('canvas');
+                const compositeCtx = compositeCanvas.getContext('2d');
+
+                compositeCanvas.width = this.imageCanvas.width;
+                compositeCanvas.height = this.imageCanvas.height;
+
+                // Draw original image
+                compositeCtx.drawImage(this.imageCanvas, 0, 0);
+
+                // Draw segmentation with opacity
+                compositeCtx.globalAlpha = this.opacity;
+                compositeCtx.drawImage(this.segmentationCanvas, 0, 0);
+
+                // Download the result
+                const link = document.createElement('a');
+                link.download = 'segmentacao_' + new Date().getTime() + '.png';
+                link.href = compositeCanvas.toDataURL();
+                link.click();
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new ImageSegmentation();
+        });
+    </script>
+</body>
+
+</html>

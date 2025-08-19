@@ -118,6 +118,45 @@
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
         }
 
+        .drop-zone {
+            position: relative;
+            border: 2px dashed transparent;
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.dragover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .drop-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .drop-zone.dragover .drop-hint {
+            opacity: 1;
+        }
+
+        .drop-zone.dragover .upload-button {
+            opacity: 0.3;
+        }
+
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -403,10 +442,13 @@
                     </div>
                 </div>
                 <input type="file" id="fileInput" class="file-input" accept="image/*">
-                <button class="upload-button" onclick="document.getElementById('fileInput').click()"
-                    style="width: 100%; margin-top: 15px;">
-                    Trocar Imagem
-                </button>
+                <div class="drop-zone" id="dropZone">
+                    <button class="upload-button" onclick="document.getElementById('fileInput').click()"
+                        style="width: 100%;">
+                        Trocar Imagem
+                    </button>
+                    <div class="drop-hint" id="dropHint">Arraste uma imagem aqui</div>
+                </div>
             </div>
 
             <!-- Compressed Image Panel -->
@@ -509,6 +551,7 @@
                             displayOriginalImageInfo(file, img);
                             contentGrid.style.display = 'grid';
                             document.getElementById('compressButton').disabled = false;
+                            setupDropZone();
                         };
                     };
                     reader.readAsDataURL(file);
@@ -521,29 +564,41 @@
 
         // File input and drag & drop handling
         const fileInput = document.getElementById('fileInput');
-        const uploadSection = document.getElementById('uploadSection');
         const contentGrid = document.getElementById('contentGrid');
 
         fileInput.addEventListener('change', handleFileSelect);
 
-        // Drag and drop
-        uploadSection.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
+        // Setup drag and drop for the drop zone
+        function setupDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            if (!dropZone) return;
 
-        uploadSection.addEventListener('dragleave', () => {
-            uploadSection.classList.remove('dragover');
-        });
+            // Drag and drop events for the drop zone
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            });
 
-        uploadSection.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Only remove dragover if we're leaving the drop zone entirely
+                if (!dropZone.contains(e.relatedTarget)) {
+                    dropZone.classList.remove('dragover');
+                }
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+        }
 
         function handleFileSelect(e) {
             const file = e.target.files[0];
@@ -572,6 +627,7 @@
                     displayOriginalImageInfo(file, img);
                     contentGrid.style.display = 'grid';
                     document.getElementById('compressButton').disabled = false;
+                    setupDropZone();
                 };
             };
             reader.readAsDataURL(file);

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imagens Vetoriais vs Matriciais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .image-type {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .vector {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+        
+        .raster {
+            border-color: #2196F3;
+            background-color: #f8fbff;
+        }
+        
+        .image-example {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .zoom-demo {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .zoom-level {
+            text-align: center;
+        }
+        
+        .characteristics {
+            margin-top: 30px;
+        }
+        
+        .characteristics table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .characteristics th, .characteristics td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .characteristics th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .vector-example, .raster-example {
+            display: inline-block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Imagens Vetoriais vs Imagens Matriciais (Raster)</h1>
+        
+        <div class="comparison">
+            <div class="image-type vector">
+                <h2>🎯 Imagem Vetorial</h2>
+                <p><strong>Baseada em fórmulas matemáticas</strong></p>
+                
+                <div class="image-example">
+                    <h3>Exemplo: Círculo SVG</h3>
+                    <div class="zoom-demo">
+                        <div class="zoom-level">
+                            <p>Tamanho Normal</p>
+                            <svg width="80" height="80">
+                                <circle cx="40" cy="40" r="35" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+                                <text x="40" y="45" text-anchor="middle" fill="white" font-size="12">SVG</text>
+                            </svg>
+                        </div>
+                        <div class="zoom-level">
+                            <p>2x Ampliado</p>
+                            <svg width="160" height="160">
+                                <circle cx="80" cy="80" r="70" fill="#4CAF50" stroke="#2E7D32" stroke-width="4"/>
+                                <text x="80" y="90" text-anchor="middle" fill="white" font-size="24">SVG</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <p><em>Mantém qualidade em qualquer tamanho!</em></p>
+                </div>
+            </div>
+            
+            <div class="image-type raster">
+                <h2>🖼️ Imagem Matricial</h2>
+                <p><strong>Baseada em pixels</strong></p>
+                
+                <div class="image-example">
+                    <h3>Exemplo: Simulação de Pixels</h3>
+                    <div class="zoom-demo">
+                        <div class="zoom-level">
+                            <p>Tamanho Normal</p>
+                            <canvas id="rasterNormal" width="80" height="80"></canvas>
+                        </div>
+                        <div class="zoom-level">
+                            <p>2x Ampliado</p>
+                            <canvas id="rasterZoomed" width="160" height="160"></canvas>
+                        </div>
+                    </div>
+                    <p><em>Perde qualidade ao ampliar!</em></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="characteristics">
+            <h2>📊 Comparação Detalhada</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Imagem Vetorial</th>
+                        <th>Imagem Matricial</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Composição</strong></td>
+                        <td>Fórmulas matemáticas (pontos, linhas, curvas)</td>
+                        <td>Grade de pixels coloridos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Escalabilidade</strong></td>
+                        <td>✅ Infinita sem perda de qualidade</td>
+                        <td>❌ Limitada - pixeliza ao ampliar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tamanho do arquivo</strong></td>
+                        <td>Pequeno para formas simples</td>
+                        <td>Depende da resolução</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Melhor uso</strong></td>
+                        <td>Logos, ícones, ilustrações simples</td>
+                        <td>Fotografias, imagens complexas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Formatos comuns</strong></td>
+                        <td>SVG, AI, EPS, PDF</td>
+                        <td>JPG, PNG, GIF, BMP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Edição</strong></td>
+                        <td>Modifica formas e propriedades</td>
+                        <td>Modifica pixels individuais</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background-color: #e8f5e8; border-radius: 8px;">
+            <h3>🎓 Resumo</h3>
+            <p><strong>Imagens Vetoriais:</strong> Ideais quando você precisa de qualidade perfeita em qualquer tamanho, como logos e ícones.</p>
+            <p><strong>Imagens Matriciais:</strong> Ideais para fotografias e imagens com muitos detalhes e variações de cor.</p>
+        </div>
+    </div>
+
+    <script>
+        // Desenhar exemplo de imagem matricial simulada
+        function drawRasterExample(canvasId, pixelSize) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Simular pixels de um círculo
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width * 0.4;
+            
+            // Limpar canvas
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Desenhar "pixels" do círculo
+            for (let x = 0; x < canvas.width; x += pixelSize) {
+                for (let y = 0; y < canvas.height; y += pixelSize) {
+                    const distance = Math.sqrt((x + pixelSize/2 - centerX) ** 2 + (y + pixelSize/2 - centerY) ** 2);
+                    if (distance <= radius) {
+                        ctx.fillStyle = '#2196F3';
+                        ctx.fillRect(x, y, pixelSize, pixelSize);
+                        
+                        // Adicionar borda para mostrar os pixels
+                        if (pixelSize > 2) {
+                            ctx.strokeStyle = '#1976D2';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(x, y, pixelSize, pixelSize);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Desenhar exemplos quando a página carregar
+        window.onload = function() {
+            drawRasterExample('rasterNormal', 2);
+            drawRasterExample('rasterZoomed', 4);
+        };
+    </script>
+</body>
+</html>

@@ -1,243 +1,250 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imagens Vetoriais vs Matriciais</title>
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <title>Vetorial vs Matricial</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh
         }
-        
+
         .container {
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         h1 {
-            color: #333;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            color: #333;
         }
-        
+
         .comparison {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 30px 0;
+            gap: 40px;
         }
-        
-        .image-type {
+
+        .image-section {
             text-align: center;
             padding: 20px;
-            border: 2px solid #ddd;
             border-radius: 8px;
+            background: #f8f9fa;
         }
-        
-        .vector {
-            border-color: #4CAF50;
-            background-color: #f8fff8;
+
+        .vector-section {
+            border: 3px solid #4CAF50;
         }
-        
-        .raster {
-            border-color: #2196F3;
-            background-color: #f8fbff;
+
+        .raster-section {
+            border: 3px solid #2196F3;
         }
-        
-        .image-example {
+
+        .image-container {
             margin: 20px 0;
             padding: 20px;
             background: white;
-            border-radius: 5px;
-        }
-        
-        .zoom-demo {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: 380px;
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
             align-items: center;
-            margin: 20px 0;
         }
-        
-        .zoom-level {
-            text-align: center;
+
+        .image-display {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
-        
-        .characteristics {
-            margin-top: 30px;
+
+        .zoom-controls {
+            margin: 0;
         }
-        
-        .characteristics table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        .zoom-slider {
+            width: 180px;
+            margin: 5px;
         }
-        
-        .characteristics th, .characteristics td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .characteristics th {
-            background-color: #f2f2f2;
+
+        .zoom-value {
             font-weight: bold;
+            color: #666;
         }
-        
-        .vector-example, .raster-example {
-            display: inline-block;
+
+        #vectorImage {
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+        }
+
+        #rasterCanvas {
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+        }
+
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
             margin: 10px;
+            transition: background 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: #ff5252;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Imagens Vetoriais vs Imagens Matriciais (Raster)</h1>
-        
+        <h1>Vetorial X Matricial</h1>
+
         <div class="comparison">
-            <div class="image-type vector">
-                <h2>🎯 Imagem Vetorial</h2>
-                <p><strong>Baseada em fórmulas matemáticas</strong></p>
-                
-                <div class="image-example">
-                    <h3>Exemplo: Círculo SVG</h3>
-                    <div class="zoom-demo">
-                        <div class="zoom-level">
-                            <p>Tamanho Normal</p>
-                            <svg width="80" height="80">
-                                <circle cx="40" cy="40" r="35" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
-                                <text x="40" y="45" text-anchor="middle" fill="white" font-size="12">SVG</text>
-                            </svg>
-                        </div>
-                        <div class="zoom-level">
-                            <p>2x Ampliado</p>
-                            <svg width="160" height="160">
-                                <circle cx="80" cy="80" r="70" fill="#4CAF50" stroke="#2E7D32" stroke-width="4"/>
-                                <text x="80" y="90" text-anchor="middle" fill="white" font-size="24">SVG</text>
-                            </svg>
-                        </div>
+            <div class="image-section vector-section">
+                <h2>Imagem Vetorial</h2>
+                <div class="image-container">
+                    <div class="image-display">
+                        <svg id="vectorImage" width="150" height="150">
+                            <defs>
+                                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="75" cy="75" r="60" fill="url(#grad1)" stroke="#1B5E20" stroke-width="3" />
+                            <polygon points="75,45 85,65 105,65 90,80 95,100 75,90 55,100 60,80 45,65 65,65"
+                                fill="white" />
+                        </svg>
                     </div>
-                    <p><em>Mantém qualidade em qualquer tamanho!</em></p>
+
+                    <div class="zoom-controls">
+                        <label>Zoom: <span id="vectorZoomValue" class="zoom-value">2.0x</span></label><br>
+                        <input type="range" id="vectorZoom" class="zoom-slider" min="2" max="4" step="0.1" value="2">
+                        <button class="reset-btn" onclick="resetVector()">Reset</button>
+                    </div>
                 </div>
             </div>
-            
-            <div class="image-type raster">
-                <h2>🖼️ Imagem Matricial</h2>
-                <p><strong>Baseada em pixels</strong></p>
-                
-                <div class="image-example">
-                    <h3>Exemplo: Simulação de Pixels</h3>
-                    <div class="zoom-demo">
-                        <div class="zoom-level">
-                            <p>Tamanho Normal</p>
-                            <canvas id="rasterNormal" width="80" height="80"></canvas>
-                        </div>
-                        <div class="zoom-level">
-                            <p>2x Ampliado</p>
-                            <canvas id="rasterZoomed" width="160" height="160"></canvas>
-                        </div>
+
+            <div class="image-section raster-section">
+                <h2>Imagem Matricial</h2>
+                <div class="image-container">
+                    <div class="image-display">
+                        <canvas id="rasterCanvas" width="150" height="150"></canvas>
                     </div>
-                    <p><em>Perde qualidade ao ampliar!</em></p>
+
+                    <div class="zoom-controls">
+                        <label>Zoom: <span id="rasterZoomValue" class="zoom-value">2.0x</span></label><br>
+                        <input type="range" id="rasterZoom" class="zoom-slider" min="2" max="4" step="0.1" value="2">
+                        <button class="reset-btn" onclick="resetRaster()">Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="characteristics">
-            <h2>📊 Comparação Detalhada</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Característica</th>
-                        <th>Imagem Vetorial</th>
-                        <th>Imagem Matricial</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Composição</strong></td>
-                        <td>Fórmulas matemáticas (pontos, linhas, curvas)</td>
-                        <td>Grade de pixels coloridos</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Escalabilidade</strong></td>
-                        <td>✅ Infinita sem perda de qualidade</td>
-                        <td>❌ Limitada - pixeliza ao ampliar</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tamanho do arquivo</strong></td>
-                        <td>Pequeno para formas simples</td>
-                        <td>Depende da resolução</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Melhor uso</strong></td>
-                        <td>Logos, ícones, ilustrações simples</td>
-                        <td>Fotografias, imagens complexas</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Formatos comuns</strong></td>
-                        <td>SVG, AI, EPS, PDF</td>
-                        <td>JPG, PNG, GIF, BMP</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Edição</strong></td>
-                        <td>Modifica formas e propriedades</td>
-                        <td>Modifica pixels individuais</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div style="margin-top: 40px; padding: 20px; background-color: #e8f5e8; border-radius: 8px;">
-            <h3>🎓 Resumo</h3>
-            <p><strong>Imagens Vetoriais:</strong> Ideais quando você precisa de qualidade perfeita em qualquer tamanho, como logos e ícones.</p>
-            <p><strong>Imagens Matriciais:</strong> Ideais para fotografias e imagens com muitos detalhes e variações de cor.</p>
-        </div>
-    </div>
 
     <script>
-        // Desenhar exemplo de imagem matricial simulada
-        function drawRasterExample(canvasId, pixelSize) {
-            const canvas = document.getElementById(canvasId);
+        let originalImageData = null;
+
+        // Controles do zoom vetorial
+        const vectorZoom = document.getElementById('vectorZoom');
+        const vectorImage = document.getElementById('vectorImage');
+        const vectorZoomValue = document.getElementById('vectorZoomValue');
+
+        vectorZoom.addEventListener('input', function () {
+            const scale = this.value;
+            vectorImage.style.transform = `scale(${scale})`;
+            vectorZoomValue.textContent = scale + 'x';
+        });
+
+        // Controles do zoom matricial
+        const rasterZoom = document.getElementById('rasterZoom');
+        const rasterCanvas = document.getElementById('rasterCanvas');
+        const rasterZoomValue = document.getElementById('rasterZoomValue');
+
+        rasterZoom.addEventListener('input', function () {
+            const scale = this.value;
+            rasterCanvas.style.transform = `scale(${scale})`;
+            rasterZoomValue.textContent = scale + 'x';
+        });
+
+        // Desenhar imagem matricial
+        function drawRasterImage() {
+            const canvas = rasterCanvas;
             const ctx = canvas.getContext('2d');
-            
-            // Simular pixels de um círculo
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = canvas.width * 0.4;
-            
-            // Limpar canvas
-            ctx.fillStyle = '#f0f0f0';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Desenhar "pixels" do círculo
-            for (let x = 0; x < canvas.width; x += pixelSize) {
-                for (let y = 0; y < canvas.height; y += pixelSize) {
-                    const distance = Math.sqrt((x + pixelSize/2 - centerX) ** 2 + (y + pixelSize/2 - centerY) ** 2);
-                    if (distance <= radius) {
-                        ctx.fillStyle = '#2196F3';
-                        ctx.fillRect(x, y, pixelSize, pixelSize);
-                        
-                        // Adicionar borda para mostrar os pixels
-                        if (pixelSize > 2) {
-                            ctx.strokeStyle = '#1976D2';
-                            ctx.lineWidth = 1;
-                            ctx.strokeRect(x, y, pixelSize, pixelSize);
-                        }
-                    }
-                }
+
+            // Criar gradiente
+            const gradient = ctx.createLinearGradient(0, 0, 150, 150);
+            gradient.addColorStop(0, '#4CAF50');
+            gradient.addColorStop(1, '#2E7D32');
+
+            // Desenhar círculo
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(75, 75, 60, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Borda do círculo
+            ctx.strokeStyle = '#1B5E20';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Desenhar estrela
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(75, 45);
+            ctx.lineTo(85, 65);
+            ctx.lineTo(105, 65);
+            ctx.lineTo(90, 80);
+            ctx.lineTo(95, 100);
+            ctx.lineTo(75, 90);
+            ctx.lineTo(55, 100);
+            ctx.lineTo(60, 80);
+            ctx.lineTo(45, 65);
+            ctx.lineTo(65, 65);
+            ctx.closePath();
+            ctx.fill();
+
+            // Salvar dados originais
+            if (!originalImageData) {
+                originalImageData = ctx.getImageData(0, 0, 150, 150);
             }
         }
-        
-        // Desenhar exemplos quando a página carregar
-        window.onload = function() {
-            drawRasterExample('rasterNormal', 2);
-            drawRasterExample('rasterZoomed', 4);
+
+        function resetVector() {
+            vectorZoom.value = 2;
+            vectorImage.style.transform = 'scale(2)';
+            vectorZoomValue.textContent = '2.0x';
+        }
+
+        function resetRaster() {
+            rasterZoom.value = 2;
+            rasterCanvas.style.transform = 'scale(2)';
+            rasterZoomValue.textContent = '2.0x';
+        }
+
+        window.onload = function () {
+            drawRasterImage();
         };
     </script>
 </body>
+
 </html>

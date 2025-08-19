@@ -349,7 +349,7 @@
                     <div class="action-buttons">
                         <button class="btn btn-clear" id="clearBtn">🗑️ Limpar Tudo</button>
                         <button class="btn btn-undo" id="undoBtn">↶ Desfazer</button>
-                        <button class="btn btn-save" id="saveBtn">💾 Salvar</button>
+                        <button class="btn btn-save" id="saveBtn">💾 Salvar (3 imagens)</button>
                     </div>
                 </div>
             </div>
@@ -743,25 +743,46 @@
             }
 
             saveSegmentation() {
-                // Create a composite canvas
-                const compositeCanvas = document.createElement('canvas');
-                const compositeCtx = compositeCanvas.getContext('2d');
+                const timestamp = new Date().getTime();
 
-                compositeCanvas.width = this.imageCanvas.width;
-                compositeCanvas.height = this.imageCanvas.height;
+                // 1. Salvar imagem original
+                const originalLink = document.createElement('a');
+                originalLink.download = `original_${timestamp}.png`;
+                originalLink.href = this.imageCanvas.toDataURL();
+                originalLink.click();
 
-                // Draw original image
-                compositeCtx.drawImage(this.imageCanvas, 0, 0);
+                // Aguardar um pouco antes do próximo download
+                setTimeout(() => {
+                    // 2. Salvar apenas a segmentação (com fundo transparente)
+                    const segmentationLink = document.createElement('a');
+                    segmentationLink.download = `segmentacao_${timestamp}.png`;
+                    segmentationLink.href = this.segmentationCanvas.toDataURL();
+                    segmentationLink.click();
 
-                // Draw segmentation with opacity
-                compositeCtx.globalAlpha = this.opacity;
-                compositeCtx.drawImage(this.segmentationCanvas, 0, 0);
+                    setTimeout(() => {
+                        // 3. Salvar composição (original + segmentação)
+                        const compositeCanvas = document.createElement('canvas');
+                        const compositeCtx = compositeCanvas.getContext('2d');
 
-                // Download the result
-                const link = document.createElement('a');
-                link.download = 'segmentacao_' + new Date().getTime() + '.png';
-                link.href = compositeCanvas.toDataURL();
-                link.click();
+                        compositeCanvas.width = this.imageCanvas.width;
+                        compositeCanvas.height = this.imageCanvas.height;
+
+                        // Draw original image
+                        compositeCtx.drawImage(this.imageCanvas, 0, 0);
+
+                        // Draw segmentation with opacity
+                        compositeCtx.globalAlpha = this.opacity;
+                        compositeCtx.drawImage(this.segmentationCanvas, 0, 0);
+
+                        const compositeLink = document.createElement('a');
+                        compositeLink.download = `composicao_${timestamp}.png`;
+                        compositeLink.href = compositeCanvas.toDataURL();
+                        compositeLink.click();
+
+                        // Mostrar mensagem de sucesso
+                        alert('3 imagens salvas:\n- Original\n- Segmentação\n- Composição');
+                    }, 500);
+                }, 500);
             }
         }
 
